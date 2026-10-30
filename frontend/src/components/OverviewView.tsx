@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { ArrowUpRight, ShieldCheck, Zap, Database, Cpu, Activity, Stethoscope, MessageSquare, RefreshCw } from 'lucide-react';
+import { InteractiveOrb } from './InteractiveOrb';
 
 export const OverviewView: React.FC = () => {
   const { setActiveTab } = useApp();
@@ -54,63 +55,9 @@ export const OverviewView: React.FC = () => {
             </button>
           </div>
 
-          {/* Concentric Kinetic Rings with Refractive Glass Core SVG */}
-          <div className="relative w-full max-w-[800px] h-[320px] sm:h-[400px] flex items-center justify-center mt-2 select-none pointer-events-none">
-            <svg className="w-full h-full" fill="none" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="chromeGradOuter" x1="100" x2="700" y1="180" y2="340" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                  <stop offset="25%" stopColor="#c4c7c7" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#ffffff" stopOpacity="0.95" />
-                  <stop offset="75%" stopColor="#a8abaa" stopOpacity="0.75" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.9" />
-                </linearGradient>
-                <linearGradient id="chromeGradMid" x1="150" x2="650" y1="200" y2="310" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                  <stop offset="35%" stopColor="#b0b4b2" stopOpacity="0.65" />
-                  <stop offset="70%" stopColor="#ffffff" stopOpacity="0.85" />
-                  <stop offset="100%" stopColor="#8a8e8c" stopOpacity="0.7" />
-                </linearGradient>
-                <radialGradient id="sphereFluidGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#aff1c6" stopOpacity="1" />
-                  <stop offset="45%" stopColor="#2a6a48" stopOpacity="0.85" />
-                  <stop offset="80%" stopColor="#00210c" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0.95" />
-                </radialGradient>
-                <radialGradient id="sphereGlassShell" cx="35%" cy="30%" r="65%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                  <stop offset="30%" stopColor="#ffffff" stopOpacity="0.4" />
-                  <stop offset="70%" stopColor="#f4f3f1" stopOpacity="0.15" />
-                  <stop offset="95%" stopColor="#93d5ac" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.6" />
-                </radialGradient>
-                <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="24" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-
-              {/* Shadow Bed under Orb */}
-              <ellipse cx="400" cy="390" rx="260" ry="24" fill="#1a1c1a" fillOpacity="0.06" filter="blur(16px)" />
-              <ellipse cx="400" cy="380" rx="140" ry="14" fill="#2a6a48" fillOpacity="0.12" filter="blur(12px)" />
-
-              {/* Orbital Segments */}
-              <path d="M 120 280 C 120 210, 680 210, 680 280" stroke="url(#chromeGradOuter)" strokeWidth="6" strokeLinecap="round" opacity="0.75" />
-              <ellipse cx="400" cy="265" rx="245" ry="58" stroke="url(#chromeGradMid)" strokeWidth="4" strokeDasharray="720 180" transform="rotate(-7 400 265)" opacity="0.6" />
-              
-              {/* Biological Core Emerald Nucleus */}
-              <circle cx="400" cy="250" r="42" fill="#6dfe9c" opacity="0.5" filter="blur(20px)" />
-              <circle cx="400" cy="250" r="32" fill="url(#sphereFluidGlow)" />
-              <circle cx="395" cy="242" r="14" fill="#aff1c6" opacity="0.85" filter="blur(3px)" />
-
-              {/* Outer Glass Sphere */}
-              <circle cx="400" cy="250" r="88" fill="url(#sphereGlassShell)" filter="url(#softGlow)" />
-              <ellipse cx="370" cy="205" rx="34" ry="18" fill="#ffffff" fillOpacity="0.85" transform="rotate(-28 370 205)" filter="blur(1px)" />
-
-              {/* Front Foreground Segments */}
-              <path d="M 680 280 C 680 355, 120 355, 120 280" stroke="url(#chromeGradOuter)" strokeWidth="7" strokeLinecap="round" />
-              <path d="M 640 280 C 625 330, 185 305, 160 255" stroke="url(#chromeGradMid)" strokeWidth="5" strokeLinecap="round" opacity="0.9" />
-            </svg>
+          {/* Interactive Light Mode Bio-Synthetic Orb Animation */}
+          <div className="w-full max-w-[853px] mx-auto mt-2 relative z-0">
+            <InteractiveOrb />
           </div>
         </div>
       </section>

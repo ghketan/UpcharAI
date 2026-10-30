@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f3f1] text-[#444748] font-mono text-xs border border-[#e3e2e0]/70">
+          <div className="hidden xl:inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-[#f4f3f1] text-[#444748] font-mono text-xs border border-[#e3e2e0]/70">
             <span className="w-2 h-2 rounded-full bg-[#2a6a48] animate-pulse" />
             <span>Edge Enclave: Offline SQLite Active</span>
           </div>
@@ -76,41 +76,36 @@ export const Header: React.FC = () => {
               }
             }}
             title="Reset DB & reload 4 canonical judge scenarios"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f4f3f1] text-[#444748] hover:text-[#1a1c1a] hover:bg-[#e9e8e5] font-mono text-xs border border-[#e3e2e0] transition-colors cursor-pointer"
+            className="hidden sm:inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full bg-[#f4f3f1] text-[#444748] hover:text-[#1a1c1a] hover:bg-[#e9e8e5] font-mono text-xs border border-[#e3e2e0] transition-colors cursor-pointer shadow-sm"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Reset Demo</span>
           </button>
 
           {/* Role Switcher Pill */}
-          <div className="flex flex-col items-end">
-            <button
-              onClick={toggleRole}
-              title="Click to toggle Demo Role between NURSE and DOCTOR"
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full border transition-all duration-200 cursor-pointer shadow-sm ${
-                role === 'DOCTOR'
-                  ? 'bg-[#aceec4]/40 border-[#2a6a48] text-[#2a6a48]'
-                  : 'bg-[#f4f3f1] border-[#c4c7c7] text-[#1a1c1a]'
-              }`}
-            >
-              {role === 'DOCTOR' ? (
-                <Stethoscope className="w-3.5 h-3.5 text-[#2a6a48]" />
-              ) : (
-                <UserCheck className="w-3.5 h-3.5 text-[#444748]" />
-              )}
-              <span className="font-mono text-xs font-bold tracking-wider">
-                {role === 'DOCTOR' ? 'Dr. Mode (Finalise Enabled)' : 'Nurse Mode'}
-              </span>
-            </button>
-            <span className="text-[10px] text-[#747878] font-mono mt-0.5 hidden sm:block">
-              Demo roles — not auth
+          <button
+            onClick={toggleRole}
+            title="Click to toggle Demo Role between NURSE and DOCTOR"
+            className={`inline-flex items-center justify-center gap-2 h-9 px-3.5 rounded-full border transition-all duration-200 cursor-pointer shadow-sm ${
+              role === 'DOCTOR'
+                ? 'bg-[#aceec4]/40 border-[#2a6a48] text-[#2a6a48]'
+                : 'bg-[#f4f3f1] border-[#c4c7c7] text-[#1a1c1a]'
+            }`}
+          >
+            {role === 'DOCTOR' ? (
+              <Stethoscope className="w-3.5 h-3.5 text-[#2a6a48]" />
+            ) : (
+              <UserCheck className="w-3.5 h-3.5 text-[#444748]" />
+            )}
+            <span className="font-mono text-xs font-bold tracking-wider">
+              {role === 'DOCTOR' ? 'Dr. Mode (Finalise Enabled)' : 'Nurse Mode'}
             </span>
-          </div>
+          </button>
 
           {/* Launch Outpost CDSS Action Button */}
           <button
             onClick={() => setActiveTab('triage')}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#000000] text-[#ffffff] font-mono text-xs font-medium tracking-wider shadow-md hover:bg-[#1c1b1b] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#000000] text-[#ffffff] font-mono text-xs font-medium tracking-wider shadow-md hover:bg-[#1c1b1b] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
           >
             <Activity className="w-3.5 h-3.5 text-[#aff1c6]" />
             <span className="hidden sm:inline">Launch Outpost CDSS</span>
@@ -128,7 +123,7 @@ export const Header: React.FC = () => {
             <button
               key={item.key}
               onClick={() => setActiveTab(item.key)}
-              className={`px-3 py-1 rounded-full font-mono text-xs whitespace-nowrap cursor-pointer transition-colors ${
+              className={`h-8 inline-flex items-center px-3.5 rounded-full font-mono text-xs whitespace-nowrap cursor-pointer transition-colors ${
                 isActive ? 'bg-[#000000] text-white' : 'text-[#444748] bg-[#faf9f6]'
               }`}
             >

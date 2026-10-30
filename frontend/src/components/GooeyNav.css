@@ -6,6 +6,7 @@
   --gn-y: 8px;
   position: relative;
   display: inline-flex;
+  align-items: center;
   max-width: 100%;
   font-family: var(--font-mono, 'Space Grotesk', monospace);
   font-size: var(--gn-font);
@@ -70,7 +71,8 @@
 .gooey-nav__list {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: var(--gn-gap);
   margin: 0;
   padding: 0;
@@ -88,6 +90,7 @@
 
 .gooey-nav__item {
   display: flex;
+  align-items: center;
 }
 
 .gooey-nav__link {
