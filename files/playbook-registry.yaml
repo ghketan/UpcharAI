@@ -1,0 +1,374 @@
+- id: R-001
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-001
+  - D-005
+  tests:
+  - T-005
+  - T-017
+- id: R-002
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  tests:
+  - T-005
+- id: R-003
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  tests:
+  - T-001
+  - T-002
+- id: R-004
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  tests:
+  - T-006
+- id: R-005
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  tests:
+  - T-003
+- id: R-006
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-003
+  tests:
+  - T-004
+- id: R-007
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-004
+  tests:
+  - T-007
+  - T-008
+- id: R-008
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-001
+  tests:
+  - T-009
+- id: R-009
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-005
+  - D-010
+  tests:
+  - T-020
+- id: R-010
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-001
+  - D-002
+  tests:
+  - T-017
+- id: R-011
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  - D-010
+  tests:
+  - T-019
+- id: R-012
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-006
+  tests:
+  - T-010
+- id: R-013
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-007
+  tests:
+  - T-011
+- id: R-014
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-005
+  tests:
+  - T-012
+- id: R-015
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-004
+  - D-005
+  tests:
+  - T-012
+- id: R-016
+  type: requirement
+  priority: P2
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-009
+  tests:
+  - T-021
+- id: R-017
+  type: requirement
+  priority: P2
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-008
+  tests:
+  - T-013
+- id: R-018
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-001
+  tests:
+  - T-014
+- id: R-019
+  type: requirement
+  priority: P2
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-011
+  tests:
+  - T-022
+- id: R-020
+  type: requirement
+  priority: P0
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-001
+  tests:
+  - T-015
+- id: R-021
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-011
+  tests:
+  - T-016
+- id: R-022
+  type: requirement
+  priority: P1
+  evidence_axis: USER_PROVIDED
+  status: PLANNED
+  source_ids:
+  - S-001
+  - S-002
+  design:
+  - D-002
+  tests:
+  - T-018
+- id: D-001
+  type: decision
+  status: PROPOSED
+- id: D-002
+  type: decision
+  status: PROPOSED
+- id: D-003
+  type: decision
+  status: PROPOSED
+- id: D-004
+  type: decision
+  status: PROPOSED
+- id: D-005
+  type: decision
+  status: PROPOSED
+- id: D-006
+  type: decision
+  status: PROPOSED
+- id: D-007
+  type: decision
+  status: PROPOSED
+- id: D-008
+  type: decision
+  status: PROPOSED
+- id: D-009
+  type: decision
+  status: PROPOSED
+- id: D-010
+  type: decision
+  status: PROPOSED
+- id: D-011
+  type: decision
+  status: PROPOSED
+- id: D-012
+  type: decision
+  status: PROPOSED
+- id: T-001
+  type: test
+  status: PLANNED
+- id: T-002
+  type: test
+  status: PLANNED
+- id: T-003
+  type: test
+  status: PLANNED
+- id: T-004
+  type: test
+  status: PLANNED
+- id: T-005
+  type: test
+  status: PLANNED
+- id: T-006
+  type: test
+  status: PLANNED
+- id: T-007
+  type: test
+  status: PLANNED
+- id: T-008
+  type: test
+  status: PLANNED
+- id: T-009
+  type: test
+  status: PLANNED
+- id: T-010
+  type: test
+  status: PLANNED
+- id: T-011
+  type: test
+  status: PLANNED
+- id: T-012
+  type: test
+  status: PLANNED
+- id: T-013
+  type: test
+  status: PLANNED
+- id: T-014
+  type: test
+  status: PLANNED
+- id: T-015
+  type: test
+  status: PLANNED
+- id: T-016
+  type: test
+  status: PLANNED
+- id: T-017
+  type: test
+  status: PLANNED
+- id: T-018
+  type: test
+  status: PLANNED
+- id: T-019
+  type: test
+  status: PLANNED
+- id: T-020
+  type: test
+  status: PLANNED
+- id: T-021
+  type: test
+  status: PLANNED
+- id: T-022
+  type: test
+  status: PLANNED
