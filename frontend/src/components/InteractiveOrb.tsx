@@ -197,7 +197,7 @@ export const InteractiveOrb: React.FC<{ className?: string }> = ({ className = '
 
       // 3. Floating glass beads (drift + repel from cursor)
       ctx.save();
-      ctx.shadowColor = 'rgba(40,60,50,0.16)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
       ctx.shadowBlur = 8 * s;
       ctx.shadowOffsetY = 3 * s;
       ctx.fillStyle = '#ffffff';
