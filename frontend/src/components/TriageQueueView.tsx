@@ -460,7 +460,7 @@ export const TriageQueueView: React.FC = () => {
       <section className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#e3e2e0]">
           <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#444748]">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f3f1] text-[#1a1c1a] border border-[#e3e2e0]">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f3eee3] text-[#1a1c1a] border border-[#e3e2e0]">
               <span className="w-2 h-2 rounded-full bg-[#2a6a48]" />
               <span>Sub-Centre Outpost (Punjab)</span>
             </span>
@@ -473,12 +473,12 @@ export const TriageQueueView: React.FC = () => {
           <div className="flex items-center gap-3 font-mono text-xs">
             <button
               onClick={refreshQueue}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeeeb] text-[#444748] hover:text-[#1a1c1a] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eae4d6] text-[#444748] hover:text-[#1a1c1a] transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${queueLoading ? 'animate-spin' : ''}`} />
               <span>Refresh Queue</span>
             </button>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeeeb] text-[#444748]">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eae4d6] text-[#444748]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48] animate-pulse" />
               <span>100% Offline SQLite</span>
             </div>
@@ -502,7 +502,7 @@ export const TriageQueueView: React.FC = () => {
           </div>
 
           <div className="lg:col-span-4 flex justify-start lg:justify-end">
-            <div className="w-full max-w-[280px] p-4 rounded-2xl bg-[#f4f3f1] border border-[#e3e2e0] shadow-sm flex flex-col gap-2">
+            <div className="w-full max-w-[280px] p-4 rounded-2xl bg-[#f3eee3] border border-[#e3e2e0] shadow-sm flex flex-col gap-2">
               <div className="flex items-center justify-between text-[#444748] font-mono text-xs">
                 <span className="uppercase tracking-wider">Active Queue Matrix</span>
                 <span className="text-[#2a6a48] font-bold">LIVE EVAL</span>
@@ -560,7 +560,7 @@ export const TriageQueueView: React.FC = () => {
                 <Activity className="w-5 h-5 text-[#2a6a48]" />
                 <h2 className="text-lg font-bold text-[#1a1c1a]">Point-of-Care Intake</h2>
               </div>
-              <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#f4f3f1] text-[#444748] border border-[#e3e2e0]">
+              <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#f3eee3] text-[#444748] border border-[#e3e2e0]">
                 ANM TELEMETRY
               </span>
             </div>
@@ -611,7 +611,7 @@ export const TriageQueueView: React.FC = () => {
                     placeholder="e.g. P-105 or Jasleen Kaur"
                     value={displayCode}
                     onChange={(e) => setDisplayCode(e.target.value)}
-                    className="px-3.5 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none focus:ring-1 focus:ring-black"
+                    className="px-3.5 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none focus:ring-1 focus:ring-black"
                   />
                 </div>
 
@@ -628,12 +628,12 @@ export const TriageQueueView: React.FC = () => {
                       placeholder="Age"
                       value={age}
                       onChange={(e) => setAge(e.target.value)}
-                      className="w-1/2 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none focus:ring-1 focus:ring-black font-mono"
+                      className="w-1/2 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none focus:ring-1 focus:ring-black font-mono"
                     />
                     <select
                       value={sex}
                       onChange={(e) => setSex(e.target.value as any)}
-                      className="w-1/2 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                      className="w-1/2 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                     >
                       <option value="F">Female (F)</option>
                       <option value="M">Male (M)</option>
@@ -644,7 +644,7 @@ export const TriageQueueView: React.FC = () => {
               </div>
 
               {/* Pregnancy Checkbox */}
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0]">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0]">
                 <input
                   type="checkbox"
                   id="pregCheck"
@@ -667,7 +667,7 @@ export const TriageQueueView: React.FC = () => {
                     {symptoms.length} selected
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-[#f4f3f1] rounded-2xl border border-[#e3e2e0]">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-[#f3eee3] rounded-2xl border border-[#e3e2e0]">
                   {SYMPTOM_OPTIONS.map((item) => {
                     const isSelected = symptoms.includes(item.code);
                     return (
@@ -707,7 +707,7 @@ export const TriageQueueView: React.FC = () => {
                         className={`px-2.5 py-0.5 rounded-full font-mono text-xs transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-[#2a6a48] text-white'
-                            : 'bg-[#f4f3f1] text-[#444748] hover:bg-[#e9e8e5]'
+                            : 'bg-[#f3eee3] text-[#444748] hover:bg-[#eae4d6]'
                         }`}
                       >
                         {isSelected ? '✓ ' : '+ '}
@@ -729,7 +729,7 @@ export const TriageQueueView: React.FC = () => {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {/* SpO2 */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">SpO2 (%)</span>
                     <input
                       type="number"
@@ -744,7 +744,7 @@ export const TriageQueueView: React.FC = () => {
                   </div>
 
                   {/* SBP */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">Systolic BP (mmHg)</span>
                     <input
                       type="number"
@@ -759,7 +759,7 @@ export const TriageQueueView: React.FC = () => {
                   </div>
 
                   {/* DBP */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">Diastolic BP (mmHg)</span>
                     <input
                       type="number"
@@ -774,7 +774,7 @@ export const TriageQueueView: React.FC = () => {
                   </div>
 
                   {/* Pulse */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">Pulse (bpm)</span>
                     <input
                       type="number"
@@ -789,7 +789,7 @@ export const TriageQueueView: React.FC = () => {
                   </div>
 
                   {/* Temp */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">Temp (°C)</span>
                     <input
                       type="number"
@@ -805,7 +805,7 @@ export const TriageQueueView: React.FC = () => {
                   </div>
 
                   {/* Resp Rate */}
-                  <div className="p-2.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1">
+                  <div className="p-2.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1">
                     <span className="text-[11px] text-[#747878] font-mono">Resp Rate (rr)</span>
                     <input
                       type="number"
@@ -827,7 +827,7 @@ export const TriageQueueView: React.FC = () => {
                     <select
                       value={avpu}
                       onChange={(e) => setAvpu(e.target.value)}
-                      className="px-3 py-1.5 rounded-xl bg-[#f4f3f1] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                      className="px-3 py-1.5 rounded-xl bg-[#f3eee3] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                     >
                       <option value="A">Alert (A)</option>
                       <option value="V">Voice Response (V)</option>
@@ -844,7 +844,7 @@ export const TriageQueueView: React.FC = () => {
                       className={`px-3 py-1.5 rounded-xl font-mono text-xs transition-colors cursor-pointer border ${
                         onOxygen
                           ? 'bg-[#2a6a48] text-white border-[#2a6a48]'
-                          : 'bg-[#f4f3f1] text-[#444748] border-[#e3e2e0]'
+                          : 'bg-[#f3eee3] text-[#444748] border-[#e3e2e0]'
                       }`}
                     >
                       {onOxygen ? 'On Oxygen (+2 NEWS2)' : 'Room Air (0)'}
@@ -863,7 +863,7 @@ export const TriageQueueView: React.FC = () => {
                       placeholder="e.g. 2"
                       value={durationDays}
                       onChange={(e) => setDurationDays(e.target.value)}
-                      className="px-3 py-1.5 rounded-xl bg-[#f4f3f1] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                      className="px-3 py-1.5 rounded-xl bg-[#f3eee3] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                     />
                   </div>
                   <div className="sm:col-span-2 flex flex-col gap-1">
@@ -883,7 +883,7 @@ export const TriageQueueView: React.FC = () => {
                         placeholder="Optional free-text observations or click mic to dictate"
                         value={freeText}
                         onChange={(e) => setFreeText(e.target.value)}
-                        className="w-full pl-3 pr-10 py-1.5 rounded-xl bg-[#f4f3f1] text-xs text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                        className="w-full pl-3 pr-10 py-1.5 rounded-xl bg-[#f3eee3] text-xs text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                       />
                       <button
                         type="button"
@@ -986,7 +986,7 @@ export const TriageQueueView: React.FC = () => {
                   placeholder="Search code / reason..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-full bg-[#f4f3f1] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-full bg-[#f3eee3] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                 />
               </div>
             </div>
@@ -998,7 +998,7 @@ export const TriageQueueView: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
                   filterPriority === 'all'
                     ? 'bg-[#000000] text-white'
-                    : 'bg-[#f4f3f1] text-[#444748] hover:text-[#1a1c1a]'
+                    : 'bg-[#f3eee3] text-[#444748] hover:text-[#1a1c1a]'
                 }`}
               >
                 All ({counts.total})
@@ -1008,7 +1008,7 @@ export const TriageQueueView: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors cursor-pointer ${
                   filterPriority === 'tier1'
                     ? 'bg-[#ba1a1a] text-white'
-                    : 'bg-[#f4f3f1] text-[#ba1a1a] hover:bg-[#ffdad6]'
+                    : 'bg-[#f3eee3] text-[#ba1a1a] hover:bg-[#ffdad6]'
                 }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a] animate-ping" />
@@ -1019,7 +1019,7 @@ export const TriageQueueView: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
                   filterPriority === 'tier2'
                     ? 'bg-[#d97706] text-white'
-                    : 'bg-[#f4f3f1] text-[#d97706] hover:bg-[#fff4e5]'
+                    : 'bg-[#f3eee3] text-[#d97706] hover:bg-[#fff4e5]'
                 }`}
               >
                 Urgent ({counts.tier2})
@@ -1029,7 +1029,7 @@ export const TriageQueueView: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
                   filterPriority === 'tier3'
                     ? 'bg-[#2a6a48] text-white'
-                    : 'bg-[#f4f3f1] text-[#2a6a48] hover:bg-[#aceec4]/30'
+                    : 'bg-[#f3eee3] text-[#2a6a48] hover:bg-[#aceec4]/30'
                 }`}
               >
                 Routine ({counts.tier3})
@@ -1039,7 +1039,7 @@ export const TriageQueueView: React.FC = () => {
                 className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
                   filterPriority === 'flagged'
                     ? 'bg-[#1a1c1a] text-white'
-                    : 'bg-[#f4f3f1] text-[#747878] hover:bg-[#e9e8e5]'
+                    : 'bg-[#f3eee3] text-[#747878] hover:bg-[#eae4d6]'
                 }`}
               >
                 Flagged / Incomplete
@@ -1084,7 +1084,7 @@ export const TriageQueueView: React.FC = () => {
                             className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold ${
                               item.state === 'FINALISED'
                                 ? 'bg-[#2a6a48] text-white'
-                                : 'bg-[#f4f3f1] text-[#444748] border border-[#e3e2e0]'
+                                : 'bg-[#f3eee3] text-[#444748] border border-[#e3e2e0]'
                             }`}
                           >
                             {item.state}
@@ -1117,7 +1117,7 @@ export const TriageQueueView: React.FC = () => {
                         {item.flags.map((flag, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-0.5 rounded-full bg-[#f4f3f1] text-[#747878] text-[10px] font-mono border border-[#e3e2e0] flex items-center gap-1"
+                            className="px-2 py-0.5 rounded-full bg-[#f3eee3] text-[#747878] text-[10px] font-mono border border-[#e3e2e0] flex items-center gap-1"
                           >
                             <AlertCircle className="w-3 h-3 text-[#f59e0b]" />
                             <span>{flag}</span>
@@ -1152,7 +1152,7 @@ export const TriageQueueView: React.FC = () => {
 
                         <button
                           onClick={() => openPatientAudit(item.patient_id, item.latest_assessment_id || undefined)}
-                          className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] hover:bg-[#e9e8e5] text-[#1a1c1a] font-medium border border-[#e3e2e0] transition-colors cursor-pointer flex items-center gap-1"
+                          className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#1a1c1a] font-medium border border-[#e3e2e0] transition-colors cursor-pointer flex items-center gap-1"
                         >
                           <span>Audit & Finalise</span>
                           <ChevronRight className="w-3.5 h-3.5" />

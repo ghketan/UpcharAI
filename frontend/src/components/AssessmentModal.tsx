@@ -128,7 +128,7 @@ export const AssessmentModal: React.FC = () => {
       }}
       className="fixed inset-0 z-50 bg-[#000000]/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
     >
-      <div className="w-full max-w-3xl bg-[#faf9f6] rounded-3xl border border-[#c4c7c7] shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="w-full max-w-3xl bg-[#faf7ee] rounded-3xl border border-[#c4c7c7] shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
         
         {/* Modal Top Header */}
         <div className="p-5 sm:p-6 bg-[#ffffff] border-b border-[#e3e2e0] flex items-center justify-between">
@@ -140,7 +140,7 @@ export const AssessmentModal: React.FC = () => {
                   Clinical Case Audit & Inspector
                 </h3>
                 {history?.patient?.display_code && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#efeeeb] font-mono text-xs font-semibold text-[#1a1c1a]">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#eae4d6] font-mono text-xs font-semibold text-[#1a1c1a]">
                     #{history.patient.display_code}
                   </span>
                 )}
@@ -153,7 +153,7 @@ export const AssessmentModal: React.FC = () => {
 
           <button
             onClick={closePatientAudit}
-            className="w-9 h-9 rounded-full bg-[#f4f3f1] hover:bg-[#e9e8e5] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -177,7 +177,7 @@ export const AssessmentModal: React.FC = () => {
               {/* Patient Demographics Strip */}
               <div className="p-4 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#efeeeb] flex items-center justify-center text-[#1a1c1a]">
+                  <div className="w-10 h-10 rounded-full bg-[#eae4d6] flex items-center justify-center text-[#1a1c1a]">
                     <User className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col">
@@ -196,7 +196,7 @@ export const AssessmentModal: React.FC = () => {
                   <span className="text-[#1a1c1a]">
                     {new Date(history.patient.arrived_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#f4f3f1] text-[#444748] border border-[#e3e2e0]">
+                  <span className="px-2 py-0.5 rounded-full bg-[#f3eee3] text-[#444748] border border-[#e3e2e0]">
                     By {history.patient.created_by_role}
                   </span>
                 </div>
@@ -252,7 +252,7 @@ export const AssessmentModal: React.FC = () => {
                         setEscalateTo(target);
                         setShowEscalate(!showEscalate);
                       }}
-                      className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#c4c7c7] transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f3eee3] text-[#1a1c1a] font-mono text-xs border border-[#c4c7c7] transition-all cursor-pointer"
                     >
                       Escalate Priority ↑
                     </button>
@@ -274,7 +274,7 @@ export const AssessmentModal: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="p-4 rounded-xl bg-[#f4f3f1] text-xs text-[#747878] font-mono">
+                <div className="p-4 rounded-xl bg-[#f3eee3] text-xs text-[#747878] font-mono">
                   No assessments entered for this patient yet.
                 </div>
               )}
@@ -303,7 +303,7 @@ export const AssessmentModal: React.FC = () => {
                       <select
                         value={escalateTo}
                         onChange={(e) => setEscalateTo(e.target.value as any)}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                       >
                         {effectivePriority === 'ROUTINE' && <option value="URGENT">URGENT</option>}
                         <option value="EMERGENCY">EMERGENCY</option>
@@ -318,7 +318,7 @@ export const AssessmentModal: React.FC = () => {
                         onChange={(e) => setEscalateReason(e.target.value)}
                         required
                         minLength={5}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -361,7 +361,7 @@ export const AssessmentModal: React.FC = () => {
                       <select
                         value={finalPriority}
                         onChange={(e) => setFinalPriority(e.target.value as Priority)}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                       >
                         <option value="EMERGENCY">EMERGENCY</option>
                         <option value="URGENT">URGENT</option>
@@ -377,7 +377,7 @@ export const AssessmentModal: React.FC = () => {
                         placeholder="Clinician notes / justification"
                         value={finaliseReason}
                         onChange={(e) => setFinaliseReason(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f4f3f1] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-[#f3eee3] text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -406,7 +406,7 @@ export const AssessmentModal: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">SpO2</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.spo2 ?? '—'}%
@@ -416,7 +416,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">SBP</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.sbp ?? '—'} mmHg
@@ -426,7 +426,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">Pulse</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.pulse ?? '—'} bpm
@@ -436,7 +436,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">Temp</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.temp_c ? `${latestAssessment.inputs.temp_c}°C` : '—'}
@@ -446,7 +446,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">Resp Rate</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.rr ?? '—'} /min
@@ -456,7 +456,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">AVPU</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.avpu ?? '—'}
@@ -466,7 +466,7 @@ export const AssessmentModal: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                    <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                       <span className="text-[11px] text-[#747878]">Oxygen</span>
                       <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                         {latestAssessment.inputs?.on_oxygen ? 'Yes' : 'Room Air'}
@@ -500,7 +500,7 @@ export const AssessmentModal: React.FC = () => {
                             ? 'bg-[#ffdad6]/30 border-[#ba1a1a]/20 text-[#ba1a1a]'
                             : f.tier === 'URGENT'
                             ? 'bg-[#fff4e5]/50 border-[#f59e0b]/20 text-[#d97706]'
-                            : 'bg-[#f4f3f1] border-[#e3e2e0] text-[#1a1c1a]'
+                            : 'bg-[#f3eee3] border-[#e3e2e0] text-[#1a1c1a]'
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -534,7 +534,7 @@ export const AssessmentModal: React.FC = () => {
                     {latestAssessment.flags.map((flag, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 rounded-full bg-[#efeeeb] text-[#1a1c1a] border border-[#c4c7c7] font-mono text-xs font-medium flex items-center gap-1.5"
+                        className="px-3 py-1 rounded-full bg-[#eae4d6] text-[#1a1c1a] border border-[#c4c7c7] font-mono text-xs font-medium flex items-center gap-1.5"
                       >
                         <AlertTriangle className="w-3.5 h-3.5 text-[#f59e0b]" />
                         <span>{flag}</span>
@@ -554,7 +554,7 @@ export const AssessmentModal: React.FC = () => {
                     {history.assessments.map((a) => (
                       <div
                         key={a.assessment_id}
-                        className="p-2.5 rounded-xl bg-[#f4f3f1] flex items-center justify-between text-xs font-mono"
+                        className="p-2.5 rounded-xl bg-[#f3eee3] flex items-center justify-between text-xs font-mono"
                       >
                         <div className="flex items-center gap-2">
                           <span className="font-bold">Seq #{a.seq}</span>
@@ -594,7 +594,7 @@ export const AssessmentModal: React.FC = () => {
 
                     return (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                        <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                           <span className="text-[10px] font-mono text-[#747878]">SpO2 Shift</span>
                           <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                             {prevInputs.spo2 ?? '—'}% → {currInputs.spo2 ?? '—'}%
@@ -606,7 +606,7 @@ export const AssessmentModal: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                        <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                           <span className="text-[10px] font-mono text-[#747878]">Pulse Shift</span>
                           <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                             {prevInputs.pulse ?? '—'} → {currInputs.pulse ?? '—'} bpm
@@ -618,7 +618,7 @@ export const AssessmentModal: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                        <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                           <span className="text-[10px] font-mono text-[#747878]">SBP Shift</span>
                           <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                             {prevInputs.sbp ?? '—'} → {currInputs.sbp ?? '—'} mmHg
@@ -630,7 +630,7 @@ export const AssessmentModal: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                        <div className="p-2.5 rounded-xl bg-[#f3eee3] flex flex-col">
                           <span className="text-[10px] font-mono text-[#747878]">Resp Rate Shift</span>
                           <span className="font-mono font-bold text-sm text-[#1a1c1a]">
                             {prevInputs.rr ?? '—'} → {currInputs.rr ?? '—'} /min
@@ -730,7 +730,7 @@ export const AssessmentModal: React.FC = () => {
 
           <button
             onClick={closePatientAudit}
-            className="px-5 py-2 rounded-full bg-[#efeeeb] text-[#1a1c1a] hover:bg-[#e3e2e0] font-mono text-xs font-medium transition-colors cursor-pointer"
+            className="px-5 py-2 rounded-full bg-[#eae4d6] text-[#1a1c1a] hover:bg-[#e3e2e0] font-mono text-xs font-medium transition-colors cursor-pointer"
           >
             Close Inspector
           </button>

@@ -73,7 +73,7 @@ const MainContent: React.FC = () => {
   const { activeTab } = useApp();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf9f6]">
+    <div className="min-h-screen flex flex-col bg-[#faf7ee]">
       <ScrollProgressBar />
       <Header />
       <main className="flex-1 pt-[128px] lg:pt-20 flex flex-col">

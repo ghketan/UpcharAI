@@ -49,8 +49,8 @@ export const InteractiveOrb: React.FC<{ className?: string }> = ({ className = '
     const TAU = Math.PI * 2;
     const N = 150;
 
-    // Strict light mode background tone: warm alabaster (#faf9f6)
-    const BG: [number, number, number] = [250, 249, 246];
+    // Light cream / warm off-white background tone (#faf7ee)
+    const BG: [number, number, number] = [250, 247, 238];
 
     const RINGS: Ring[] = [
       { R: 290, tilt: 80, roll: -1.5, spin: 0.14, arc: TAU, w: 2.8, ph: 0, a: 0 },

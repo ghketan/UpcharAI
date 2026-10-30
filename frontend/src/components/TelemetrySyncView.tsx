@@ -107,7 +107,7 @@ export const TelemetrySyncView: React.FC = () => {
       
       {/* Top Editorial Telemetry Header */}
       <section className="flex flex-col items-center text-center max-w-3xl mx-auto gap-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f4f3f1] border border-[#e3e2e0] text-[#2a6a48] font-mono text-xs shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f3eee3] border border-[#e3e2e0] text-[#2a6a48] font-mono text-xs shadow-sm">
           <span className="w-2 h-2 rounded-full bg-[#2a6a48] animate-pulse" />
           <span>Autonomous Edge Enclave · Zero-Bandwidth Engine</span>
         </div>
@@ -124,7 +124,7 @@ export const TelemetrySyncView: React.FC = () => {
         {/* Edge Gateway Node Banner */}
         <div className="mt-4 w-full p-4 sm:p-5 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-left">
-            <div className="w-12 h-12 rounded-2xl bg-[#f4f3f1] border border-[#e3e2e0] flex items-center justify-center text-[#2a6a48] shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-[#f3eee3] border border-[#e3e2e0] flex items-center justify-center text-[#2a6a48] shrink-0">
               <Server className="w-6 h-6" />
             </div>
             <div>
@@ -132,7 +132,7 @@ export const TelemetrySyncView: React.FC = () => {
                 <span className="font-bold text-sm text-[#1a1c1a]">
                   Sub-Centre Khunnan Kalan Gateway
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-[#f4f3f1] text-[10px] font-mono text-[#444748]">
+                <span className="px-2 py-0.5 rounded-full bg-[#f3eee3] text-[10px] font-mono text-[#444748]">
                   PB-MKT-088
                 </span>
               </div>
@@ -143,7 +143,7 @@ export const TelemetrySyncView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0]">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f3eee3] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0]">
               <span className="w-2 h-2 rounded-full bg-[#2a6a48]" />
               <span>{syncStatus?.online ? 'EDGE READY' : 'OFFLINE'}</span>
             </div>
@@ -281,7 +281,7 @@ export const TelemetrySyncView: React.FC = () => {
                   resetDemoDatabase();
                 }
               }}
-              className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] hover:bg-[#e9e8e5] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5 text-[#444748]" />
               <span>Reset Demo DB</span>
@@ -293,7 +293,7 @@ export const TelemetrySyncView: React.FC = () => {
         <div className="w-full overflow-x-auto rounded-3xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm">
           <table className="w-full text-left font-mono text-xs border-collapse min-w-[700px]">
             <thead>
-              <tr className="bg-[#f4f3f1] text-[#747878] uppercase border-b border-[#e3e2e0]">
+              <tr className="bg-[#f3eee3] text-[#747878] uppercase border-b border-[#e3e2e0]">
                 <th className="py-3 px-4 font-semibold">Patient Code</th>
                 <th className="py-3 px-4 font-semibold">Triage Tier</th>
                 <th className="py-3 px-4 font-semibold">Clinical Reason</th>
@@ -311,7 +311,7 @@ export const TelemetrySyncView: React.FC = () => {
                 </tr>
               ) : (
                 filteredItems.map((item) => (
-                  <tr key={item.patient_id} className="hover:bg-[#f4f3f1]/50 transition-colors">
+                  <tr key={item.patient_id} className="hover:bg-[#f3eee3]/50 transition-colors">
                     <td className="py-3.5 px-4 font-bold text-[#1a1c1a]">
                       #{item.display_code}
                     </td>
@@ -332,7 +332,7 @@ export const TelemetrySyncView: React.FC = () => {
                       {item.top_reason}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-full bg-[#f4f3f1] text-[#444748] border border-[#e3e2e0] text-[10px]">
+                      <span className="px-2 py-0.5 rounded-full bg-[#f3eee3] text-[#444748] border border-[#e3e2e0] text-[10px]">
                         {item.state}
                       </span>
                     </td>
@@ -379,7 +379,7 @@ export const TelemetrySyncView: React.FC = () => {
           <button
             onClick={fetchOutboxAndHub}
             disabled={loadingOutbox}
-            className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer self-start sm:self-auto"
+            className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f3eee3] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer self-start sm:self-auto"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#2a6a48] ${loadingOutbox ? 'animate-spin' : ''}`} />
             <span>Refresh Outbox</span>
@@ -389,7 +389,7 @@ export const TelemetrySyncView: React.FC = () => {
         <div className="w-full overflow-x-auto rounded-3xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm">
           <table className="w-full text-left font-mono text-xs border-collapse min-w-[750px]">
             <thead>
-              <tr className="bg-[#f4f3f1] text-[#747878] uppercase border-b border-[#e3e2e0]">
+              <tr className="bg-[#f3eee3] text-[#747878] uppercase border-b border-[#e3e2e0]">
                 <th className="py-3 px-4 font-semibold">Entity Type</th>
                 <th className="py-3 px-4 font-semibold">Entity ID</th>
                 <th className="py-3 px-4 font-semibold">State</th>
@@ -408,7 +408,7 @@ export const TelemetrySyncView: React.FC = () => {
                 </tr>
               ) : (
                 outboxItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-[#f4f3f1]/50 transition-colors">
+                  <tr key={item.id} className="hover:bg-[#f3eee3]/50 transition-colors">
                     <td className="py-3 px-4 font-bold text-[#1a1c1a] uppercase">
                       {item.entity}
                     </td>
@@ -448,7 +448,7 @@ export const TelemetrySyncView: React.FC = () => {
                         <button
                           onClick={() => handleRetryItem(item.id)}
                           disabled={retryingId === item.id}
-                          className="px-2.5 py-1 rounded-full bg-[#f4f3f1] hover:bg-[#e3e2e0] text-[#1a1c1a] font-mono text-[11px] border border-[#c4c7c7] transition-colors cursor-pointer disabled:opacity-50"
+                          className="px-2.5 py-1 rounded-full bg-[#f3eee3] hover:bg-[#e3e2e0] text-[#1a1c1a] font-mono text-[11px] border border-[#c4c7c7] transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {retryingId === item.id ? 'Resetting...' : 'Force Retry'}
                         </button>
@@ -479,25 +479,25 @@ export const TelemetrySyncView: React.FC = () => {
                 </p>
               </div>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#f4f3f1] text-[#2a6a48] font-mono text-xs font-bold border border-[#e3e2e0]">
+            <span className="px-3 py-1 rounded-full bg-[#f3eee3] text-[#2a6a48] font-mono text-xs font-bold border border-[#e3e2e0]">
               Ingest Node Active
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+            <div className="p-3 rounded-2xl bg-[#f3eee3] flex flex-col">
               <span className="text-[10px] font-mono uppercase text-[#747878]">Total Patients</span>
               <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_patients}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+            <div className="p-3 rounded-2xl bg-[#f3eee3] flex flex-col">
               <span className="text-[10px] font-mono uppercase text-[#747878]">Total Assessments</span>
               <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_assessments}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+            <div className="p-3 rounded-2xl bg-[#f3eee3] flex flex-col">
               <span className="text-[10px] font-mono uppercase text-[#747878]">Total Referrals</span>
               <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_referrals}</span>
             </div>
-            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+            <div className="p-3 rounded-2xl bg-[#f3eee3] flex flex-col">
               <span className="text-[10px] font-mono uppercase text-[#747878]">Source Outposts</span>
               <span className="text-sm font-bold font-mono text-[#2a6a48] mt-1">{targetHub.remote_sources.join(', ')}</span>
             </div>

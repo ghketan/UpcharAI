@@ -4,14 +4,14 @@
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'Space Grotesk', ui-monospace, SFMono-Regular, monospace;
   
-  --color-surface: #faf9f6;
-  --color-surface-dim: #dbdad7;
-  --color-surface-bright: #faf9f6;
+  --color-surface: #faf7ee;
+  --color-surface-dim: #dbd5c6;
+  --color-surface-bright: #fdfbf7;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f4f3f1;
-  --color-surface-container: #efeeeb;
-  --color-surface-container-high: #e9e8e5;
-  --color-surface-container-highest: #e3e2e0;
+  --color-surface-container-low: #f3eee3;
+  --color-surface-container: #eae4d6;
+  --color-surface-container-high: #e2dcce;
+  --color-surface-container-highest: #ded7c7;
   
   --color-on-surface: #1a1c1a;
   --color-on-surface-variant: #444748;

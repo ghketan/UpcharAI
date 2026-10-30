@@ -106,7 +106,7 @@ export const EmergencyReferralView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 font-mono text-xs text-[#444748]">
-            <span className="px-3 py-1 rounded-full bg-[#f4f3f1] border border-[#e3e2e0]">
+            <span className="px-3 py-1 rounded-full bg-[#f3eee3] border border-[#e3e2e0]">
               ABDM & FHIR R4 Structure
             </span>
           </div>
@@ -147,7 +147,7 @@ export const EmergencyReferralView: React.FC = () => {
                 <select
                   value={selectedPatientId}
                   onChange={(e) => handlePatientChange(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#f4f3f1] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#f3eee3] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                 >
                   {queue.length === 0 ? (
                     <option value="">No patients in queue</option>
@@ -163,7 +163,7 @@ export const EmergencyReferralView: React.FC = () => {
 
               {/* Selected Patient Snapshot */}
               {selectedPatientItem && (
-                <div className="p-3.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-1 text-xs font-mono">
+                <div className="p-3.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-1 text-xs font-mono">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-[#1a1c1a]">#{selectedPatientItem.display_code}</span>
                     <span
@@ -194,7 +194,7 @@ export const EmergencyReferralView: React.FC = () => {
                   <select
                     value={selectedHospitalId}
                     onChange={(e) => setSelectedHospitalId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f4f3f1] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f3eee3] text-xs font-mono text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
                   >
                     {hospitals.map((h) => (
                       <option key={h.id} value={h.id}>
@@ -207,7 +207,7 @@ export const EmergencyReferralView: React.FC = () => {
 
               {/* Selected Hospital Quick Contact Card with tel: link (UI-005) */}
               {selectedHospital && (
-                <div className="p-3.5 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-2">
+                <div className="p-3.5 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[#1a1c1a]">{selectedHospital.name}</span>
                     <span className="text-[10px] text-[#747878] font-mono">Simulated</span>
@@ -259,7 +259,7 @@ export const EmergencyReferralView: React.FC = () => {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => window.print()}
-                    className="px-4 py-2 rounded-full bg-[#f4f3f1] hover:bg-[#e9e8e5] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Printer className="w-4 h-4 text-[#444748]" />
                     <span>Print Slip</span>
@@ -268,7 +268,7 @@ export const EmergencyReferralView: React.FC = () => {
               </div>
 
               {/* Demographics & Priority Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#f4f3f1] border border-[#e3e2e0] font-mono text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#f3eee3] border border-[#e3e2e0] font-mono text-xs">
                 <div>
                   <span className="text-[#747878]">Patient Code:</span>
                   <p className="font-bold text-sm text-[#1a1c1a]">#{referralResult.display_code}</p>
@@ -302,25 +302,25 @@ export const EmergencyReferralView: React.FC = () => {
                   Recorded Physiological Telemetry
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col">
+                  <div className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col">
                     <span className="text-[11px] text-[#747878] font-mono">SpO2 Level</span>
                     <span className="text-base font-bold text-[#1a1c1a] font-mono">
                       {referralResult.vitals.spo2 ?? '—'}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col">
+                  <div className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col">
                     <span className="text-[11px] text-[#747878] font-mono">Blood Pressure</span>
                     <span className="text-base font-bold text-[#1a1c1a] font-mono">
                       {referralResult.vitals.sbp ?? '—'}/{referralResult.vitals.dbp ?? '—'} mmHg
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col">
+                  <div className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col">
                     <span className="text-[11px] text-[#747878] font-mono">Heart Rate</span>
                     <span className="text-base font-bold text-[#1a1c1a] font-mono">
                       {referralResult.vitals.pulse ?? '—'} bpm
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col">
+                  <div className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col">
                     <span className="text-[11px] text-[#747878] font-mono">Temperature</span>
                     <span className="text-base font-bold text-[#1a1c1a] font-mono">
                       {referralResult.vitals.temp_c ? `${referralResult.vitals.temp_c}°C` : '—'}
@@ -339,13 +339,13 @@ export const EmergencyReferralView: React.FC = () => {
                     referralResult.fired_rules.map((rule, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] text-[#1a1c1a]"
+                        className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] text-[#1a1c1a]"
                       >
                         {rule}
                       </div>
                     ))
                   ) : (
-                    <div className="p-3 rounded-xl bg-[#f4f3f1] text-[#747878]">
+                    <div className="p-3 rounded-xl bg-[#f3eee3] text-[#747878]">
                       No critical rules fired.
                     </div>
                   )}
@@ -369,7 +369,7 @@ export const EmergencyReferralView: React.FC = () => {
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#747878]">
                   Zero-Connectivity GSM SMS Fallback Packet
                 </span>
-                <code className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] font-mono text-xs text-[#1a1c1a] block overflow-x-auto">
+                <code className="p-3 rounded-xl bg-[#f3eee3] border border-[#e3e2e0] font-mono text-xs text-[#1a1c1a] block overflow-x-auto">
                   UPCHAR/REF:{referralResult.referral_id.slice(0, 6)}/P:{referralResult.display_code}/
                   {referralResult.effective_priority}/O2:{referralResult.vitals.spo2 ?? 'NA'}/BP:
                   {referralResult.vitals.sbp ?? 'NA'}/{referralResult.vitals.dbp ?? 'NA'}/HR:

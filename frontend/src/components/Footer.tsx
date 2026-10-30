@@ -3,7 +3,7 @@ import { Shield, Database, Lock, HeartHandshake } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-[#f4f3f1] border-t border-[#e3e2e0] mt-auto">
+    <footer className="w-full bg-[#f3eee3] border-t border-[#e3e2e0] mt-auto">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
         
         {/* Core Regulatory & Clinical Disclaimers Banner */}
@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0 justify-end font-mono text-xs text-[#444748] bg-[#f4f3f1] px-3.5 py-2 rounded-full border border-[#e3e2e0]">
+          <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0 justify-end font-mono text-xs text-[#444748] bg-[#f3eee3] px-3.5 py-2 rounded-full border border-[#e3e2e0]">
             <HeartHandshake className="w-4 h-4 text-[#2a6a48]" />
             <span>Demo roles — not authentication</span>
           </div>

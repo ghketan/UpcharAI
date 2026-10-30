@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-[#faf9f6]/90 backdrop-blur-xl border-b border-[#e3e2e0]/60 shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+    <header className="fixed top-0 inset-x-0 z-50 bg-[#faf7ee]/90 backdrop-blur-xl border-b border-[#e3e2e0]/60 shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
       <div className="h-20 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
         
         {/* Brand & Edge Status */}
@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          <div className="hidden xl:inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-[#f4f3f1] text-[#444748] font-mono text-[11px] border border-[#e3e2e0]/70 whitespace-nowrap shrink-0">
+          <div className="hidden xl:inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-[#f3eee3] text-[#444748] font-mono text-[11px] border border-[#e3e2e0]/70 whitespace-nowrap shrink-0">
             <span
               className={`w-2 h-2 rounded-full shrink-0 ${
                 syncStatus?.online ? 'bg-[#2a6a48] animate-pulse' : 'bg-[#d97706]'
@@ -84,7 +84,7 @@ export const Header: React.FC = () => {
               }
             }}
             title="Reset DB & reload 4 canonical judge scenarios"
-            className="hidden sm:inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full bg-[#f4f3f1] text-[#444748] hover:text-[#1a1c1a] hover:bg-[#e9e8e5] font-mono text-xs border border-[#e3e2e0] transition-colors cursor-pointer shadow-sm whitespace-nowrap shrink-0"
+            className="hidden sm:inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full bg-[#f3eee3] text-[#444748] hover:text-[#1a1c1a] hover:bg-[#eae4d6] font-mono text-xs border border-[#e3e2e0] transition-colors cursor-pointer shadow-sm whitespace-nowrap shrink-0"
           >
             <RefreshCw className="w-3.5 h-3.5 shrink-0" />
             <span className="whitespace-nowrap">Reset Demo</span>
@@ -97,7 +97,7 @@ export const Header: React.FC = () => {
             className={`inline-flex items-center justify-center gap-2 h-9 px-4 rounded-full border transition-all duration-200 cursor-pointer shadow-sm whitespace-nowrap shrink-0 ${
               role === 'DOCTOR'
                 ? 'bg-[#aceec4]/40 border-[#2a6a48] text-[#2a6a48]'
-                : 'bg-[#f4f3f1] border-[#c4c7c7] text-[#1a1c1a]'
+                : 'bg-[#f3eee3] border-[#c4c7c7] text-[#1a1c1a]'
             }`}
           >
             {role === 'DOCTOR' ? (
@@ -124,7 +124,7 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Mobile Nav Drawer Strip */}
-      <div className="lg:hidden flex overflow-x-auto py-2 px-4 gap-1.5 bg-[#efeeeb]/70 border-t border-[#e3e2e0]/60 no-scrollbar">
+      <div className="lg:hidden flex overflow-x-auto py-2 px-4 gap-1.5 bg-[#f3eee3]/90 border-t border-[#e3e2e0]/60 no-scrollbar">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
@@ -132,7 +132,7 @@ export const Header: React.FC = () => {
               key={item.key}
               onClick={() => setActiveTab(item.key)}
               className={`h-8 inline-flex items-center px-3.5 rounded-full font-mono text-xs whitespace-nowrap cursor-pointer transition-colors ${
-                isActive ? 'bg-[#000000] text-white' : 'text-[#444748] bg-[#faf9f6]'
+                isActive ? 'bg-[#000000] text-white' : 'text-[#444748] bg-[#faf7ee]'
               }`}
             >
               {item.label}

@@ -261,7 +261,7 @@ export const SahayakChatView: React.FC = () => {
         {/* Language & Role Mode Selector Strip */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           {/* Language Selector */}
-          <div className="flex items-center p-1 rounded-full bg-[#efeeeb] border border-[#e3e2e0] text-xs font-mono">
+          <div className="flex items-center p-1 rounded-full bg-[#eae4d6] border border-[#e3e2e0] text-xs font-mono">
             <button
               onClick={() => setLanguage('en')}
               className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
@@ -289,7 +289,7 @@ export const SahayakChatView: React.FC = () => {
           </div>
 
           {/* Practitioner vs Patient Mode */}
-          <div className="flex items-center p-1 rounded-full bg-[#efeeeb] border border-[#e3e2e0] text-xs font-mono">
+          <div className="flex items-center p-1 rounded-full bg-[#eae4d6] border border-[#e3e2e0] text-xs font-mono">
             <button
               onClick={() => setPractitionerMode(true)}
               className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
@@ -322,7 +322,7 @@ export const SahayakChatView: React.FC = () => {
                 <Radio className="w-5 h-5 text-[#2a6a48]" />
                 <h2 className="text-base font-bold text-[#1a1c1a]">Instant Voice Protocols</h2>
               </div>
-              <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#f4f3f1] text-[#444748] border border-[#e3e2e0]">
+              <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#f3eee3] text-[#444748] border border-[#e3e2e0]">
                 1-Tap Audio
               </span>
             </div>
@@ -342,7 +342,7 @@ export const SahayakChatView: React.FC = () => {
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                       isSelected
                         ? 'bg-[#aceec4]/25 border-[#2a6a48]'
-                        : 'bg-[#f4f3f1] border-[#e3e2e0] hover:bg-[#efeeeb]'
+                        : 'bg-[#f3eee3] border-[#e3e2e0] hover:bg-[#eae4d6]'
                     }`}
                   >
                     <div className="flex flex-col">
@@ -375,7 +375,7 @@ export const SahayakChatView: React.FC = () => {
 
             {/* Active Voice Player Bar */}
             {activeVoiceTrack && (
-              <div className="p-4 rounded-2xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col gap-3">
+              <div className="p-4 rounded-2xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold text-[#1a1c1a] truncate max-w-[200px]">
                     Playing: {activeVoiceTrack.subtitle}
@@ -455,7 +455,7 @@ export const SahayakChatView: React.FC = () => {
             <button
               onClick={clearChat}
               title="Reset conversation"
-              className="w-8 h-8 rounded-full bg-[#f4f3f1] hover:bg-[#e9e8e5] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -476,7 +476,7 @@ export const SahayakChatView: React.FC = () => {
                         ? 'bg-[#000000] text-white rounded-tr-none'
                         : msg.escalated
                         ? 'bg-[#ffdad6] text-[#ba1a1a] border border-[#ba1a1a] rounded-tl-none'
-                        : 'bg-[#f4f3f1] text-[#1a1c1a] border border-[#e3e2e0] rounded-tl-none'
+                        : 'bg-[#f3eee3] text-[#1a1c1a] border border-[#e3e2e0] rounded-tl-none'
                     }`}
                   >
                     {msg.escalated && (
@@ -503,7 +503,7 @@ export const SahayakChatView: React.FC = () => {
           </div>
 
           {/* Prompt Suggestions & Message Input Form */}
-          <div className="p-4 bg-[#f4f3f1] border-t border-[#e3e2e0] flex flex-col gap-3">
+          <div className="p-4 bg-[#f3eee3] border-t border-[#e3e2e0] flex flex-col gap-3">
             
             {/* Quick Prompt Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs font-mono">

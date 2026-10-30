@@ -74,7 +74,7 @@ export const OverviewView: React.FC = () => {
   return (
     <div className="flex flex-col w-full overflow-hidden">
       {/* Hero Section */}
-      <section className="relative w-full overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-gradient-to-b from-[#faf9f6] via-[#f4f3f1] to-[#faf9f6]">
+      <section className="relative w-full overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-gradient-to-b from-[#faf7ee] via-[#f3eee3] to-[#faf7ee]">
         {/* Ambient Glows */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[480px] bg-[#aff1c6]/30 rounded-full blur-[120px] pointer-events-none -z-10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] bg-[#aceec4]/40 rounded-full blur-[70px] pointer-events-none -z-10" />
@@ -120,7 +120,7 @@ export const OverviewView: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveTab('emergency')}
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#ffffff]/80 backdrop-blur-md text-[#1a1c1a] font-mono text-xs uppercase tracking-wider border border-[#e3e2e0] shadow-sm hover:bg-[#efeeeb] transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#ffffff]/80 backdrop-blur-md text-[#1a1c1a] font-mono text-xs uppercase tracking-wider border border-[#e3e2e0] shadow-sm hover:bg-[#eae4d6] transition-all cursor-pointer"
               >
                 <span>Emergency Referral Desk</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -136,7 +136,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Validation Metric Strip */}
-      <section className="w-full bg-[#f4f3f1] py-12 border-y border-[#e3e2e0]">
+      <section className="w-full bg-[#f3eee3] py-12 border-y border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <ScrollReveal animation="fade-up" delay={0}>
@@ -175,12 +175,12 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Anti-Hallucination Architecture Section */}
-      <section className="w-full py-20 bg-[#faf9f6]">
+      <section className="w-full py-20 bg-[#faf7ee]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
           <ScrollReveal animation="fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeeeb] text-[#2a6a48] font-mono text-xs mb-3 border border-[#e3e2e0]">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eae4d6] text-[#2a6a48] font-mono text-xs mb-3 border border-[#e3e2e0]">
                   <Lock className="w-3.5 h-3.5" />
                   <span>Anti-Hallucination Architecture</span>
                 </div>
@@ -197,7 +197,7 @@ export const OverviewView: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Deterministic Clinical Gate */}
             <ScrollReveal animation="fade-left" delay={150}>
-              <div className="h-full p-8 rounded-2xl bg-[#f4f3f1] border border-[#e3e2e0] flex flex-col justify-between shadow-sm">
+              <div className="h-full p-8 rounded-2xl bg-[#f3eee3] border border-[#e3e2e0] flex flex-col justify-between shadow-sm">
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
                     <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export const OverviewView: React.FC = () => {
                           Condition: SBP &gt; 180 mmHg OR Diaphoresis &gt; 25 mins
                         </span>
                       </div>
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#efeeeb] text-[#747878] font-medium tracking-wider shrink-0">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#eae4d6] text-[#747878] font-medium tracking-wider shrink-0">
                         STANDBY
                       </span>
                     </div>
@@ -264,7 +264,7 @@ export const OverviewView: React.FC = () => {
                           Age &lt; 28d, Temp &gt; 38.0°C or &lt; 35.5°C, Refusal to suckle
                         </span>
                       </div>
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#efeeeb] text-[#747878] font-medium tracking-wider shrink-0">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#eae4d6] text-[#747878] font-medium tracking-wider shrink-0">
                         STANDBY
                       </span>
                     </div>
@@ -317,7 +317,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* 5-Step Rural Outpost Pipeline Section */}
-      <section className="w-full py-20 bg-[#f4f3f1] border-y border-[#e3e2e0]">
+      <section className="w-full py-20 bg-[#f3eee3] border-y border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10 text-center">
           <ScrollReveal animation="fade-up">
             <div className="max-w-2xl mx-auto">
@@ -396,7 +396,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Live Outpost Buffer Table Section */}
-      <section className="w-full py-20 bg-[#faf9f6]">
+      <section className="w-full py-20 bg-[#faf7ee]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="zoom-in">
             <div className="p-6 sm:p-8 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm">
@@ -422,7 +422,7 @@ export const OverviewView: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab('telemetry')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#f3eee3] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] cursor-pointer hover:bg-[#eae4d6] transition-colors"
                   >
                     <span>⌁ Offline Sync</span>
                   </button>
@@ -448,7 +448,7 @@ export const OverviewView: React.FC = () => {
                         const isEmergency = item.effective_priority === 'EMERGENCY';
                         const isUrgent = item.effective_priority === 'URGENT';
                         return (
-                          <tr key={item.patient_id} className="hover:bg-[#f4f3f1]/50 transition-colors">
+                          <tr key={item.patient_id} className="hover:bg-[#f3eee3]/50 transition-colors">
                             <td className="py-4 px-3 whitespace-nowrap">
                               <span
                                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[11px] font-bold ${
@@ -490,7 +490,7 @@ export const OverviewView: React.FC = () => {
                                   {item.flags.map((f) => (
                                     <span
                                       key={f}
-                                      className="px-1.5 py-0.5 rounded bg-[#efeeeb] text-[10px] font-mono text-[#444748]"
+                                      className="px-1.5 py-0.5 rounded bg-[#eae4d6] text-[10px] font-mono text-[#444748]"
                                     >
                                       {f}
                                     </span>
@@ -505,7 +505,7 @@ export const OverviewView: React.FC = () => {
                                 className={`inline-block px-2 py-1 rounded font-mono text-[10px] font-medium border ${
                                   isEmergency
                                     ? 'bg-[#ffdad6]/60 text-[#ba1a1a] border-[#ffdad6]'
-                                    : 'bg-[#efeeeb] text-[#444748] border-[#e3e2e0]'
+                                    : 'bg-[#eae4d6] text-[#444748] border-[#e3e2e0]'
                                 }`}
                               >
                                 {item.top_reason ? item.top_reason.split(':')[0] : 'Deterministic Gate'}
@@ -533,7 +533,7 @@ export const OverviewView: React.FC = () => {
                                       item.latest_assessment_id || undefined
                                     )
                                   }
-                                  className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                                  className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#eae4d6] transition-all"
                                 >
                                   Doctor Review
                                 </button>
@@ -545,7 +545,7 @@ export const OverviewView: React.FC = () => {
                                       item.latest_assessment_id || undefined
                                     )
                                   }
-                                  className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                                  className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#eae4d6] transition-all"
                                 >
                                   Standard OPD Queue
                                 </button>
@@ -557,7 +557,7 @@ export const OverviewView: React.FC = () => {
                     ) : (
                       <>
                         {/* Fallback canonical rows when queue is empty */}
-                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                        <tr className="hover:bg-[#f3eee3]/50 transition-colors">
                           <td className="py-4 px-3 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] font-mono text-[11px] font-bold">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]" />
@@ -589,7 +589,7 @@ export const OverviewView: React.FC = () => {
                           </td>
                         </tr>
 
-                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                        <tr className="hover:bg-[#f3eee3]/50 transition-colors">
                           <td className="py-4 px-3 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fff4e5] text-[#d97706] font-mono text-[11px] font-bold">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#d97706]" />
@@ -607,21 +607,21 @@ export const OverviewView: React.FC = () => {
                             SpO2: 95% | <span className="text-[#d97706] font-bold">BP: 190/110</span> | HR: 98 | Temp: 98.4°F
                           </td>
                           <td className="py-4 px-3">
-                            <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#444748] font-mono text-[10px] font-medium border border-[#e3e2e0]">
+                            <span className="inline-block px-2 py-1 rounded bg-[#eae4d6] text-[#444748] font-mono text-[10px] font-medium border border-[#e3e2e0]">
                               Rule #HYP-03: Hypertensive Pattern
                             </span>
                           </td>
                           <td className="py-4 px-3 text-right whitespace-nowrap">
                             <button
                               onClick={() => setActiveTab('triage')}
-                              className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                              className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#eae4d6] transition-all"
                             >
                               Escalate Doctor Review
                             </button>
                           </td>
                         </tr>
 
-                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                        <tr className="hover:bg-[#f3eee3]/50 transition-colors">
                           <td className="py-4 px-3 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#aceec4] text-[#2a6a48] font-mono text-[11px] font-bold">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48]" />
@@ -639,14 +639,14 @@ export const OverviewView: React.FC = () => {
                             SpO2: 98% | BP: 122/78 | HR: 74 | Temp: 98.6°F
                           </td>
                           <td className="py-4 px-3">
-                            <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#747878] font-mono text-[10px]">
+                            <span className="inline-block px-2 py-1 rounded bg-[#eae4d6] text-[#747878] font-mono text-[10px]">
                               No Acute Red Flags Detected
                             </span>
                           </td>
                           <td className="py-4 px-3 text-right whitespace-nowrap">
                             <button
                               onClick={() => setActiveTab('triage')}
-                              className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                              className="px-3.5 py-1.5 rounded-full bg-[#f3eee3] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#eae4d6] transition-all"
                             >
                               Standard OPD Queue
                             </button>
@@ -677,7 +677,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Sahayak Multilingual Voice Copilot Section */}
-      <section className="w-full py-20 bg-[#f4f3f1] border-b border-[#e3e2e0]">
+      <section className="w-full py-20 bg-[#f3eee3] border-b border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column: Copilot Details */}
@@ -735,7 +735,7 @@ export const OverviewView: React.FC = () => {
                     <span className="font-mono text-[11px] text-[#747878]">0:14 / 0:30</span>
                   </div>
 
-                  <blockquote className="p-4 rounded-xl bg-[#f4f3f1] text-xs text-[#1a1c1a] italic leading-relaxed border-l-2 border-[#2a6a48] mb-4">
+                  <blockquote className="p-4 rounded-xl bg-[#f3eee3] text-xs text-[#1a1c1a] italic leading-relaxed border-l-2 border-[#2a6a48] mb-4">
                     “मरीज़ को तुरंत 45 डिग्री बैठाएं। अगर ऑक्सीजन 90% से नीचे है, तो ऑक्सीजन सिलेंडर ऑन करें और 108 एम्बुलेंस की पुष्टि के लिए लाल बटन दबाएं।”
                   </blockquote>
 
@@ -750,7 +750,7 @@ export const OverviewView: React.FC = () => {
                           'मरीज़ को तुरंत 45 डिग्री बैठाएं। अगर ऑक्सीजन 90% से नीचे है, तो ऑक्सीजन सिलेंडर ऑन करें और 108 एम्बुलेंस की पुष्टि के लिए लाल बटन दबाएं।'
                         )
                       }
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4f3f1] text-[#1a1c1a] hover:bg-[#000000] hover:text-white border border-[#e3e2e0] font-mono text-xs cursor-pointer transition-all shrink-0"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f3eee3] text-[#1a1c1a] hover:bg-[#000000] hover:text-white border border-[#e3e2e0] font-mono text-xs cursor-pointer transition-all shrink-0"
                     >
                       {playingAudio === 'hindi' ? (
                         <>
@@ -783,7 +783,7 @@ export const OverviewView: React.FC = () => {
                     <span className="font-mono text-[11px] text-[#747878]">0:08 / 0:24</span>
                   </div>
 
-                  <blockquote className="p-4 rounded-xl bg-[#f4f3f1] text-xs text-[#1a1c1a] italic leading-relaxed border-l-2 border-[#2a6a48] mb-4">
+                  <blockquote className="p-4 rounded-xl bg-[#f3eee3] text-xs text-[#1a1c1a] italic leading-relaxed border-l-2 border-[#2a6a48] mb-4">
                     “ਜੇਕਰ ਬੱਚੇ ਨੂੰ ਸਾਹ ਲੈਣ ਵਿੱਚ ਔਖ ਹੋ ਰਹੀ ਹੈ ਅਤੇ ਪਸਲੀਆਂ ਅੰਦਰ ਧਸ ਰਹੀਆਂ ਹਨ, ਤਾਂ ਉਸਨੂੰ ਤੁਰੰਤ ਸਿੱਧਾ ਬਿਠਾਓ ਅਤੇ ਹਵਾਦਾਰ ਥਾਂ ਲੈ ਜਾਓ।”
                   </blockquote>
 
@@ -798,7 +798,7 @@ export const OverviewView: React.FC = () => {
                           'ਜੇਕਰ ਬੱਚੇ ਨੂੰ ਸਾਹ ਲੈਣ ਵਿੱਚ ਔਖ ਹੋ ਰਹੀ ਹੈ ਅਤੇ ਪਸਲੀਆਂ ਅੰਦਰ ਧਸ ਰਹੀਆਂ ਹਨ, ਤਾਂ ਉਸਨੂੰ ਤੁਰੰਤ ਸਿੱਧਾ ਬਿਠਾਓ ਅਤੇ ਹਵਾਦਾਰ ਥਾਂ ਲੈ ਜਾਓ।'
                         )
                       }
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4f3f1] text-[#1a1c1a] hover:bg-[#000000] hover:text-white border border-[#e3e2e0] font-mono text-xs cursor-pointer transition-all shrink-0"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f3eee3] text-[#1a1c1a] hover:bg-[#000000] hover:text-white border border-[#e3e2e0] font-mono text-xs cursor-pointer transition-all shrink-0"
                     >
                       {playingAudio === 'punjabi' ? (
                         <>
@@ -827,12 +827,12 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Feature Cards Showcase (Point-of-Care Modules) */}
-      <section className="w-full py-20 bg-[#faf9f6]">
+      <section className="w-full py-20 bg-[#faf7ee]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
           <ScrollReveal animation="fade-up">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#efeeeb] text-[#2a6a48] font-mono text-xs mb-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eae4d6] text-[#2a6a48] font-mono text-xs mb-2">
                   <Cpu className="w-3.5 h-3.5" />
                   <span>Point-of-Care Suite</span>
                 </div>
@@ -898,7 +898,7 @@ export const OverviewView: React.FC = () => {
                 className="h-full p-6 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between group hover:-translate-y-1"
               >
                 <div className="flex flex-col gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#efeeeb] text-[#1a1c1a] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-[#eae4d6] text-[#1a1c1a] flex items-center justify-center group-hover:scale-105 transition-transform">
                     <MessageSquare className="w-6 h-6" />
                   </div>
                   <h3 className="font-medium text-lg text-[#1a1c1a]">Sahayak Copilot</h3>
@@ -920,7 +920,7 @@ export const OverviewView: React.FC = () => {
                 className="h-full p-6 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between group hover:-translate-y-1"
               >
                 <div className="flex flex-col gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#f4f3f1] text-[#444748] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-[#f3eee3] text-[#444748] flex items-center justify-center group-hover:scale-105 transition-transform">
                     <Database className="w-6 h-6" />
                   </div>
                   <h3 className="font-medium text-lg text-[#1a1c1a]">Telemetry &amp; Sync Outbox</h3>
@@ -939,7 +939,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Call to Action (CTA) Section */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#faf9f6] via-[#f4f3f1] to-[#faf9f6] border-t border-[#e3e2e0]">
+      <section className="w-full py-20 bg-gradient-to-b from-[#faf7ee] via-[#f3eee3] to-[#faf7ee] border-t border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           <ScrollReveal animation="fade-up">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffffff] text-[#2a6a48] font-mono text-xs mb-4 border border-[#e3e2e0]">
@@ -964,7 +964,7 @@ export const OverviewView: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveTab('emergency')}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#ffffff] text-[#1a1c1a] font-mono text-xs uppercase tracking-wider border border-[#e3e2e0] shadow-sm hover:bg-[#efeeeb] transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#ffffff] text-[#1a1c1a] font-mono text-xs uppercase tracking-wider border border-[#e3e2e0] shadow-sm hover:bg-[#eae4d6] transition-all cursor-pointer"
               >
                 <span>EMERGENCY REFERRAL DESK →</span>
               </button>
