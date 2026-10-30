@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../api';
+import { SyncOutboxItem, TargetHubSummary } from '../types';
 import {
   Database,
   RefreshCw,
@@ -16,6 +17,8 @@ import {
   Server,
   CloudOff,
   Cloud,
+  Network,
+  RotateCw,
 } from 'lucide-react';
 
 export const TelemetrySyncView: React.FC = () => {
@@ -32,6 +35,30 @@ export const TelemetrySyncView: React.FC = () => {
 
   const [syncing, setSyncing] = useState<boolean>(false);
   const [filterText, setFilterText] = useState<string>('');
+  const [outboxItems, setOutboxItems] = useState<SyncOutboxItem[]>([]);
+  const [loadingOutbox, setLoadingOutbox] = useState<boolean>(false);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [targetHub, setTargetHub] = useState<TargetHubSummary | null>(null);
+
+  const fetchOutboxAndHub = async () => {
+    setLoadingOutbox(true);
+    try {
+      const [outboxRes, hubRes] = await Promise.all([
+        api.getSyncOutbox(50, role),
+        api.getTargetHubSummary(role),
+      ]);
+      setOutboxItems(outboxRes.items);
+      setTargetHub(hubRes);
+    } catch {
+      // Graceful fallback for offline
+    } finally {
+      setLoadingOutbox(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOutboxAndHub();
+  }, [role]);
 
   const handlePushSync = async () => {
     setSyncing(true);
@@ -43,10 +70,25 @@ export const TelemetrySyncView: React.FC = () => {
       );
       await refreshSyncStatus();
       await refreshQueue();
+      await fetchOutboxAndHub();
     } catch (err: any) {
       showToast(err.message || 'Push sync failed', 'error');
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleRetryItem = async (itemId: string) => {
+    setRetryingId(itemId);
+    try {
+      await api.retryOutboxItem(itemId, role);
+      showToast('Outbox record reset to PENDING for retry', 'success');
+      await fetchOutboxAndHub();
+      await refreshSyncStatus();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to retry item', 'error');
+    } finally {
+      setRetryingId(null);
     }
   };
 
@@ -315,6 +357,153 @@ export const TelemetrySyncView: React.FC = () => {
           </table>
         </div>
       </section>
+
+      {/* Outbox Items Telemetry Inspection & Retry Section */}
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-mono text-[#2a6a48] font-bold uppercase tracking-wider">
+                Store-and-Forward Buffer
+              </span>
+              <span className="text-[#c4c7c7]">•</span>
+              <span className="text-xs font-mono text-[#747878]">
+                Outbox Telemetry & Retry Queue ({outboxItems.length} records)
+              </span>
+            </div>
+            <h2 className="text-xl font-bold text-[#1a1c1a]">
+              Outbox Transmission Queue
+            </h2>
+          </div>
+
+          <button
+            onClick={fetchOutboxAndHub}
+            disabled={loadingOutbox}
+            className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#e3e2e0] flex items-center gap-1.5 transition-colors cursor-pointer self-start sm:self-auto"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-[#2a6a48] ${loadingOutbox ? 'animate-spin' : ''}`} />
+            <span>Refresh Outbox</span>
+          </button>
+        </div>
+
+        <div className="w-full overflow-x-auto rounded-3xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm">
+          <table className="w-full text-left font-mono text-xs border-collapse min-w-[750px]">
+            <thead>
+              <tr className="bg-[#f4f3f1] text-[#747878] uppercase border-b border-[#e3e2e0]">
+                <th className="py-3 px-4 font-semibold">Entity Type</th>
+                <th className="py-3 px-4 font-semibold">Entity ID</th>
+                <th className="py-3 px-4 font-semibold">State</th>
+                <th className="py-3 px-4 font-semibold">Attempts</th>
+                <th className="py-3 px-4 font-semibold">Error Diagnostic</th>
+                <th className="py-3 px-4 font-semibold">Created At</th>
+                <th className="py-3 px-4 text-right font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#e3e2e0]">
+              {outboxItems.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-[#747878]">
+                    No pending or historical outbox records found.
+                  </td>
+                </tr>
+              ) : (
+                outboxItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-[#f4f3f1]/50 transition-colors">
+                    <td className="py-3 px-4 font-bold text-[#1a1c1a] uppercase">
+                      {item.entity}
+                    </td>
+                    <td className="py-3 px-4 text-[#747878] truncate max-w-[140px]">
+                      {item.entity_id}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                          item.state === 'SENT'
+                            ? 'bg-[#aceec4]/40 text-[#2a6a48]'
+                            : item.state === 'FAILED'
+                            ? 'bg-[#ffdad6] text-[#ba1a1a]'
+                            : 'bg-[#fff4e5] text-[#d97706]'
+                        }`}
+                      >
+                        {item.state}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-[#444748]">
+                      {item.attempts}/8
+                    </td>
+                    <td className="py-3 px-4 text-[#747878] max-w-xs truncate">
+                      {item.last_error ? (
+                        <span className="text-[#ba1a1a] font-sans text-xs">
+                          {item.last_error}
+                        </span>
+                      ) : (
+                        'None — Ready'
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-[#747878]">
+                      {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      {item.state !== 'SENT' && (
+                        <button
+                          onClick={() => handleRetryItem(item.id)}
+                          disabled={retryingId === item.id}
+                          className="px-2.5 py-1 rounded-full bg-[#f4f3f1] hover:bg-[#e3e2e0] text-[#1a1c1a] font-mono text-[11px] border border-[#c4c7c7] transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {retryingId === item.id ? 'Resetting...' : 'Force Retry'}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Central Hospital Target Hub Aggregation Node Card */}
+      {targetHub && (
+        <section className="p-6 rounded-3xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#aceec4]/30 border border-[#2a6a48]/20 flex items-center justify-center text-[#2a6a48]">
+                <Network className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#1a1c1a]">
+                  District Hospital Target Hub Telemetry
+                </h3>
+                <p className="text-xs text-[#747878] font-mono">
+                  Aggregator Status: {targetHub.node_status} (Target Mode: {targetHub.target_mode ? 'ENABLED' : 'STANDALONE_ENCLAVE'})
+                </p>
+              </div>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-[#f4f3f1] text-[#2a6a48] font-mono text-xs font-bold border border-[#e3e2e0]">
+              Ingest Node Active
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+              <span className="text-[10px] font-mono uppercase text-[#747878]">Total Patients</span>
+              <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_patients}</span>
+            </div>
+            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+              <span className="text-[10px] font-mono uppercase text-[#747878]">Total Assessments</span>
+              <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_assessments}</span>
+            </div>
+            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+              <span className="text-[10px] font-mono uppercase text-[#747878]">Total Referrals</span>
+              <span className="text-2xl font-bold font-mono text-[#1a1c1a]">{targetHub.ingested_referrals}</span>
+            </div>
+            <div className="p-3 rounded-2xl bg-[#f4f3f1] flex flex-col">
+              <span className="text-[10px] font-mono uppercase text-[#747878]">Source Outposts</span>
+              <span className="text-sm font-bold font-mono text-[#2a6a48] mt-1">{targetHub.remote_sources.join(', ')}</span>
+            </div>
+          </div>
+        </section>
+      )}
 
     </div>
   );

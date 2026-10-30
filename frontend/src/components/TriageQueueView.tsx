@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, ApiError } from '../api';
-import { QueueItem, Priority } from '../types';
+import { QueueItem, Priority, RuleConfig } from '../types';
 import {
   Activity,
   Search,
@@ -16,6 +16,9 @@ import {
   User,
   AlertCircle,
   CheckCircle2,
+  Mic,
+  MicOff,
+  Sparkles,
 } from 'lucide-react';
 
 const SYMPTOM_OPTIONS = [
@@ -84,6 +87,42 @@ export const TriageQueueView: React.FC = () => {
   // Submission & Confirmation State
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [implausibleWarning, setImplausibleWarning] = useState<string | null>(null);
+  const [ruleConfig, setRuleConfig] = useState<RuleConfig | null>(null);
+  const [isListeningNotes, setIsListeningNotes] = useState<boolean>(false);
+
+  useEffect(() => {
+    api.getRuleConfig(role).then(setRuleConfig).catch(() => {});
+  }, [role]);
+
+  const toggleNotesDictation = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast('Speech recognition not supported in this browser. Please use Chrome.', 'warning');
+      return;
+    }
+    if (isListeningNotes) {
+      setIsListeningNotes(false);
+      return;
+    }
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onstart = () => setIsListeningNotes(true);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setFreeText((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        setIsListeningNotes(false);
+        showToast('Voice note transcribed', 'info');
+      };
+      recognition.onerror = () => setIsListeningNotes(false);
+      recognition.onend = () => setIsListeningNotes(false);
+      recognition.start();
+    } catch {
+      setIsListeningNotes(false);
+    }
+  };
 
   // Toggle symptom chip
   const toggleSymptom = (code: string) => {
@@ -700,17 +739,35 @@ export const TriageQueueView: React.FC = () => {
                     />
                   </div>
                   <div className="sm:col-span-2 flex flex-col gap-1">
-                    <label className="text-[11px] font-mono text-[#747878]">
-                      Clinical Notes (Triggers Review Flag)
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={300}
-                      placeholder="Optional free-text observations"
-                      value={freeText}
-                      onChange={(e) => setFreeText(e.target.value)}
-                      className="px-3 py-1.5 rounded-xl bg-[#f4f3f1] text-xs text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-mono text-[#747878]">
+                        Clinical Notes (Triggers Review Flag)
+                      </label>
+                      <span className="text-[10px] font-mono text-[#2a6a48] flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        <span>Voice Enabled</span>
+                      </span>
+                    </div>
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        maxLength={300}
+                        placeholder="Optional free-text observations or click mic to dictate"
+                        value={freeText}
+                        onChange={(e) => setFreeText(e.target.value)}
+                        className="w-full pl-3 pr-10 py-1.5 rounded-xl bg-[#f4f3f1] text-xs text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={toggleNotesDictation}
+                        className={`absolute right-1.5 p-1 rounded-lg transition-colors cursor-pointer ${
+                          isListeningNotes ? 'bg-[#ba1a1a] text-white animate-pulse' : 'text-[#747878] hover:text-[#1a1c1a]'
+                        }`}
+                        title="Dictate clinical observations (Speech-to-Text)"
+                      >
+                        {isListeningNotes ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

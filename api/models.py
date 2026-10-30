@@ -111,3 +111,36 @@ class ChatResponse(BaseModel):
     escalated: bool
     language: str
 
+
+class AssessmentPreviewRequest(BaseModel):
+    age: Optional[int] = 40
+    sex: Optional[str] = "M"
+    pregnant: Optional[bool] = False
+    temp_c: Optional[float] = None
+    sbp: Optional[int] = None
+    dbp: Optional[int] = None
+    spo2: Optional[int] = None
+    pulse: Optional[int] = None
+    rr: Optional[int] = None
+    avpu: Optional[str] = "A"
+    on_oxygen: Optional[bool] = False
+    symptom_codes: List[str] = Field(default_factory=list)
+    history_codes: List[str] = Field(default_factory=list)
+    duration_days: Optional[int] = None
+    free_text: Optional[str] = None
+    confirm_implausible: bool = True
+
+
+class AssessmentPreviewResponse(BaseModel):
+    priority: str
+    news2_total: int
+    news2_params_scored: int
+    news2: Dict[str, Any]
+    findings: List[AssessmentFindingResponse]
+    flags: List[str]
+    missing: List[str]
+    suggested_action: str
+    rule_set_version: str
+    plausibility_violations: List[str] = Field(default_factory=list)
+
+

@@ -1,7 +1,7 @@
 from collections import defaultdict
 import re
 import time
-from typing import Dict, List
+from typing import Any, Dict, List
 from fastapi import APIRouter, Request
 
 from api.config import LLM_API_KEY
@@ -200,4 +200,41 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
         # Fallback to static safety reply when network/LLM is unreachable
         safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
         return ChatResponse(reply=safety_reply, escalated=False, language=lang)
+
+
+@router.get("/protocols")
+def get_chat_protocols() -> List[Dict[str, Any]]:
+    """
+    Returns server-managed vernacular emergency and first-aid protocols for frontline health workers.
+    """
+    return [
+        {
+            "id": "chest_pain",
+            "title": "सीने में तेज दर्द और पसीना आने पर क्या करें?",
+            "subtitle": "Acute Chest Pain & Angina First-Aid Protocol",
+            "lang": "hi-IN",
+            "text": "मरीज को तुरंत आराम की स्थिति में बैठाएं। तंग कपड़े ढीले करें। यदि मरीज पहले से डॉक्टर की सलाह पर एस्पिरिन लेता है, तो तुरंत डॉक्टर से संपर्क करें। बिना देरी किए नजदीकी अस्पताल ले जाएं।",
+        },
+        {
+            "id": "pediatric_convulsion",
+            "title": "ਤੇਜ਼ ਬੁਖ਼ਾਰ ਅਤੇ ਝਟਕੇ ਲੱਗਣ 'ਤੇ ਮੁੱਢਲੀ ਸਹਾਇਤਾ",
+            "subtitle": "Pediatric Febrile Convulsion Steps (0-5 Yrs)",
+            "lang": "pa-IN",
+            "text": "ਬੱਚੇ ਨੂੰ ਇੱਕ ਪਾਸੇ ਲਿਟਾਓ ਤਾਂ ਜੋ ਸਾਹ ਨਾਲੀ ਸਾਫ਼ ਰਹੇ। ਮੂੰਹ ਵਿੱਚ ਕੁੱਝ ਨਾ ਪਾਓ। ਤਾਜ਼ੇ ਪਾਣੀ ਦੀ ਪੱਟੀ ਮੱਥੇ ਤੇ ਰੱਖੋ। ਤੁਰੰਤ ਸਿਹਤ ਕੇਂਦਰ ਲੈ ਕੇ ਜਾਓ।",
+        },
+        {
+            "id": "pph",
+            "title": "गर्भावस्था में अत्यधिक रक्तस्राव की स्थिति",
+            "subtitle": "Post-Partum Hemorrhage Immediate Steps",
+            "lang": "hi-IN",
+            "text": "गर्भवती महिला को बाईं करवट लिटाएं। पैर थोड़े ऊंचे रखें। तुरंत एंबुलेंस या वाहन की व्यवस्था करें और स्वास्थ्य कार्यकर्ता या डॉक्टर को सूचित करें।",
+        },
+        {
+            "id": "snakebite",
+            "title": "ਸੱਪ ਦੇ ਡੰਗਣ 'ਤੇ ਜ਼ਰੂਰੀ ਕਦਮ",
+            "subtitle": "Snakebite Triage & Immobilization",
+            "lang": "pa-IN",
+            "text": "ਡੰਗ ਵਾਲੇ ਅੰਗ ਨੂੰ ਬਿਲਕੁਲ ਹਿੱਲਣ ਨਾ ਦਿਓ। ਕੋਈ ਕੱਟ ਨਾ ਲਗਾਓ। ਮਰੀਜ਼ ਨੂੰ ਸ਼ਾਂਤ ਰੱਖੋ ਅਤੇ ਤੁਰੰਤ ਐਂਟੀ ਸਨੇਕ ਵੈਨਮ ਵਾਲੇ ਹਸਪਤਾਲ ਪਹੁੰਚਾਓ।",
+        },
+    ]
 

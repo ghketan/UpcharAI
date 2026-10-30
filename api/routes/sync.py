@@ -272,3 +272,62 @@ def ingest_record(data: Dict[str, Any]) -> Dict[str, Any]:
 
         else:
             raise APIException(status_code=422, code="unknown_entity", message=f"Unknown entity type {entity}")
+
+
+@router.get("/outbox")
+def get_sync_outbox(limit: int = 50) -> Dict[str, Any]:
+    """
+    Returns recent local outbox entries for telemetry inspection and store-and-forward tracking.
+    """
+    with get_db() as conn:
+        items = conn.execute(
+            """
+            SELECT id, entity, entity_id, state, attempts, last_error, created_at
+            FROM sync_outbox
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return {
+            "items": [dict(it) for it in items],
+            "total_count": len(items),
+        }
+
+
+@router.post("/outbox/{item_id}/retry")
+def retry_outbox_item(item_id: str) -> Dict[str, Any]:
+    """
+    Resets an outbox entry to PENDING state and zeroes attempt counters to force immediate retry.
+    """
+    with get_db() as conn:
+        row = conn.execute("SELECT * FROM sync_outbox WHERE id = ?", (item_id,)).fetchone()
+        if not row:
+            raise APIException(status_code=404, code="not_found", message="Outbox item not found.")
+        conn.execute(
+            "UPDATE sync_outbox SET state = 'PENDING', attempts = 0, last_error = NULL WHERE id = ?",
+            (item_id,),
+        )
+        updated = conn.execute("SELECT * FROM sync_outbox WHERE id = ?", (item_id,)).fetchone()
+    return {"status": "reset_to_pending", "item": dict(updated)}
+
+
+@router.get("/target-hub")
+def get_target_hub_summary() -> Dict[str, Any]:
+    """
+    Aggregates synchronization records across remote outposts for central hospital hub monitoring.
+    """
+    with get_db() as conn:
+        patients_c = conn.execute("SELECT COUNT(*) AS c FROM patients").fetchone()["c"]
+        assessments_c = conn.execute("SELECT COUNT(*) AS c FROM assessments").fetchone()["c"]
+        referrals_c = conn.execute("SELECT COUNT(*) AS c FROM referrals").fetchone()["c"]
+        roles = conn.execute("SELECT DISTINCT created_by_role FROM patients").fetchall()
+        role_list = [r["created_by_role"] for r in roles if r["created_by_role"]]
+    return {
+        "target_mode": config.TARGET_MODE,
+        "ingested_patients": patients_c,
+        "ingested_assessments": assessments_c,
+        "ingested_referrals": referrals_c,
+        "remote_sources": role_list or ["SYNC_SOURCE_EDGE_ENCLAVE"],
+        "node_status": "ONLINE_CENTRAL_HUB" if config.TARGET_MODE else "STANDALONE_EDGE_ENCLAVE",
+    }

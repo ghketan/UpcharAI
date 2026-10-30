@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, ApiError } from '../api';
 import { PatientHistory, Assessment, Priority, Finding } from '../types';
-import { X, ShieldAlert, ArrowUpRight, CheckCircle2, AlertTriangle, AlertCircle, Clock, Stethoscope, ChevronRight, User } from 'lucide-react';
+import { X, ShieldAlert, ArrowUpRight, CheckCircle2, AlertTriangle, AlertCircle, Clock, Stethoscope, ChevronRight, User, TrendingUp, TrendingDown, History, CheckCheck } from 'lucide-react';
 
 export const AssessmentModal: React.FC = () => {
   const {
@@ -566,6 +566,139 @@ export const AssessmentModal: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Longitudinal Vitals Delta Tracking */}
+              {history.assessments.length > 1 && (
+                <div className="p-4 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-[#1a1c1a] uppercase tracking-wider flex items-center gap-1.5">
+                      <TrendingUp className="w-3.5 h-3.5 text-[#2a6a48]" />
+                      Longitudinal Vitals Progression (Seq #{history.assessments[history.assessments.length - 2].seq} → #{latestAssessment?.seq})
+                    </span>
+                    <span className="text-[11px] font-mono text-[#747878]">
+                      Dynamic physiological trajectory
+                    </span>
+                  </div>
+
+                  {(() => {
+                    const prevInputs: any = history.assessments[history.assessments.length - 2]?.inputs || {};
+                    const currInputs: any = latestAssessment?.inputs || {};
+                    const spo2Delta = currInputs.spo2 && prevInputs.spo2 ? currInputs.spo2 - prevInputs.spo2 : null;
+                    const pulseDelta = currInputs.pulse && prevInputs.pulse ? currInputs.pulse - prevInputs.pulse : null;
+                    const sbpDelta = currInputs.sbp && prevInputs.sbp ? currInputs.sbp - prevInputs.sbp : null;
+                    const rrDelta = currInputs.rr && prevInputs.rr ? currInputs.rr - prevInputs.rr : null;
+
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                          <span className="text-[10px] font-mono text-[#747878]">SpO2 Shift</span>
+                          <span className="font-mono font-bold text-sm text-[#1a1c1a]">
+                            {prevInputs.spo2 ?? '—'}% → {currInputs.spo2 ?? '—'}%
+                          </span>
+                          {spo2Delta !== null && (
+                            <span className={`text-[10px] font-mono font-bold ${spo2Delta >= 0 ? 'text-[#2a6a48]' : 'text-[#ba1a1a]'}`}>
+                              {spo2Delta > 0 ? `+${spo2Delta}% (Improving)` : spo2Delta < 0 ? `${spo2Delta}% (Decline)` : '0% (Stable)'}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                          <span className="text-[10px] font-mono text-[#747878]">Pulse Shift</span>
+                          <span className="font-mono font-bold text-sm text-[#1a1c1a]">
+                            {prevInputs.pulse ?? '—'} → {currInputs.pulse ?? '—'} bpm
+                          </span>
+                          {pulseDelta !== null && (
+                            <span className="text-[10px] font-mono font-bold text-[#444748]">
+                              {pulseDelta > 0 ? `+${pulseDelta} bpm` : `${pulseDelta} bpm`}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                          <span className="text-[10px] font-mono text-[#747878]">SBP Shift</span>
+                          <span className="font-mono font-bold text-sm text-[#1a1c1a]">
+                            {prevInputs.sbp ?? '—'} → {currInputs.sbp ?? '—'} mmHg
+                          </span>
+                          {sbpDelta !== null && (
+                            <span className="text-[10px] font-mono font-bold text-[#444748]">
+                              {sbpDelta > 0 ? `+${sbpDelta} mmHg` : `${sbpDelta} mmHg`}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-[#f4f3f1] flex flex-col">
+                          <span className="text-[10px] font-mono text-[#747878]">Resp Rate Shift</span>
+                          <span className="font-mono font-bold text-sm text-[#1a1c1a]">
+                            {prevInputs.rr ?? '—'} → {currInputs.rr ?? '—'} /min
+                          </span>
+                          {rrDelta !== null && (
+                            <span className="text-[10px] font-mono font-bold text-[#444748]">
+                              {rrDelta > 0 ? `+${rrDelta} /min` : `${rrDelta} /min`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Clinician Action Audit Trail (Escalations & Finalisations) */}
+              {(() => {
+                const allEscalations = history.assessments.flatMap((a) => (a.escalations || []).map((e) => ({ ...e, assessmentSeq: a.seq })));
+                const allFinalisations = history.assessments.flatMap((a) => (a.finalisations || []).map((f) => ({ ...f, assessmentSeq: a.seq })));
+                if (allEscalations.length === 0 && allFinalisations.length === 0) return null;
+
+                return (
+                  <div className="p-4 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] flex flex-col gap-3">
+                    <span className="font-mono text-xs font-bold text-[#1a1c1a] uppercase tracking-wider flex items-center gap-1.5">
+                      <History className="w-3.5 h-3.5 text-[#2a6a48]" />
+                      Clinician Action Audit Trail ({allEscalations.length + allFinalisations.length} Recorded Actions)
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      {allEscalations.map((esc, i) => (
+                        <div key={`esc-${i}`} className="p-2.5 rounded-xl bg-[#fff4e5] border border-[#f59e0b]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded-md bg-[#f59e0b] text-white font-bold text-[10px]">
+                              ESCALATION (Seq #{esc.assessmentSeq})
+                            </span>
+                            <span className="font-semibold text-[#1a1c1a]">
+                              Raised to {esc.to_priority} by {esc.role}
+                            </span>
+                            <span className="text-[#444748] italic font-sans text-xs">
+                              — "{esc.reason}"
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-[#747878] shrink-0">
+                            {new Date(esc.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      ))}
+
+                      {allFinalisations.map((fin, i) => (
+                        <div key={`fin-${i}`} className="p-2.5 rounded-xl bg-[#aceec4]/25 border border-[#2a6a48]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded-md bg-[#2a6a48] text-white font-bold text-[10px]">
+                              FINALISATION (Seq #{fin.assessmentSeq})
+                            </span>
+                            <span className="font-semibold text-[#1a1c1a]">
+                              Determined as {fin.final_priority} by {fin.role}
+                            </span>
+                            {fin.reason && (
+                              <span className="text-[#444748] italic font-sans text-xs">
+                                — "{fin.reason}"
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-[#747878] shrink-0">
+                            {new Date(fin.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </>
           )}
         </div>

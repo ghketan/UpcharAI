@@ -178,3 +178,77 @@ export interface ChatResponse {
   escalated: boolean;
   language: string;
 }
+
+export interface SyncOutboxItem {
+  id: string;
+  entity: string;
+  entity_id: string;
+  state: 'PENDING' | 'SENT' | 'FAILED';
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+}
+
+export interface TargetHubSummary {
+  target_mode: boolean;
+  ingested_patients: number;
+  ingested_assessments: number;
+  ingested_referrals: number;
+  remote_sources: string[];
+  node_status: string;
+}
+
+export interface PlausibilityBound {
+  min: number;
+  max: number;
+  unit?: string;
+}
+
+export interface RuleConfig {
+  rule_set_version: string;
+  clinical_review_status: string;
+  age_floor: number;
+  plausibility: Record<string, PlausibilityBound>;
+  symptom_codes: string[];
+  history_codes: string[];
+}
+
+export interface AssessmentPreviewInput {
+  age?: number;
+  sex?: string;
+  pregnant?: boolean;
+  symptom_codes?: string[];
+  history_codes?: string[];
+  free_text?: string | null;
+  duration_days?: number | null;
+  temp_c?: number | null;
+  sbp?: number | null;
+  dbp?: number | null;
+  spo2?: number | null;
+  pulse?: number | null;
+  rr?: number | null;
+  avpu?: string | null;
+  on_oxygen?: boolean | null;
+  confirm_implausible?: boolean;
+}
+
+export interface AssessmentPreviewResult {
+  priority: Priority;
+  news2_total: number;
+  news2_params_scored: number;
+  news2: NEWS2Score;
+  findings: Finding[];
+  flags: string[];
+  missing: string[];
+  suggested_action: string;
+  rule_set_version: string;
+  plausibility_violations: string[];
+}
+
+export interface VoiceProtocol {
+  id: string;
+  title: string;
+  subtitle: string;
+  lang: string;
+  text: string;
+}

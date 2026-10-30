@@ -8,6 +8,8 @@ from api.db import get_db, record_outbox, utc_now_iso
 from api.errors import APIException
 from api.models import (
     AssessmentFindingResponse,
+    AssessmentPreviewRequest,
+    AssessmentPreviewResponse,
     AssessmentResponse,
     CreateAssessmentRequest,
     EscalateRequest,
@@ -409,4 +411,78 @@ def finalise_assessment(
         "reason": req.reason,
         "role": role.value,
         "at": now,
+    }
+
+
+@router.post("/assessments/preview", response_model=AssessmentPreviewResponse)
+def preview_assessment(req: AssessmentPreviewRequest) -> AssessmentPreviewResponse:
+    """
+    Stateless dry-run evaluation of patient triage based on the deterministic rules engine.
+    Computes NEWS2 and fired rules without saving records to SQLite or sync outbox.
+    """
+    rule_cfg = load_config()
+    engine_inputs = AssessmentInputs(
+        age=req.age if req.age is not None else 40,
+        sex=req.sex or "M",
+        pregnant=bool(req.pregnant),
+        temp_c=req.temp_c,
+        sbp=req.sbp,
+        dbp=req.dbp,
+        spo2=req.spo2,
+        pulse=req.pulse,
+        rr=req.rr,
+        avpu=req.avpu,
+        on_oxygen=req.on_oxygen,
+        symptom_codes=req.symptom_codes,
+        duration_days=req.duration_days,
+        history_codes=req.history_codes,
+        free_text=req.free_text,
+        confirm_implausible=True,
+    )
+
+    violations = []
+    from engine.plausibility import check_plausibility
+    try:
+        raw_violations = check_plausibility(engine_inputs, rule_cfg)
+        violations = [f"{v.parameter}: {v.message}" for v in raw_violations]
+    except Exception:
+        pass
+
+    triage_res = evaluate_triage(engine_inputs, rule_cfg)
+    return AssessmentPreviewResponse(
+        priority=triage_res.priority.value,
+        news2_total=triage_res.news2.total,
+        news2_params_scored=triage_res.news2.params_scored,
+        news2=triage_res.news2.model_dump(),
+        findings=[
+            AssessmentFindingResponse(
+                rule_id=f.rule_id,
+                tier=f.tier.value,
+                plain_message=f.plain_message,
+                observed_value=f.observed_value,
+            )
+            for f in triage_res.findings
+        ],
+        flags=triage_res.flags,
+        missing=triage_res.missing,
+        suggested_action=triage_res.suggested_action,
+        rule_set_version=triage_res.rule_set_version,
+        plausibility_violations=violations,
+    )
+
+
+@router.get("/rules/config")
+def get_rule_config() -> Dict[str, Any]:
+    """
+    Returns active deterministic rule version, plausibility parameter bounds,
+    and valid symptom and history codes for client-side form validation.
+    """
+    cfg = load_config()
+    return {
+        "rule_set_version": cfg.rule_set_version,
+        "clinical_review_status": cfg.clinical_review_status,
+        "age_floor": cfg.age_floor,
+        "plausibility": cfg.plausibility,
+        "symptom_codes": cfg.symptom_codes,
+        "history_codes": cfg.history_codes,
     }

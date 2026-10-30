@@ -368,3 +368,58 @@ def test_chatbot_guardrails_prefilter():
             assert r.json()["code"] == "rate_limit_exceeded"
             break
     assert hit_limit is True
+
+
+def test_preview_and_rules_config_endpoints():
+    # 1. Rules config
+    cfg_res = client.get("/api/rules/config")
+    assert cfg_res.status_code == 200
+    cfg_data = cfg_res.json()
+    assert cfg_data["rule_set_version"] == "v1"
+    assert "temp_c" in cfg_data["plausibility"]
+    assert "CHEST_PAIN" in cfg_data["symptom_codes"]
+
+    # 2. Preview assessment (stateless dry-run)
+    prev_res = client.post(
+        "/api/assessments/preview",
+        json={
+            "age": 55,
+            "sex": "M",
+            "temp_c": 37.0,
+            "sbp": 88,
+            "dbp": 55,
+            "spo2": 89,
+            "pulse": 115,
+            "symptom_codes": ["CHEST_PAIN"],
+        },
+    )
+    assert prev_res.status_code == 200
+    prev_data = prev_res.json()
+    assert prev_data["priority"] == "EMERGENCY"
+    assert prev_data["news2_total"] >= 7
+    assert len(prev_data["findings"]) >= 1
+
+
+def test_sync_outbox_inspection_and_protocols():
+    # 1. Chat protocols endpoint
+    proto_res = client.get("/api/chat/protocols")
+    assert proto_res.status_code == 200
+    protocols = proto_res.json()
+    assert len(protocols) == 4
+    assert protocols[0]["id"] == "chest_pain"
+
+    # 2. Outbox inspection endpoint
+    # Create patient to create an outbox record
+    client.post("/api/patients", json={"display_code": "P-OUTBOX-TEST", "age": 40, "sex": "F"})
+    outbox_res = client.get("/api/sync/outbox")
+    assert outbox_res.status_code == 200
+    items = outbox_res.json()["items"]
+    assert len(items) >= 1
+    first_item = items[0]
+
+    # 3. Retry endpoint
+    retry_res = client.post(f"/api/sync/outbox/{first_item['id']}/retry")
+    assert retry_res.status_code == 200
+    assert retry_res.json()["status"] == "reset_to_pending"
+    assert retry_res.json()["item"]["state"] == "PENDING"
+
