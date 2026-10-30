@@ -1,0 +1,223 @@
+oracle_cases:
+  - id: 1
+    description: "SpO2 86, pulse 120, SEVERE_BREATHING_DIFFICULTY"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 86
+      pulse: 120
+      symptom_codes: ["SEVERE_BREATHING_DIFFICULTY"]
+    expected:
+      news2_total: 5
+      fired_rule_ids: ["RF-E01", "RF-E02", "NW-U01", "NW-U02"]
+      priority: "EMERGENCY"
+      flags: ["UNDERSTATED"]
+
+  - id: 2
+    description: "CHEST_PAIN, SpO2 92, pulse 100 (age 50)"
+    input:
+      age: 50
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 92
+      pulse: 100
+      symptom_codes: ["CHEST_PAIN"]
+    expected:
+      news2_total: 3
+      fired_rule_ids: ["RF-E09"]
+      priority: "EMERGENCY"
+      flags: ["UNDERSTATED"]
+
+  - id: 3
+    description: "CHEST_PAIN, all vitals normal (age 50)"
+    input:
+      age: 50
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      symptom_codes: ["CHEST_PAIN"]
+    expected:
+      news2_total: 0
+      fired_rule_ids: ["RF-U01"]
+      priority: "URGENT"
+      flags: ["UNDERSTATED"]
+
+  - id: 4
+    description: "FEVER 2 days, temp 38.2, age 30"
+    input:
+      age: 30
+      sex: "M"
+      pregnant: false
+      temp_c: 38.2
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      symptom_codes: ["FEVER"]
+      duration_days: 2
+    expected:
+      news2_total: 1
+      fired_rule_ids: []
+      priority: "ROUTINE"
+      flags: ["UNDERSTATED"]
+
+  - id: 5
+    description: "Same as 4 but SpO2 not entered"
+    input:
+      age: 30
+      sex: "M"
+      pregnant: false
+      temp_c: 38.2
+      sbp: 120
+      dbp: 80
+      spo2: null
+      pulse: 80
+      symptom_codes: ["FEVER"]
+      duration_days: 2
+    expected:
+      news2_total: 1
+      fired_rule_ids: []
+      priority: "ROUTINE"
+      flags: ["INCOMPLETE", "UNDERSTATED"]
+      missing: ["spo2"]
+
+  - id: 6
+    description: "Age 8, vitals normal"
+    input:
+      age: 8
+      sex: "F"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      symptom_codes: []
+    expected:
+      news2_total: 0
+      fired_rule_ids: ["FLOOR-01"]
+      priority: "URGENT"
+      flags: ["UNDERSTATED"]
+
+  - id: 7
+    description: "SpO2 93, pulse 112, temp 39.2, SBP 105"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 39.2
+      sbp: 105
+      dbp: 70
+      spo2: 93
+      pulse: 112
+      symptom_codes: []
+    expected:
+      news2_total: 7
+      fired_rule_ids: ["NW-E01"]
+      priority: "EMERGENCY"
+      flags: ["UNDERSTATED"]
+
+  - id: 8
+    description: "SpO2 94, pulse 95, temp 38.5, SBP 108, rr 22"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 38.5
+      sbp: 108
+      dbp: 70
+      spo2: 94
+      pulse: 95
+      rr: 22
+      symptom_codes: []
+    expected:
+      news2_total: 6
+      fired_rule_ids: ["NW-U01"]
+      priority: "URGENT"
+      flags: ["UNDERSTATED"]
+
+  - id: 9
+    description: "Pulse 135, all else normal"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 135
+      symptom_codes: []
+    expected:
+      news2_total: 3
+      fired_rule_ids: ["NW-U02"]
+      priority: "URGENT"
+      flags: ["UNDERSTATED"]
+
+  - id: 10
+    description: "All vitals normal, free_text 'burning feet'"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      free_text: "burning feet"
+      symptom_codes: []
+    expected:
+      news2_total: 0
+      fired_rule_ids: []
+      priority: "ROUTINE"
+      flags: ["NEEDS_REVIEW", "UNDERSTATED"]
+
+  - id: 11
+    description: "Female, pregnant, vitals normal"
+    input:
+      age: 25
+      sex: "F"
+      pregnant: true
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      symptom_codes: []
+    expected:
+      news2_total: 0
+      fired_rule_ids: ["FLOOR-02"]
+      priority: "URGENT"
+      flags: ["UNDERSTATED"]
+
+  - id: 12
+    description: "avpu = U, all else normal"
+    input:
+      age: 40
+      sex: "M"
+      pregnant: false
+      temp_c: 37.0
+      sbp: 120
+      dbp: 80
+      spo2: 98
+      pulse: 80
+      avpu: "U"
+      symptom_codes: []
+    expected:
+      news2_total: 3
+      fired_rule_ids: ["RF-E03", "NW-U02"]
+      priority: "EMERGENCY"
+      flags: ["UNDERSTATED"]
+

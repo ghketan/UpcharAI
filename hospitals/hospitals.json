@@ -1,0 +1,27 @@
+[
+  {
+    "id": "HOSP-001",
+    "name": "District Civil Hospital",
+    "phone": "+91-11-23456789",
+    "area": "District Headquarters (12 km)",
+    "fictional": true,
+    "source": "simulated"
+  },
+  {
+    "id": "HOSP-002",
+    "name": "Sub-Divisional Referral Hospital",
+    "phone": "+91-11-23456790",
+    "area": "Block Centre (6 km)",
+    "fictional": true,
+    "source": "simulated"
+  },
+  {
+    "id": "HOSP-003",
+    "name": "Community Health Centre Emergency Unit",
+    "phone": "+91-11-23456791",
+    "area": "Tehsil Main Road (3 km)",
+    "fictional": true,
+    "source": "simulated"
+  }
+]
+
