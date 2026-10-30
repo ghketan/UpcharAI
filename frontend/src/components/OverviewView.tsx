@@ -24,7 +24,7 @@ import { InteractiveOrb } from './InteractiveOrb';
 import { ScrollReveal } from './ScrollReveal';
 
 export const OverviewView: React.FC = () => {
-  const { setActiveTab } = useApp();
+  const { setActiveTab, queue, syncStatus, openPatientAudit, initiateReferral } = useApp();
   const [playingAudio, setPlayingAudio] = useState<'hindi' | 'punjabi' | null>(null);
   const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
   const audioTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -443,111 +443,233 @@ export const OverviewView: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#e3e2e0]/60 text-xs">
-                    {/* Row 1 */}
-                    <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] font-mono text-[11px] font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]" />
-                          Tier 1 Emergency
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#1a1c1a] block">Harpreet Kaur, 28 F</span>
-                        <span className="font-mono text-[10px] text-[#747878]">ABHA #91-3081-4401</span>
-                      </td>
-                      <td className="py-4 px-3 text-[#ba1a1a] font-medium max-w-[180px]">
-                        Severe Dyspnea &amp; Post-Partum Rigors
-                      </td>
-                      <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
-                        <span className="text-[#ba1a1a] font-bold">SpO2: 87%</span> | BP: 85/50 | HR: 132 | Temp: 103.2°F
-                      </td>
-                      <td className="py-4 px-3">
-                        <span className="inline-block px-2 py-1 rounded bg-[#ffdad6]/60 text-[#ba1a1a] font-mono text-[10px] font-medium border border-[#ffdad6]">
-                          Rule #SEP-01: Septic Shock Matrix
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => setActiveTab('emergency')}
-                          className="px-3.5 py-1.5 rounded-full bg-[#ba1a1a] text-white font-mono text-[11px] font-bold cursor-pointer hover:bg-[#93000a] transition-all hover:scale-[1.02]"
-                        >
-                          Trigger 108 SOS
-                        </button>
-                      </td>
-                    </tr>
+                    {queue.length > 0 ? (
+                      queue.slice(0, 5).map((item) => {
+                        const isEmergency = item.effective_priority === 'EMERGENCY';
+                        const isUrgent = item.effective_priority === 'URGENT';
+                        return (
+                          <tr key={item.patient_id} className="hover:bg-[#f4f3f1]/50 transition-colors">
+                            <td className="py-4 px-3 whitespace-nowrap">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[11px] font-bold ${
+                                  isEmergency
+                                    ? 'bg-[#ffdad6] text-[#ba1a1a]'
+                                    : isUrgent
+                                    ? 'bg-[#fff4e5] text-[#d97706]'
+                                    : 'bg-[#aceec4] text-[#2a6a48]'
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    isEmergency ? 'bg-[#ba1a1a]' : isUrgent ? 'bg-[#d97706]' : 'bg-[#2a6a48]'
+                                  }`}
+                                />
+                                {isEmergency
+                                  ? 'Tier 1 Emergency'
+                                  : isUrgent
+                                  ? 'Tier 2 Urgent'
+                                  : 'Tier 3 Routine'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-3 whitespace-nowrap">
+                              <span className="font-bold text-[#1a1c1a] block">{item.display_code}</span>
+                              <span className="font-mono text-[10px] text-[#747878]">
+                                Wait: {Math.floor(item.wait_seconds / 60)}m {item.wait_seconds % 60}s
+                              </span>
+                            </td>
+                            <td
+                              className={`py-4 px-3 font-medium max-w-[200px] truncate ${
+                                isEmergency ? 'text-[#ba1a1a]' : 'text-[#1a1c1a]'
+                              }`}
+                            >
+                              {item.top_reason || 'Point-of-care clinical triage'}
+                            </td>
+                            <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
+                              {item.flags && item.flags.length > 0 ? (
+                                <span className="inline-flex gap-1 flex-wrap">
+                                  {item.flags.map((f) => (
+                                    <span
+                                      key={f}
+                                      className="px-1.5 py-0.5 rounded bg-[#efeeeb] text-[10px] font-mono text-[#444748]"
+                                    >
+                                      {f}
+                                    </span>
+                                  ))}
+                                </span>
+                              ) : (
+                                <span>No special flags</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-3">
+                              <span
+                                className={`inline-block px-2 py-1 rounded font-mono text-[10px] font-medium border ${
+                                  isEmergency
+                                    ? 'bg-[#ffdad6]/60 text-[#ba1a1a] border-[#ffdad6]'
+                                    : 'bg-[#efeeeb] text-[#444748] border-[#e3e2e0]'
+                                }`}
+                              >
+                                {item.top_reason ? item.top_reason.split(':')[0] : 'Deterministic Gate'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-3 text-right whitespace-nowrap">
+                              {isEmergency ? (
+                                <button
+                                  onClick={() =>
+                                    initiateReferral(
+                                      item.patient_id,
+                                      item.latest_assessment_id || '',
+                                      item.display_code
+                                    )
+                                  }
+                                  className="px-3.5 py-1.5 rounded-full bg-[#ba1a1a] text-white font-mono text-[11px] font-bold cursor-pointer hover:bg-[#93000a] transition-all hover:scale-[1.02]"
+                                >
+                                  Trigger 108 SOS
+                                </button>
+                              ) : isUrgent ? (
+                                <button
+                                  onClick={() =>
+                                    openPatientAudit(
+                                      item.patient_id,
+                                      item.latest_assessment_id || undefined
+                                    )
+                                  }
+                                  className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                                >
+                                  Doctor Review
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    openPatientAudit(
+                                      item.patient_id,
+                                      item.latest_assessment_id || undefined
+                                    )
+                                  }
+                                  className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                                >
+                                  Standard OPD Queue
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <>
+                        {/* Fallback canonical rows when queue is empty */}
+                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] font-mono text-[11px] font-bold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]" />
+                              Tier 1 Emergency
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="font-bold text-[#1a1c1a] block">Harpreet Kaur, 28 F</span>
+                            <span className="font-mono text-[10px] text-[#747878]">ABHA #91-3081-4401</span>
+                          </td>
+                          <td className="py-4 px-3 text-[#ba1a1a] font-medium max-w-[180px]">
+                            Severe Dyspnea &amp; Post-Partum Rigors
+                          </td>
+                          <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
+                            <span className="text-[#ba1a1a] font-bold">SpO2: 87%</span> | BP: 85/50 | HR: 132 | Temp: 103.2°F
+                          </td>
+                          <td className="py-4 px-3">
+                            <span className="inline-block px-2 py-1 rounded bg-[#ffdad6]/60 text-[#ba1a1a] font-mono text-[10px] font-medium border border-[#ffdad6]">
+                              Rule #SEP-01: Septic Shock Matrix
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => setActiveTab('emergency')}
+                              className="px-3.5 py-1.5 rounded-full bg-[#ba1a1a] text-white font-mono text-[11px] font-bold cursor-pointer hover:bg-[#93000a] transition-all hover:scale-[1.02]"
+                            >
+                              Trigger 108 SOS
+                            </button>
+                          </td>
+                        </tr>
 
-                    {/* Row 2 */}
-                    <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fff4e5] text-[#d97706] font-mono text-[11px] font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#d97706]" />
-                          Tier 2 Urgent
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#1a1c1a] block">Gurdeep Singh, 54 M</span>
-                        <span className="font-mono text-[10px] text-[#747878]">ABHA #91-8821-0021</span>
-                      </td>
-                      <td className="py-4 px-3 text-[#1a1c1a] font-medium max-w-[180px]">
-                        Retrosternal Tightness &amp; Left Jaw Pain
-                      </td>
-                      <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
-                        SpO2: 95% | <span className="text-[#d97706] font-bold">BP: 190/110</span> | HR: 98 | Temp: 98.4°F
-                      </td>
-                      <td className="py-4 px-3">
-                        <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#444748] font-mono text-[10px] font-medium border border-[#e3e2e0]">
-                          Rule #HYP-03: Hypertensive Pattern
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => setActiveTab('triage')}
-                          className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
-                        >
-                          Escalate Doctor Review
-                        </button>
-                      </td>
-                    </tr>
+                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fff4e5] text-[#d97706] font-mono text-[11px] font-bold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#d97706]" />
+                              Tier 2 Urgent
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="font-bold text-[#1a1c1a] block">Gurdeep Singh, 54 M</span>
+                            <span className="font-mono text-[10px] text-[#747878]">ABHA #91-8821-0021</span>
+                          </td>
+                          <td className="py-4 px-3 text-[#1a1c1a] font-medium max-w-[180px]">
+                            Retrosternal Tightness &amp; Left Jaw Pain
+                          </td>
+                          <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
+                            SpO2: 95% | <span className="text-[#d97706] font-bold">BP: 190/110</span> | HR: 98 | Temp: 98.4°F
+                          </td>
+                          <td className="py-4 px-3">
+                            <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#444748] font-mono text-[10px] font-medium border border-[#e3e2e0]">
+                              Rule #HYP-03: Hypertensive Pattern
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => setActiveTab('triage')}
+                              className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#1a1c1a] font-mono text-[11px] font-bold border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                            >
+                              Escalate Doctor Review
+                            </button>
+                          </td>
+                        </tr>
 
-                    {/* Row 3 */}
-                    <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#aceec4] text-[#2a6a48] font-mono text-[11px] font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48]" />
-                          Tier 3 Routine
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#1a1c1a] block">Manjit Lal, 41 M</span>
-                        <span className="font-mono text-[10px] text-[#747878]">ABHA #91-1029-7711</span>
-                      </td>
-                      <td className="py-4 px-3 text-[#444748] max-w-[180px]">
-                        Chronic Lumbar Pain &amp; Mild Pruritus
-                      </td>
-                      <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
-                        SpO2: 98% | BP: 122/78 | HR: 74 | Temp: 98.6°F
-                      </td>
-                      <td className="py-4 px-3">
-                        <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#747878] font-mono text-[10px]">
-                          No Acute Red Flags Detected
-                        </span>
-                      </td>
-                      <td className="py-4 px-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => setActiveTab('triage')}
-                          className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
-                        >
-                          Standard OPD Queue
-                        </button>
-                      </td>
-                    </tr>
+                        <tr className="hover:bg-[#f4f3f1]/50 transition-colors">
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#aceec4] text-[#2a6a48] font-mono text-[11px] font-bold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48]" />
+                              Tier 3 Routine
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <span className="font-bold text-[#1a1c1a] block">Manjit Lal, 41 M</span>
+                            <span className="font-mono text-[10px] text-[#747878]">ABHA #91-1029-7711</span>
+                          </td>
+                          <td className="py-4 px-3 text-[#444748] max-w-[180px]">
+                            Chronic Lumbar Pain &amp; Mild Pruritus
+                          </td>
+                          <td className="py-4 px-3 font-mono text-[11px] text-[#444748] whitespace-nowrap">
+                            SpO2: 98% | BP: 122/78 | HR: 74 | Temp: 98.6°F
+                          </td>
+                          <td className="py-4 px-3">
+                            <span className="inline-block px-2 py-1 rounded bg-[#efeeeb] text-[#747878] font-mono text-[10px]">
+                              No Acute Red Flags Detected
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 text-right whitespace-nowrap">
+                            <button
+                              onClick={() => setActiveTab('triage')}
+                              className="px-3.5 py-1.5 rounded-full bg-[#f4f3f1] text-[#747878] font-mono text-[11px] border border-[#e3e2e0] cursor-pointer hover:bg-[#e9e8e5] transition-all"
+                            >
+                              Standard OPD Queue
+                            </button>
+                          </td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 </table>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-4 border-t border-[#e3e2e0] font-mono text-[10px] text-[#747878]">
-                <span>Priority Buffer: 3 active patients in edge SQLite outbox</span>
-                <span className="text-[#2a6a48] font-semibold">● Gateway Compute: Local CDSS Active</span>
+                <span>
+                  Priority Buffer:{' '}
+                  {queue.length > 0
+                    ? `${queue.length} active patients in edge queue (${queue.filter((q) => q.effective_priority === 'EMERGENCY').length} Emergency, ${queue.filter((q) => q.effective_priority === 'URGENT').length} Urgent)`
+                    : '3 active patients in edge SQLite outbox'}
+                </span>
+                <span className="text-[#2a6a48] font-semibold">
+                  {syncStatus?.online
+                    ? `● Gateway Compute: Hub Linked (${syncStatus.pending} pending sync)`
+                    : '● Gateway Compute: Local CDSS Enclave (Offline)'}
+                </span>
               </div>
             </div>
           </ScrollReveal>

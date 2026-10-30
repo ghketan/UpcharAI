@@ -4,7 +4,7 @@ import { UserCheck, Stethoscope, RefreshCw, Activity, ArrowUpRight } from 'lucid
 import { GooeyNav } from './GooeyNav';
 
 export const Header: React.FC = () => {
-  const { role, toggleRole, activeTab, setActiveTab, resetDemoDatabase } = useApp();
+  const { role, toggleRole, activeTab, setActiveTab, resetDemoDatabase, syncStatus } = useApp();
 
   const navItems: { key: TabKey; label: string }[] = [
     { key: 'overview', label: 'Platform' },
@@ -39,8 +39,16 @@ export const Header: React.FC = () => {
           </button>
 
           <div className="hidden xl:inline-flex items-center gap-2 h-9 px-3.5 rounded-full bg-[#f4f3f1] text-[#444748] font-mono text-[11px] border border-[#e3e2e0]/70 whitespace-nowrap shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#2a6a48] animate-pulse shrink-0" />
-            <span className="whitespace-nowrap">Edge Enclave: Offline SQLite Active</span>
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                syncStatus?.online ? 'bg-[#2a6a48] animate-pulse' : 'bg-[#d97706]'
+              }`}
+            />
+            <span className="whitespace-nowrap">
+              {syncStatus?.online
+                ? `Edge Enclave: Hub Linked (${syncStatus.pending} pending)`
+                : 'Edge Enclave: Offline SQLite Active'}
+            </span>
           </div>
         </div>
 

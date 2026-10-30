@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, ApiError } from '../api';
-import { QueueItem, Priority, RuleConfig } from '../types';
+import { QueueItem, Priority, RuleConfig, AssessmentPreviewInput, AssessmentPreviewResult } from '../types';
 import {
   Activity,
   Search,
@@ -90,6 +90,8 @@ export const TriageQueueView: React.FC = () => {
   const [createdPatientId, setCreatedPatientId] = useState<string | null>(null);
   const [ruleConfig, setRuleConfig] = useState<RuleConfig | null>(null);
   const [isListeningNotes, setIsListeningNotes] = useState<boolean>(false);
+  const [backendPreview, setBackendPreview] = useState<AssessmentPreviewResult | null>(null);
+  const [previewLoading, setPreviewLoading] = useState<boolean>(false);
   const recognitionRef = React.useRef<any>(null);
 
   useEffect(() => {
@@ -217,6 +219,109 @@ export const TriageQueueView: React.FC = () => {
       message: 'No immediate red-flag thresholds breached.',
     };
   }, [spo2, sbp, pulse, tempC, avpu, symptoms, age, pregnant]);
+
+  // Debounced live server-side preview calculation
+  useEffect(() => {
+    const hasAnyInput =
+      Boolean(age) ||
+      Boolean(spo2) ||
+      Boolean(sbp) ||
+      Boolean(dbp) ||
+      Boolean(pulse) ||
+      Boolean(tempC) ||
+      Boolean(rr) ||
+      symptoms.length > 0 ||
+      pregnant;
+
+    if (!hasAnyInput) {
+      setBackendPreview(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setPreviewLoading(true);
+      try {
+        const previewData: AssessmentPreviewInput = {
+          age: parseInt(age, 10) || undefined,
+          sex,
+          pregnant,
+          symptom_codes: symptoms,
+          history_codes: historyCodes,
+          free_text: freeText.trim() || undefined,
+          duration_days: durationDays ? parseInt(durationDays, 10) : undefined,
+          spo2: spo2 ? parseFloat(spo2) : undefined,
+          sbp: sbp ? parseFloat(sbp) : undefined,
+          dbp: dbp ? parseFloat(dbp) : undefined,
+          pulse: pulse ? parseFloat(pulse) : undefined,
+          temp_c: tempC ? parseFloat(tempC) : undefined,
+          rr: rr ? parseFloat(rr) : undefined,
+          avpu: (avpu as any) || 'A',
+          on_oxygen: onOxygen,
+        };
+
+        const result = await api.previewAssessment(previewData, role);
+        setBackendPreview(result);
+      } catch {
+        setBackendPreview(null);
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [
+    age,
+    sex,
+    pregnant,
+    symptoms,
+    historyCodes,
+    freeText,
+    durationDays,
+    spo2,
+    sbp,
+    dbp,
+    pulse,
+    tempC,
+    rr,
+    avpu,
+    onOxygen,
+    role,
+  ]);
+
+  // Effective preview: uses backend calculation when available, otherwise livePreview fallback
+  const effectivePreview = useMemo(() => {
+    if (backendPreview) {
+      if (backendPreview.priority === 'EMERGENCY') {
+        return {
+          priority: 'EMERGENCY' as Priority,
+          badgeClass: 'bg-[#ffdad6] text-[#ba1a1a] border-[#ba1a1a]',
+          title: 'Tier 1 Red Emergency Detected',
+          message:
+            backendPreview.findings.length > 0
+              ? backendPreview.findings[0].plain_message
+              : backendPreview.suggested_action || 'Critical physiological threshold or red-flag symptom triggered.',
+        };
+      }
+      if (backendPreview.priority === 'URGENT') {
+        return {
+          priority: 'URGENT' as Priority,
+          badgeClass: 'bg-[#fff4e5] text-[#d97706] border-[#f59e0b]',
+          title: 'Tier 2 Urgent Detected',
+          message:
+            backendPreview.findings.length > 0
+              ? backendPreview.findings[0].plain_message
+              : backendPreview.suggested_action || 'High-risk condition, age/pregnancy floor, or abnormal biometrics.',
+        };
+      }
+      return {
+        priority: 'ROUTINE' as Priority,
+        badgeClass: 'bg-[#aceec4]/40 text-[#2a6a48] border-[#2a6a48]',
+        title: 'Tier 3 Routine OPD',
+        message: backendPreview.suggested_action || 'No immediate red-flag thresholds breached.',
+      };
+    }
+    return livePreview;
+  }, [backendPreview, livePreview]);
 
   // Handle Form Submission
   const handleSubmit = async (e: React.FormEvent, confirmImplausible: boolean = false) => {
@@ -797,15 +902,51 @@ export const TriageQueueView: React.FC = () => {
 
               {/* Live Preview Box */}
               <div
-                className={`p-3.5 rounded-2xl border flex flex-col gap-1 transition-all ${livePreview.badgeClass}`}
+                className={`p-3.5 rounded-2xl border flex flex-col gap-1.5 transition-all ${effectivePreview.badgeClass}`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold uppercase tracking-wider">
-                    {livePreview.title}
+                    {effectivePreview.title}
                   </span>
-                  <span className="font-mono text-[11px] font-bold">PREVIEW</span>
+                  <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/70 border border-current font-semibold flex items-center gap-1">
+                    {previewLoading ? (
+                      <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping" />
+                        <span>EVALUATING</span>
+                      </>
+                    ) : backendPreview ? (
+                      <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48]" />
+                        <span>LIVE CDSS</span>
+                      </>
+                    ) : (
+                      <span>OFFLINE PREVIEW</span>
+                    )}
+                  </span>
                 </div>
-                <p className="text-xs opacity-90">{livePreview.message}</p>
+                <p className="text-xs opacity-90">{effectivePreview.message}</p>
+
+                {backendPreview && (
+                  <div className="mt-1 pt-2 border-t border-current/20 flex flex-col gap-1 font-mono text-[11px]">
+                    <div className="flex items-center justify-between">
+                      <span>
+                        NEWS2 Score: <strong>{backendPreview.news2_total}</strong> ({backendPreview.news2_params_scored}/7 scored)
+                      </span>
+                      {backendPreview.findings.length > 0 && (
+                        <span className="text-[10px] font-bold">Rule: {backendPreview.findings[0].rule_id}</span>
+                      )}
+                    </div>
+                    {backendPreview.plausibility_violations && backendPreview.plausibility_violations.length > 0 && (
+                      <div className="mt-1 p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 text-[10px] flex items-start gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-700" />
+                        <div>
+                          <strong className="block">Biological Plausibility Notice:</strong>
+                          <span>{backendPreview.plausibility_violations.join('; ')}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Submit CTA */}
