@@ -138,14 +138,14 @@ rules:
     message: "Depressed consciousness: responsive only to pain or unresponsive"
   - id: RF-E04
     tier: EMERGENCY
-    trigger: "symptom: SEVERE_BLEEDING"
-    evidence: ASSUMED
-    message: "Severe uncontrolled or arterial bleeding"
-  - id: RF-E05
-    tier: EMERGENCY
     trigger: "symptom: SEIZURE_ONGOING"
     evidence: ASSUMED
     message: "Ongoing active seizure activity"
+  - id: RF-E05
+    tier: EMERGENCY
+    trigger: "symptom: SEVERE_BLEEDING"
+    evidence: ASSUMED
+    message: "Severe uncontrolled or arterial bleeding"
   - id: RF-E06
     tier: EMERGENCY
     trigger: "symptom: STROKE_SIGNS"

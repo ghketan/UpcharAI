@@ -1,7 +1,7 @@
 from collections import defaultdict
 import re
 import time
-from typing import Dict, List
+from typing import Any, Dict, List
 from fastapi import APIRouter, Request
 
 from api.config import LLM_API_KEY
@@ -98,15 +98,26 @@ DOSE_REGEX = re.compile(r"\b\d+\s*(mg|mcg|g|ml|tablets?|capsules?|drops?|teaspoo
 
 
 def detect_red_flags(text: str) -> bool:
-    cleaned = re.sub(r"[^\w\s]", " ", text.lower())
-    # English check
+    raw_lower = text.lower()
+    cleaned = re.sub(r"[^\w\s]", " ", raw_lower)
+    cleaned_compact = re.sub(r"[^\w\s]", "", raw_lower)
+
+    # English check: test raw text, space-separated punctuation, and compact punctuation
     for phrase in ENGLISH_RED_FLAGS:
-        if phrase in cleaned:
+        p_lower = phrase.lower()
+        p_clean = re.sub(r"[^\w\s]", " ", p_lower)
+        p_compact = re.sub(r"[^\w\s]", "", p_lower)
+        if (p_lower in raw_lower) or (p_clean in cleaned) or (p_compact in cleaned_compact):
             return True
+
     # Hindi check
     for phrase in HINDI_RED_FLAGS:
-        if phrase in cleaned or phrase in text:
+        p_lower = phrase.lower()
+        p_clean = re.sub(r"[^\w\s]", " ", p_lower)
+        p_compact = re.sub(r"[^\w\s]", "", p_lower)
+        if (p_lower in raw_lower) or (p_clean in cleaned) or (p_compact in cleaned_compact):
             return True
+
     return False
 
 
@@ -115,6 +126,11 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     client_ip = request.client.host if request.client else "unknown"
     now_time = time.time()
     cutoff = now_time - 60.0
+
+    # Evict stale client IPs from memory to prevent memory leaks
+    stale_ips = [ip for ip, ts_list in _CHAT_REQUEST_HISTORY.items() if not ts_list or ts_list[-1] <= cutoff]
+    for ip in stale_ips:
+        _CHAT_REQUEST_HISTORY.pop(ip, None)
 
     history = [ts for ts in _CHAT_REQUEST_HISTORY[client_ip] if ts > cutoff]
     if len(history) >= _MAX_REQUESTS_PER_MINUTE:
@@ -200,4 +216,41 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
         # Fallback to static safety reply when network/LLM is unreachable
         safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
         return ChatResponse(reply=safety_reply, escalated=False, language=lang)
+
+
+@router.get("/protocols")
+def get_chat_protocols() -> List[Dict[str, Any]]:
+    """
+    Returns server-managed vernacular emergency and first-aid protocols for frontline health workers.
+    """
+    return [
+        {
+            "id": "chest_pain",
+            "title": "सीने में तेज दर्द और पसीना आने पर क्या करें?",
+            "subtitle": "Acute Chest Pain & Angina First-Aid Protocol",
+            "lang": "hi-IN",
+            "text": "मरीज को तुरंत आराम की स्थिति में बैठाएं। तंग कपड़े ढीले करें। यदि मरीज पहले से डॉक्टर की सलाह पर एस्पिरिन लेता है, तो तुरंत डॉक्टर से संपर्क करें। बिना देरी किए नजदीकी अस्पताल ले जाएं।",
+        },
+        {
+            "id": "pediatric_convulsion",
+            "title": "ਤੇਜ਼ ਬੁਖ਼ਾਰ ਅਤੇ ਝਟਕੇ ਲੱਗਣ 'ਤੇ ਮੁੱਢਲੀ ਸਹਾਇਤਾ",
+            "subtitle": "Pediatric Febrile Convulsion Steps (0-5 Yrs)",
+            "lang": "pa-IN",
+            "text": "ਬੱਚੇ ਨੂੰ ਇੱਕ ਪਾਸੇ ਲਿਟਾਓ ਤਾਂ ਜੋ ਸਾਹ ਨਾਲੀ ਸਾਫ਼ ਰਹੇ। ਮੂੰਹ ਵਿੱਚ ਕੁੱਝ ਨਾ ਪਾਓ। ਤਾਜ਼ੇ ਪਾਣੀ ਦੀ ਪੱਟੀ ਮੱਥੇ ਤੇ ਰੱਖੋ। ਤੁਰੰਤ ਸਿਹਤ ਕੇਂਦਰ ਲੈ ਕੇ ਜਾਓ।",
+        },
+        {
+            "id": "pph",
+            "title": "गर्भावस्था में अत्यधिक रक्तस्राव की स्थिति",
+            "subtitle": "Post-Partum Hemorrhage Immediate Steps",
+            "lang": "hi-IN",
+            "text": "गर्भवती महिला को बाईं करवट लिटाएं। पैर थोड़े ऊंचे रखें। तुरंत एंबुलेंस या वाहन की व्यवस्था करें और स्वास्थ्य कार्यकर्ता या डॉक्टर को सूचित करें।",
+        },
+        {
+            "id": "snakebite",
+            "title": "ਸੱਪ ਦੇ ਡੰਗਣ 'ਤੇ ਜ਼ਰੂਰੀ ਕਦਮ",
+            "subtitle": "Snakebite Triage & Immobilization",
+            "lang": "pa-IN",
+            "text": "ਡੰਗ ਵਾਲੇ ਅੰਗ ਨੂੰ ਬਿਲਕੁਲ ਹਿੱਲਣ ਨਾ ਦਿਓ। ਕੋਈ ਕੱਟ ਨਾ ਲਗਾਓ। ਮਰੀਜ਼ ਨੂੰ ਸ਼ਾਂਤ ਰੱਖੋ ਅਤੇ ਤੁਰੰਤ ਐਂਟੀ ਸਨੇਕ ਵੈਨਮ ਵਾਲੇ ਹਸਪਤਾਲ ਪਹੁੰਚਾਓ।",
+        },
+    ]
 

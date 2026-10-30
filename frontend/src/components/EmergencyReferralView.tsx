@@ -33,12 +33,13 @@ export const EmergencyReferralView: React.FC = () => {
     if (referralTarget) {
       setSelectedPatientId(referralTarget.patientId);
       setSelectedAssessmentId(referralTarget.assessmentId);
+      clearReferralTarget();
     } else if (!selectedPatientId && queue.length > 0) {
       const emergencyCase = queue.find((q) => q.effective_priority === 'EMERGENCY') || queue[0];
       setSelectedPatientId(emergencyCase.patient_id);
       setSelectedAssessmentId(emergencyCase.latest_assessment_id || '');
     }
-  }, [referralTarget, queue.length, selectedPatientId, setSelectedPatientId, setSelectedAssessmentId]);
+  }, [referralTarget, queue.length, selectedPatientId, clearReferralTarget]);
 
   // Load hospitals
   useEffect(() => {

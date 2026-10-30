@@ -319,7 +319,7 @@ def test_demo_reset_and_repeatable_hash():
         assert reset_res.status_code == 200
         assert reset_res.json()["seeded_scenarios"] == 4
 
-        q_res = client.get("/api/queue")
+        q_res = client.get("/api/queue?as_of=2026-10-30T12:00:00Z")
         dumped = json.dumps(q_res.json()["items"], sort_keys=True)
         h = hashlib.sha256(dumped.encode("utf-8")).hexdigest()
         hashes.append(h)
@@ -338,6 +338,14 @@ def test_chatbot_guardrails_prefilter():
     en_data = en_res.json()
     assert en_data["escalated"] is True
     assert "EMERGENCY ALERT" in en_data["reply"]
+
+    # English red flag with apostrophe
+    en_res2 = client.post(
+        "/api/chat",
+        json={"message": "Doctor help me I can't breathe"},
+    )
+    assert en_res2.status_code == 200
+    assert en_res2.json()["escalated"] is True
 
     # Hindi red flag
     hi_res = client.post(
@@ -368,3 +376,58 @@ def test_chatbot_guardrails_prefilter():
             assert r.json()["code"] == "rate_limit_exceeded"
             break
     assert hit_limit is True
+
+
+def test_preview_and_rules_config_endpoints():
+    # 1. Rules config
+    cfg_res = client.get("/api/rules/config")
+    assert cfg_res.status_code == 200
+    cfg_data = cfg_res.json()
+    assert cfg_data["rule_set_version"] == "v1"
+    assert "temp_c" in cfg_data["plausibility"]
+    assert "CHEST_PAIN" in cfg_data["symptom_codes"]
+
+    # 2. Preview assessment (stateless dry-run)
+    prev_res = client.post(
+        "/api/assessments/preview",
+        json={
+            "age": 55,
+            "sex": "M",
+            "temp_c": 37.0,
+            "sbp": 88,
+            "dbp": 55,
+            "spo2": 89,
+            "pulse": 115,
+            "symptom_codes": ["CHEST_PAIN"],
+        },
+    )
+    assert prev_res.status_code == 200
+    prev_data = prev_res.json()
+    assert prev_data["priority"] == "EMERGENCY"
+    assert prev_data["news2_total"] >= 7
+    assert len(prev_data["findings"]) >= 1
+
+
+def test_sync_outbox_inspection_and_protocols():
+    # 1. Chat protocols endpoint
+    proto_res = client.get("/api/chat/protocols")
+    assert proto_res.status_code == 200
+    protocols = proto_res.json()
+    assert len(protocols) == 4
+    assert protocols[0]["id"] == "chest_pain"
+
+    # 2. Outbox inspection endpoint
+    # Create patient to create an outbox record
+    client.post("/api/patients", json={"display_code": "P-OUTBOX-TEST", "age": 40, "sex": "F"})
+    outbox_res = client.get("/api/sync/outbox")
+    assert outbox_res.status_code == 200
+    items = outbox_res.json()["items"]
+    assert len(items) >= 1
+    first_item = items[0]
+
+    # 3. Retry endpoint
+    retry_res = client.post(f"/api/sync/outbox/{first_item['id']}/retry")
+    assert retry_res.status_code == 200
+    assert retry_res.json()["status"] == "reset_to_pending"
+    assert retry_res.json()["item"]["state"] == "PENDING"
+

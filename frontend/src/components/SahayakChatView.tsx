@@ -16,6 +16,8 @@ import {
   User,
   Radio,
   FileQuestion,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 
 interface VoiceProtocol {
@@ -62,6 +64,52 @@ export const SahayakChatView: React.FC = () => {
 
   const [language, setLanguage] = useState<'en' | 'hi' | 'pa'>('en');
   const [practitionerMode, setPractitionerMode] = useState<boolean>(true);
+  const [protocols, setProtocols] = useState<VoiceProtocol[]>(VOICE_PROTOCOLS);
+  const [isListening, setIsListening] = useState<boolean>(false);
+
+  useEffect(() => {
+    api.getChatProtocols(role).then((data) => {
+      if (data && data.length > 0) setProtocols(data);
+    }).catch(() => {});
+  }, [role]);
+
+  const recognitionRef = useRef<any>(null);
+
+  const toggleSpeechRecognition = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showToast('Speech recognition not supported in this browser. Please use Chrome.', 'warning');
+      return;
+    }
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
+      setIsListening(false);
+      return;
+    }
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      recognition.lang = language === 'hi' ? 'hi-IN' : language === 'pa' ? 'pa-IN' : 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputMessage(transcript);
+        setIsListening(false);
+        showToast('Speech converted to text', 'info');
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
+  };
 
   // Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -87,6 +135,11 @@ export const SahayakChatView: React.FC = () => {
     return () => {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
       }
     };
   }, []);
@@ -280,7 +333,7 @@ export const SahayakChatView: React.FC = () => {
 
             {/* Protocol Buttons List */}
             <div className="flex flex-col gap-2.5">
-              {VOICE_PROTOCOLS.map((protocol) => {
+              {protocols.map((protocol) => {
                 const isSelected = activeVoiceTrack?.id === protocol.id;
                 return (
                   <div
@@ -493,16 +546,28 @@ export const SahayakChatView: React.FC = () => {
                 type="text"
                 placeholder={
                   language === 'hi'
-                    ? 'यहाँ अपना प्रश्न लिखें...'
+                    ? 'यहाँ अपना प्रश्न लिखें या माइक दबाएं...'
                     : language === 'pa'
                     ? 'ਇੱਥੇ ਆਪਣਾ ਸਵਾਲ ਲਿਖੋ...'
-                    : 'Ask clinical triage question...'
+                    : 'Ask clinical triage question or click mic...'
                 }
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 disabled={sending}
                 className="flex-1 px-4 py-2.5 rounded-full bg-white text-sm text-[#1a1c1a] border border-[#e3e2e0] focus:outline-none focus:ring-1 focus:ring-black"
               />
+              <button
+                type="button"
+                onClick={toggleSpeechRecognition}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0 border ${
+                  isListening
+                    ? 'bg-[#ba1a1a] text-white border-[#ba1a1a] animate-pulse'
+                    : 'bg-white text-[#444748] hover:text-[#1a1c1a] border-[#e3e2e0]'
+                }`}
+                title="Voice query (Hindi/Punjabi/English)"
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
               <button
                 type="submit"
                 disabled={sending || !inputMessage.trim()}
