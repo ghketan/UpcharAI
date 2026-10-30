@@ -103,9 +103,10 @@ export const TriageQueueView: React.FC = () => {
   const livePreview = useMemo(() => {
     const s = parseFloat(spo2);
     const sys = parseFloat(sbp);
-    const d = parseFloat(dbp);
     const p = parseFloat(pulse);
     const t = parseFloat(tempC);
+
+    const isValidNum = (v: number) => !isNaN(v) && isFinite(v);
 
     const hasEmergencySymptom = symptoms.some((code) =>
       [
@@ -120,13 +121,14 @@ export const TriageQueueView: React.FC = () => {
     );
 
     const isChestPainEmergency =
-      symptoms.includes('CHEST_PAIN') && ((s && s <= 93) || (sys && sys <= 100) || (p && p >= 111));
+      symptoms.includes('CHEST_PAIN') &&
+      ((isValidNum(s) && s <= 93) || (isValidNum(sys) && sys <= 100) || (isValidNum(p) && p >= 111));
 
     if (
       hasEmergencySymptom ||
       isChestPainEmergency ||
-      (s && s <= 90) ||
-      (sys && sys <= 90) ||
+      (isValidNum(s) && s <= 90) ||
+      (isValidNum(sys) && sys <= 90) ||
       ['P', 'U'].includes(avpu)
     ) {
       return {
@@ -143,8 +145,8 @@ export const TriageQueueView: React.FC = () => {
       symptoms.includes('VOMITING_DIARRHOEA_DEHYDRATION') ||
       parseInt(age, 10) < 16 ||
       pregnant ||
-      (s && s <= 95) ||
-      (t && t >= 38.5)
+      (isValidNum(s) && s <= 95) ||
+      (isValidNum(t) && t >= 38.5)
     ) {
       return {
         priority: 'URGENT' as Priority,
@@ -160,7 +162,7 @@ export const TriageQueueView: React.FC = () => {
       title: 'Tier 3 Routine OPD',
       message: 'No immediate red-flag thresholds breached.',
     };
-  }, [spo2, sbp, dbp, pulse, tempC, avpu, symptoms, age, pregnant]);
+  }, [spo2, sbp, pulse, tempC, avpu, symptoms, age, pregnant]);
 
   // Handle Form Submission
   const handleSubmit = async (e: React.FormEvent, confirmImplausible: boolean = false) => {
@@ -212,12 +214,23 @@ export const TriageQueueView: React.FC = () => {
         'success'
       );
 
-      // Clear or reset form
+      // Clear form and reset biometrics to healthy baseline defaults
       setDisplayCode('');
       setFreeText('');
       setSymptoms([]);
       setHistoryCodes([]);
       setDurationDays('');
+      setAge('35');
+      setSex('M');
+      setPregnant(false);
+      setSpo2('96');
+      setSbp('120');
+      setDbp('80');
+      setPulse('76');
+      setTempC('37.0');
+      setRr('16');
+      setAvpu('A');
+      setOnOxygen(false);
 
       await refreshQueue();
     } catch (err: any) {
@@ -248,8 +261,8 @@ export const TriageQueueView: React.FC = () => {
       // Filter by search
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
-        const code = item.display_code.toLowerCase();
-        const reason = item.top_reason.toLowerCase();
+        const code = (item.display_code || '').toLowerCase();
+        const reason = (item.top_reason || '').toLowerCase();
         return code.includes(query) || reason.includes(query);
       }
 
@@ -427,6 +440,7 @@ export const TriageQueueView: React.FC = () => {
                   <input
                     type="text"
                     required
+                    maxLength={50}
                     placeholder="e.g. P-105 or Jasleen Kaur"
                     value={displayCode}
                     onChange={(e) => setDisplayCode(e.target.value)}

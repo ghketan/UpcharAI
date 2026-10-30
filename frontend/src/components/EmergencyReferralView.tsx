@@ -28,17 +28,17 @@ export const EmergencyReferralView: React.FC = () => {
   const [generating, setGenerating] = useState<boolean>(false);
   const [referralResult, setReferralResult] = useState<ReferralSummary | null>(null);
 
-  // Initialize with referralTarget if available, or first emergency/urgent case in queue
+  // Initialize with referralTarget if available, or first emergency/urgent case in queue if unselected
   useEffect(() => {
     if (referralTarget) {
       setSelectedPatientId(referralTarget.patientId);
       setSelectedAssessmentId(referralTarget.assessmentId);
-    } else if (queue.length > 0) {
+    } else if (!selectedPatientId && queue.length > 0) {
       const emergencyCase = queue.find((q) => q.effective_priority === 'EMERGENCY') || queue[0];
       setSelectedPatientId(emergencyCase.patient_id);
       setSelectedAssessmentId(emergencyCase.latest_assessment_id || '');
     }
-  }, [referralTarget, queue]);
+  }, [referralTarget, queue.length, selectedPatientId, setSelectedPatientId, setSelectedAssessmentId]);
 
   // Load hospitals
   useEffect(() => {
@@ -63,9 +63,7 @@ export const EmergencyReferralView: React.FC = () => {
   const handlePatientChange = (patientId: string) => {
     setSelectedPatientId(patientId);
     const item = queue.find((q) => q.patient_id === patientId);
-    if (item && item.latest_assessment_id) {
-      setSelectedAssessmentId(item.latest_assessment_id);
-    }
+    setSelectedAssessmentId(item?.latest_assessment_id || '');
     setReferralResult(null);
   };
 
@@ -216,7 +214,7 @@ export const EmergencyReferralView: React.FC = () => {
                   <span className="text-xs text-[#444748] font-mono">{selectedHospital.area}</span>
                   
                   <a
-                    href={`tel:${selectedHospital.phone}`}
+                    href={`tel:${selectedHospital.phone.replace(/[^0-9+\-]/g, '')}`}
                     className="mt-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[#000000] text-white font-mono text-xs hover:bg-[#1c1b1b] transition-colors"
                   >
                     <Phone className="w-3.5 h-3.5 text-[#aff1c6]" />
@@ -372,9 +370,9 @@ export const EmergencyReferralView: React.FC = () => {
                 </span>
                 <code className="p-3 rounded-xl bg-[#f4f3f1] border border-[#e3e2e0] font-mono text-xs text-[#1a1c1a] block overflow-x-auto">
                   UPCHAR/REF:{referralResult.referral_id.slice(0, 6)}/P:{referralResult.display_code}/
-                  {referralResult.effective_priority}/O2:{referralResult.vitals.spo2 || 'NA'}/BP:
-                  {referralResult.vitals.sbp || 'NA'}/{referralResult.vitals.dbp || 'NA'}/HR:
-                  {referralResult.vitals.pulse || 'NA'}/HOSP:{referralResult.hospital.id}
+                  {referralResult.effective_priority}/O2:{referralResult.vitals.spo2 ?? 'NA'}/BP:
+                  {referralResult.vitals.sbp ?? 'NA'}/{referralResult.vitals.dbp ?? 'NA'}/HR:
+                  {referralResult.vitals.pulse ?? 'NA'}/HOSP:{referralResult.hospital.id}
                 </code>
               </div>
 

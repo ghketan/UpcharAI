@@ -44,14 +44,22 @@ async function request<T>(
   });
 
   if (!res.ok) {
-    let errorData = { message: res.statusText, code: 'unknown_error', retryable: false };
+    let errorData: any = { message: res.statusText, code: 'unknown_error', retryable: false };
     try {
       errorData = await res.json();
     } catch {
       // Use fallback
     }
+    const message =
+      errorData.message ||
+      (typeof errorData.detail === 'string'
+        ? errorData.detail
+        : Array.isArray(errorData.detail) && errorData.detail[0]?.msg
+        ? errorData.detail[0].msg
+        : res.statusText || 'API request failed');
+
     throw new ApiError(
-      errorData.message || 'API request failed',
+      message,
       res.status,
       errorData.code || 'unknown_error',
       errorData.retryable

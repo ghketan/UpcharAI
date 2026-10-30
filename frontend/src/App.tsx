@@ -17,7 +17,11 @@ const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"
+    >
       {toasts.map((toast) => {
         const isError = toast.type === 'error';
         const isWarning = toast.type === 'warning';
@@ -53,6 +57,7 @@ const ToastContainer: React.FC = () => {
 
             <button
               onClick={() => removeToast(toast.id)}
+              aria-label="Dismiss notification"
               className="text-current opacity-60 hover:opacity-100 transition-opacity cursor-pointer p-0.5"
             >
               <X className="w-4 h-4" />
@@ -71,7 +76,7 @@ const MainContent: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[#faf9f6]">
       <ScrollProgressBar />
       <Header />
-      <main className="flex-1 pt-20 flex flex-col">
+      <main className="flex-1 pt-[128px] lg:pt-20 flex flex-col">
         {activeTab === 'overview' && <OverviewView />}
         {activeTab === 'triage' && <TriageQueueView />}
         {activeTab === 'emergency' && <EmergencyReferralView />}

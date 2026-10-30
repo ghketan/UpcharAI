@@ -83,6 +83,8 @@ export const ScrollProgressBar: React.FC = () => {
       if (scrollHeight > 0) {
         const pct = Math.min(100, Math.max(0, (window.scrollY / scrollHeight) * 100));
         setProgress(pct);
+      } else {
+        setProgress(0);
       }
     };
 

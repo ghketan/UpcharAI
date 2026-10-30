@@ -230,7 +230,7 @@ const build = (gl: WebGL2RenderingContext) => {
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-  return { program, uniforms, buffer, position: gl.getAttribLocation(program, 'aPosition') };
+  return { program, uniforms, buffer, position: gl.getAttribLocation(program, 'aPosition'), vert, frag };
 };
 
 export const GooeyNav: React.FC<GooeyNavProps> = ({
@@ -756,6 +756,14 @@ export const GooeyNav: React.FC<GooeyNavProps> = ({
       list.removeEventListener('pointerover', onOver);
       list.removeEventListener('pointerleave', onLeave);
       if (gl && pipeline) {
+        if (pipeline.vert) {
+          gl.detachShader(pipeline.program, pipeline.vert);
+          gl.deleteShader(pipeline.vert);
+        }
+        if (pipeline.frag) {
+          gl.detachShader(pipeline.program, pipeline.frag);
+          gl.deleteShader(pipeline.frag);
+        }
         gl.deleteBuffer(pipeline.buffer);
         gl.deleteProgram(pipeline.program);
       }

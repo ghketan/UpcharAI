@@ -49,20 +49,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [queueLoading, setQueueLoading] = useState<boolean>(false);
   const [queueStale, setQueueStale] = useState<boolean>(false);
-  const [lastQueueFetch, setLastQueueFetch] = useState<number>(Date.now());
+  const [lastQueueFetch, setLastQueueFetch] = useState<number>(() => Date.now());
   
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const queueSeq = React.useRef(0);
+  const toastTimers = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const showToast = useCallback((message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
+
+    const timer = setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
+      toastTimers.current.delete(id);
     }, 4500);
+    toastTimers.current.set(id, timer);
   }, []);
 
   const removeToast = useCallback((id: string) => {
+    const timer = toastTimers.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      toastTimers.current.delete(id);
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
@@ -76,17 +86,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setRole(nextRole);
   };
 
-  const refreshQueue = useCallback(async () => {
-    setQueueLoading(true);
+  const refreshQueue = useCallback(async (isBackground = false) => {
+    const seq = ++queueSeq.current;
+    if (!isBackground) {
+      setQueueLoading(true);
+    }
     try {
       const res = await api.getQueue(role);
-      setQueue(res.items);
-      setLastQueueFetch(Date.now());
-      setQueueStale(false);
+      if (seq === queueSeq.current) {
+        setQueue(res.items);
+        setLastQueueFetch(Date.now());
+        setQueueStale(false);
+      }
     } catch {
-      setQueueStale(true);
+      if (seq === queueSeq.current) {
+        setQueueStale(true);
+      }
     } finally {
-      setQueueLoading(false);
+      if (seq === queueSeq.current && !isBackground) {
+        setQueueLoading(false);
+      }
     }
   }, [role]);
 
@@ -101,11 +120,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Periodic polling for queue and sync
   useEffect(() => {
-    refreshQueue();
+    refreshQueue(false);
     refreshSyncStatus();
 
     const interval = setInterval(() => {
-      refreshQueue();
+      refreshQueue(true);
       refreshSyncStatus();
     }, 4000);
 
@@ -124,9 +143,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const openPatientAudit = (patientId: string, assessmentId?: string) => {
     setSelectedPatientId(patientId);
-    if (assessmentId) {
-      setSelectedAssessmentId(assessmentId);
-    }
+    setSelectedAssessmentId(assessmentId || null);
   };
 
   const closePatientAudit = () => {

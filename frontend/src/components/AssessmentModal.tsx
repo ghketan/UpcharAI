@@ -49,6 +49,18 @@ export const AssessmentModal: React.FC = () => {
     fetchHistory();
   }, [selectedPatientId, role]);
 
+  // Handle ESC key to dismiss modal
+  useEffect(() => {
+    if (!selectedPatientId) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closePatientAudit();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPatientId, closePatientAudit]);
+
   if (!selectedPatientId) return null;
 
   const latestAssessment: Assessment | undefined =
@@ -107,7 +119,15 @@ export const AssessmentModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#000000]/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="audit-modal-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) closePatientAudit();
+      }}
+      className="fixed inset-0 z-50 bg-[#000000]/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+    >
       <div className="w-full max-w-3xl bg-[#faf9f6] rounded-3xl border border-[#c4c7c7] shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
         
         {/* Modal Top Header */}
@@ -116,7 +136,7 @@ export const AssessmentModal: React.FC = () => {
             <span className="w-3 h-3 rounded-full bg-[#2a6a48] shadow-[0_0_10px_rgba(42,106,72,0.5)]" />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold text-[#1a1c1a]">
+                <h3 id="audit-modal-title" className="text-xl font-bold text-[#1a1c1a]">
                   Clinical Case Audit & Inspector
                 </h3>
                 {history?.patient?.display_code && (
@@ -370,14 +390,14 @@ export const AssessmentModal: React.FC = () => {
               )}
 
               {/* NEWS2 & Quantitative Vitals Matrix */}
-              {latestAssessment && latestAssessment.news2 && (
+              {latestAssessment && (
                 <div className="p-4 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs font-bold text-[#1a1c1a] uppercase tracking-wider">
-                      NEWS2 Risk Aggregate: {latestAssessment.news2.total} points
+                      NEWS2 Risk Aggregate: {latestAssessment.news2?.total ?? (latestAssessment as any)?.news2_total ?? 0} points
                     </span>
                     <span className="font-mono text-xs text-[#747878]">
-                      {latestAssessment.news2.params_scored}/6 Parameters Scored
+                      {latestAssessment.news2?.params_scored ?? (latestAssessment as any)?.news2_params_scored ?? (latestAssessment.inputs ? 6 : 0)}/6 Parameters Scored
                     </span>
                   </div>
 
@@ -388,7 +408,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.spo2 ?? '—'}%
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.spo2 ?? '0'}
+                        Score: {latestAssessment.news2?.params?.spo2 ?? '0'}
                       </span>
                     </div>
 
@@ -398,7 +418,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.sbp ?? '—'} mmHg
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.sbp ?? '0'}
+                        Score: {latestAssessment.news2?.params?.sbp ?? '0'}
                       </span>
                     </div>
 
@@ -408,7 +428,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.pulse ?? '—'} bpm
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.pulse ?? '0'}
+                        Score: {latestAssessment.news2?.params?.pulse ?? '0'}
                       </span>
                     </div>
 
@@ -418,7 +438,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.temp_c ? `${latestAssessment.inputs.temp_c}°C` : '—'}
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.temp_c ?? '0'}
+                        Score: {latestAssessment.news2?.params?.temp ?? latestAssessment.news2?.params?.temp_c ?? '0'}
                       </span>
                     </div>
 
@@ -428,7 +448,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.rr ?? '—'} /min
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.rr ?? '0'}
+                        Score: {latestAssessment.news2?.params?.resp_rate ?? latestAssessment.news2?.params?.rr ?? '0'}
                       </span>
                     </div>
 
@@ -438,7 +458,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.avpu ?? '—'}
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.alertness ?? '0'}
+                        Score: {latestAssessment.news2?.params?.avpu ?? latestAssessment.news2?.params?.alertness ?? '0'}
                       </span>
                     </div>
 
@@ -448,7 +468,7 @@ export const AssessmentModal: React.FC = () => {
                         {latestAssessment.inputs?.on_oxygen ? 'Yes' : 'Room Air'}
                       </span>
                       <span className="text-[10px] text-[#2a6a48] font-mono">
-                        Score: {latestAssessment.news2.params.on_oxygen ?? '0'}
+                        Score: {latestAssessment.news2?.params?.oxygen ?? latestAssessment.news2?.params?.on_oxygen ?? '0'}
                       </span>
                     </div>
                   </div>

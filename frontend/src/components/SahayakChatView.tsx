@@ -81,6 +81,15 @@ export const SahayakChatView: React.FC = () => {
   const [speechRate, setSpeechRate] = useState<number>(1.0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -105,6 +114,7 @@ export const SahayakChatView: React.FC = () => {
     setIsPlaying(true);
 
     const utterance = new SpeechSynthesisUtterance(protocol.text);
+    activeUtteranceRef.current = utterance;
     utterance.lang = protocol.lang;
     utterance.rate = speechRate;
 

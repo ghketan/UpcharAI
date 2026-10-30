@@ -26,8 +26,26 @@ import { ScrollReveal } from './ScrollReveal';
 export const OverviewView: React.FC = () => {
   const { setActiveTab } = useApp();
   const [playingAudio, setPlayingAudio] = useState<'hindi' | 'punjabi' | null>(null);
+  const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
+  const audioTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (audioTimerRef.current) {
+        clearTimeout(audioTimerRef.current);
+      }
+    };
+  }, []);
 
   const playVoiceDirective = (lang: 'hindi' | 'punjabi', text: string) => {
+    if (audioTimerRef.current) {
+      clearTimeout(audioTimerRef.current);
+      audioTimerRef.current = null;
+    }
+
     if (playingAudio === lang) {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -39,6 +57,7 @@ export const OverviewView: React.FC = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
+      utteranceRef.current = utterance;
       utterance.lang = lang === 'hindi' ? 'hi-IN' : 'pa-IN';
       utterance.rate = 0.9;
       utterance.onend = () => setPlayingAudio(null);
@@ -47,7 +66,7 @@ export const OverviewView: React.FC = () => {
     }
     setPlayingAudio(lang);
 
-    setTimeout(() => {
+    audioTimerRef.current = setTimeout(() => {
       setPlayingAudio((curr) => (curr === lang ? null : curr));
     }, 9000);
   };
