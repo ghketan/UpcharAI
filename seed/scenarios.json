@@ -1,0 +1,110 @@
+[
+  {
+    "id": "SCENARIO-1",
+    "title": "Scenario 1: Acute Severe Asthma / Hypoxia",
+    "badge": "EMERGENCY",
+    "description": "42-year-old male with severe breathing difficulty and cyanosis. SpO2 86%, Pulse 120 bpm.",
+    "patient": {
+      "display_code": "P-8419",
+      "age": 42,
+      "sex": "M",
+      "pregnant": false,
+      "history_codes": ["COPD_ASTHMA"]
+    },
+    "vitals": {
+      "temp_c": 37.1,
+      "sbp": 125,
+      "dbp": 82,
+      "spo2": 86,
+      "pulse": 120,
+      "rr": 26,
+      "avpu": "A",
+      "on_oxygen": false,
+      "symptom_codes": ["SEVERE_BREATHING_DIFFICULTY"],
+      "duration_days": 1,
+      "free_text": "Severe wheezing, unable to speak in full sentences"
+    },
+    "expected_priority": "EMERGENCY"
+  },
+  {
+    "id": "SCENARIO-2",
+    "title": "Scenario 2: Chest Pain with Abnormal Vitals (Red-Flag Combo)",
+    "badge": "EMERGENCY",
+    "description": "54-year-old female with radiating retrosternal chest pain, borderline SpO2 92%, tachycardic at 102 bpm.",
+    "patient": {
+      "display_code": "P-9134",
+      "age": 54,
+      "sex": "F",
+      "pregnant": false,
+      "history_codes": ["HYPERTENSION", "DIABETES"]
+    },
+    "vitals": {
+      "temp_c": 36.8,
+      "sbp": 138,
+      "dbp": 88,
+      "spo2": 92,
+      "pulse": 102,
+      "rr": 18,
+      "avpu": "A",
+      "on_oxygen": false,
+      "symptom_codes": ["CHEST_PAIN"],
+      "duration_days": 1,
+      "free_text": "Substernal crushing pain radiating to left shoulder"
+    },
+    "expected_priority": "EMERGENCY"
+  },
+  {
+    "id": "SCENARIO-3",
+    "title": "Scenario 3: Chronic Cough & Low Fever (Routine)",
+    "badge": "ROUTINE",
+    "description": "31-year-old male with 2 days of mild fever (37.9°C), productive cough, stable vital signs.",
+    "patient": {
+      "display_code": "P-4277",
+      "age": 31,
+      "sex": "M",
+      "pregnant": false,
+      "history_codes": []
+    },
+    "vitals": {
+      "temp_c": 37.9,
+      "sbp": 118,
+      "dbp": 76,
+      "spo2": 98,
+      "pulse": 78,
+      "rr": 16,
+      "avpu": "A",
+      "on_oxygen": false,
+      "symptom_codes": ["FEVER", "COUGH"],
+      "duration_days": 2,
+      "free_text": ""
+    },
+    "expected_priority": "ROUTINE"
+  },
+  {
+    "id": "SCENARIO-4",
+    "title": "Scenario 4: Pediatric Fever (Under-16 Floor Trigger)",
+    "badge": "URGENT",
+    "description": "9-year-old child with acute fever. Normal vital ranges, but adult scoring triggers mandatory Urgent floor.",
+    "patient": {
+      "display_code": "P-6120",
+      "age": 9,
+      "sex": "F",
+      "pregnant": false,
+      "history_codes": []
+    },
+    "vitals": {
+      "temp_c": 38.3,
+      "sbp": 104,
+      "dbp": 66,
+      "spo2": 99,
+      "pulse": 92,
+      "rr": 20,
+      "avpu": "A",
+      "on_oxygen": false,
+      "symptom_codes": ["FEVER"],
+      "duration_days": 1,
+      "free_text": "Pediatric assessment requested by parent"
+    },
+    "expected_priority": "URGENT"
+  }
+]

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UpcharAI · AI Triage Assistant for Rural Health Centres</title>
+  <meta name="description" content="Explainable AI triage assistant prototype for rural primary health centres. Features deterministic NEWS2 scoring, red-flag emergency detection, live priority queue, clinician finalisation, and simulated emergency referral.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Safety & Synthetic Banner (SEC-001, VM-15) -->
+  <div class="security-banner">
+    <span class="security-badge">Security Guardrail</span>
+    <span data-i18n="syntheticBanner">Synthetic Data Only — Do Not Enter Real Patient Details (Demo Mode)</span>
+    <span style="opacity: 0.6;">·</span>
+    <span style="font-size: 0.78rem; opacity: 0.85;">CT BuildFest 2.0 · CTBF-AI-02</span>
+  </div>
+
+  <!-- Main Application Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-emblem" aria-label="UpcharAI Logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20M2 12h20" />
+          <path d="M4.5 16.5l3-3 3 3 4-6 3 3 2-2" stroke-width="2" />
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <h1>
+          <span>UpcharAI</span>
+          <span class="hackathon-pill" data-i18n="buildFestTag">CTBF-AI-02</span>
+        </h1>
+        <p data-i18n="appSubtitle">AI Triage Assistant for Rural Health Centres</p>
+      </div>
+    </div>
+
+    <!-- Header Actions & Mode Selectors -->
+    <div class="header-actions">
+      <!-- Role Switcher (DEC-005, SEC-004, UI-008) -->
+      <div class="role-switcher" title="Demo role selector — not authentication">
+        <button type="button" class="role-btn active" id="roleNurseBtn">
+          <span>👩‍⚕️</span>
+          <span data-i18n="roleNurse">NURSE / ASHA</span>
+        </button>
+        <button type="button" class="role-btn" id="roleDoctorBtn">
+          <span>👨‍⚕️</span>
+          <span data-i18n="roleDoctor">DOCTOR</span>
+        </button>
+      </div>
+
+      <!-- Network Mode Toggle (UI-006) -->
+      <button type="button" class="network-indicator online" id="networkToggle" title="Click to toggle Online / Offline simulation mode">
+        <span class="status-dot"></span>
+        <span id="networkLabel">Online (Sync Active)</span>
+      </button>
+
+      <!-- Language Toggle (REQ-023) -->
+      <div class="lang-toggle">
+        <button type="button" class="lang-btn active" id="langEnBtn">EN</button>
+        <button type="button" class="lang-btn" id="langHiBtn">हिन्दी</button>
+      </div>
+
+      <!-- Seed / Reset Button (REQ-011, REQ-020) -->
+      <button type="button" class="btn-seed-reset" id="resetSeedBtn" title="Reset all tables and reload 4 canonical demo scenarios">
+        <span>⚡</span>
+        <span>Reset & Seed Scenarios</span>
+      </button>
+
+      <!-- Audio Alert Toggle -->
+      <button type="button" class="btn-secondary" id="audioToggleBtn" style="padding: 6px 10px; font-size: 0.8rem;" title="Toggle Emergency chime">
+        🔔 Sound
+      </button>
+    </div>
+  </header>
+
+  <!-- Global Navigation Tabs -->
+  <nav class="app-nav" aria-label="Main Navigation">
+    <button type="button" class="nav-tab active" data-tab="triage">
+      <span>📝</span>
+      <span data-i18n="tabTriage">Triage Registration</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="queue">
+      <span>📋</span>
+      <span data-i18n="tabQueue">Live Priority Queue</span>
+      <span class="tab-badge" id="queueTabBadge">0</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="detail">
+      <span>🔍</span>
+      <span data-i18n="tabPatientDetail">Case Details & Review</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="sos">
+      <span>🚨</span>
+      <span data-i18n="tabEmergencySOS">Emergency SOS / Referral</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="chatbot">
+      <span>💬</span>
+      <span data-i18n="tabChatbot">Rural Health Bot</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="outbox">
+      <span>📡</span>
+      <span data-i18n="tabSyncOutbox">Offline Sync Outbox</span>
+      <span class="tab-badge" id="pendingSyncCount">0</span>
+    </button>
+    <button type="button" class="nav-tab" data-tab="oracle">
+      <span>🧪</span>
+      <span data-i18n="tabOracleVerification">Oracle Verification (12 Tests)</span>
+    </button>
+  </nav>
+
+  <!-- Main Content View -->
+  <main class="app-container">
+
+    <!-- Assist Disclaimer & Clinical Status Notice (REQ-009, UI-008) -->
+    <div class="assist-disclaimer-banner">
+      <div>
+        <strong>Notice:</strong>
+        <span data-i18n="assistDisclaimer">Assists the clinician. A clinician makes every final medical decision.</span>
+        <span style="opacity: 0.5;">|</span>
+        <span data-i18n="routineSafeWarning">Routine does not mean safe — a clinician reviews every case.</span>
+      </div>
+      <div class="clinical-status-pill" data-i18n="notClinicallyReviewed">
+        Rule Set v1 · Not clinically reviewed · Prototype only
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 1: TRIAGE REGISTRATION & FORM (UI-001)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-triage">
+      <div class="triage-grid">
+
+        <!-- Form Column -->
+        <div class="glass-card">
+          <div class="card-header">
+            <h2>
+              <span>📝</span>
+              <span>Patient Registration & Vitals Entry</span>
+            </h2>
+            <div class="card-header-actions">
+              <button type="button" class="btn-secondary" id="clearFormBtn" style="padding: 5px 10px; font-size: 0.78rem;">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Scenario Selector for Judges (<90s Entry per REQ-010) -->
+          <div style="margin-bottom: 12px;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">
+              Fast Demo Pre-fills (Scenarios 1–4):
+            </span>
+            <div class="scenario-picker" style="margin-top: 6px;">
+              <button type="button" class="scenario-chip" data-scenario="SCENARIO-1">🚨 S1: Asthma/Hypoxia</button>
+              <button type="button" class="scenario-chip" data-scenario="SCENARIO-2">🚨 S2: Chest Pain Combo</button>
+              <button type="button" class="scenario-chip" data-scenario="SCENARIO-3">✅ S3: Routine Fever</button>
+              <button type="button" class="scenario-chip" data-scenario="SCENARIO-4">⚠️ S4: Pediatric Floor</button>
+            </div>
+          </div>
+
+          <form id="triageForm" autocomplete="off">
+
+            <!-- Demographics Section -->
+            <div class="form-section-title">
+              <span>👤 Patient Demographics</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="age">Age (years)</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <input type="number" id="patientAge" class="form-input" min="0" max="120" placeholder="e.g. 42" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="sex">Sex</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <select id="patientSex" class="form-select" required>
+                  <option value="M" data-i18n="male">Male</option>
+                  <option value="F" data-i18n="female">Female</option>
+                  <option value="OTHER" data-i18n="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="pregnant">Pregnant</span>
+                  <span class="opt-marker">(opt.)</span>
+                </label>
+                <select id="patientPregnant" class="form-select">
+                  <option value="false" data-i18n="no">No</option>
+                  <option value="true" data-i18n="yes">Yes</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Required Vitals Section (02 §1) -->
+            <div class="form-section-title">
+              <span data-i18n="vitalsSection">Required Vital Signs (NEWS2 Base)</span>
+              <span class="req-marker" style="font-size: 0.75rem;">(Required for Complete)</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="tempLabel">Temp (°C)</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" step="0.1" id="vitalTemp" class="form-input" placeholder="37.0" />
+                  <span class="input-unit">°C</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span>Systolic BP</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" id="vitalSbp" class="form-input" placeholder="120" />
+                  <span class="input-unit">mmHg</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span>Diastolic BP</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" id="vitalDbp" class="form-input" placeholder="80" />
+                  <span class="input-unit">mmHg</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="spo2Label">SpO₂ Saturation</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" id="vitalSpo2" class="form-input" placeholder="98" />
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="pulseLabel">Pulse Rate</span>
+                  <span class="req-marker">*</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" id="vitalPulse" class="form-input" placeholder="78" />
+                  <span class="input-unit">bpm</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Optional Vitals for Full NEWS2 -->
+            <div class="form-section-title">
+              <span>Extended Vitals</span>
+              <span class="opt-marker">(Optional - Absence flags "Score Understated")</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="rrLabel">Respiratory Rate</span>
+                  <span class="opt-marker">(opt.)</span>
+                </label>
+                <div class="input-with-unit">
+                  <input type="number" id="vitalRr" class="form-input" placeholder="16" />
+                  <span class="input-unit">/min</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="avpuLabel">Alertness (AVPU)</span>
+                  <span class="opt-marker">(opt.)</span>
+                </label>
+                <select id="vitalAvpu" class="form-select">
+                  <option value="">Not Entered</option>
+                  <option value="A">Alert (A)</option>
+                  <option value="C">Confusion / Voice (V/C)</option>
+                  <option value="P">Pain Response (P)</option>
+                  <option value="U">Unresponsive (U)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <span data-i18n="oxygenLabel">Oxygen Therapy</span>
+                  <span class="opt-marker">(opt.)</span>
+                </label>
+                <select id="vitalOxygen" class="form-select">
+                  <option value="">Not Stated (Room Air)</option>
+                  <option value="false">Room Air (No O₂)</option>
+                  <option value="true">On Supplemental O₂ (+2)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Symptoms Section -->
+            <div class="form-section-title">
+              <span data-i18n="symptomsSection">Chief Reported Symptoms</span>
+            </div>
+            <div class="chips-container" id="symptomChipsContainer">
+              <!-- Rendered dynamically from engine.js -->
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="max-width: 180px;">
+                <label class="form-label" data-i18n="durationDaysLabel">Duration (Days)</label>
+                <input type="number" id="vitalDuration" class="form-input" min="0" placeholder="0" />
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">
+                  <span data-i18n="freeTextLabel">Free-text Symptoms / Additional Notes</span>
+                  <button type="button" id="voiceDictateBtn" style="background: transparent; border: none; color: var(--cyan); cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+                    🎙️ Voice Dictation (Online)
+                  </button>
+                </label>
+                <textarea id="symptomFreeText" class="form-textarea" rows="2" placeholder="e.g. complains of sudden dizziness, burning sensation in chest..."></textarea>
+              </div>
+            </div>
+
+            <!-- Medical History Section -->
+            <div class="form-section-title">
+              <span data-i18n="historySection">Significant Medical History</span>
+            </div>
+            <div class="chips-container" id="historyChipsContainer">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" id="submitTriageBtn">
+                <span>⚡</span>
+                <span data-i18n="calculateTriageBtn">Run Explainable Triage</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Result Card Column (UI-002) -->
+        <div class="glass-card result-card">
+          <div class="card-header">
+            <h2>
+              <span>📊</span>
+              <span>Triage Assessment & Findings</span>
+            </h2>
+            <div style="font-size: 0.76rem; font-family: var(--font-mono); color: var(--text-dim);" id="evalTimestamp">
+              Ready
+            </div>
+          </div>
+
+          <div id="activeResultCard">
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+              <div style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.6;">🩺</div>
+              <h3 style="color: var(--text-main); margin-bottom: 6px;">No Active Assessment</h3>
+              <p style="font-size: 0.85rem;">Fill the form on the left or click a demo scenario to run the deterministic triage engine.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 2: LIVE PRIORITY QUEUE (UI-003)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-queue" style="display: none;">
+      <!-- Stats Overview -->
+      <div class="queue-header-stats">
+        <div class="stat-card">
+          <div class="stat-icon total">👥</div>
+          <div class="stat-info">
+            <p data-i18n="totalInQueue">Patients in Queue</p>
+            <h3 id="statTotalQueue">0</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon emergency">🚨</div>
+          <div class="stat-info">
+            <p data-i18n="emergencyCount">Emergency</p>
+            <h3 id="statEmergency" style="color: #fda4af;">0</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon urgent">⚠️</div>
+          <div class="stat-info">
+            <p data-i18n="urgentCount">Urgent</p>
+            <h3 id="statUrgent" style="color: #fcd34d;">0</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon routine">✅</div>
+          <div class="stat-info">
+            <p data-i18n="routineCount">Routine</p>
+            <h3 id="statRoutine" style="color: #6ee7b7;">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stale State Alert (REQ-007, UI-003) -->
+      <div class="stale-alert" id="staleQueueAlert" style="display: none;">
+        <span>⚠️</span>
+        <span data-i18n="staleQueueAlert">WARNING: Queue data is stale (> 6s since last refresh). Check local connection.</span>
+      </div>
+
+      <!-- Queue Table -->
+      <div class="queue-table-wrapper">
+        <table class="queue-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Patient</th>
+              <th>Effective Priority</th>
+              <th>NEWS2</th>
+              <th>Top Clinical Reason / Trigger</th>
+              <th>Status</th>
+              <th>Wait</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="queueTableBody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 3: CASE DETAILS & CLINICIAN REVIEW (UI-004)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-detail" style="display: none;">
+      <div class="glass-card" style="max-width: 900px; margin: 0 auto;">
+        <div id="patientDetailView">
+          <p style="color: var(--text-muted);">Select a case from the queue to view full audit logs, sequential assessments, and clinician controls.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 4: EMERGENCY SOS & REFERRAL COORDINATION (UI-005)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-sos" style="display: none;">
+      <div class="assist-disclaimer-banner" style="background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.35); color: #fecdd3; margin-bottom: 20px;">
+        <span>🚨 <strong>SIMULATED WORKFLOW:</strong> This SOS workflow is an explainable rural referral coordinator. No actual ambulance is dispatched and no external hospital is notified in demo mode.</span>
+      </div>
+
+      <div class="sos-container">
+        <!-- Hospital Directory Selection -->
+        <div class="glass-card">
+          <div class="card-header">
+            <h2>
+              <span>🏥</span>
+              <span>Available Referral Centers (Directory)</span>
+            </h2>
+          </div>
+          <div id="hospitalsListContainer">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Generated Referral Packet -->
+        <div class="glass-card">
+          <div class="card-header">
+            <h2>
+              <span>📄</span>
+              <span data-i18n="referralSummary">Emergency Referral Packet</span>
+            </h2>
+            <div class="card-header-actions">
+              <button type="button" class="btn-secondary" id="copyReferralBtn" style="padding: 6px 12px; font-size: 0.8rem;">
+                📋 Copy
+              </button>
+            </div>
+          </div>
+          <div class="referral-packet-preview" id="referralPreview">
+Select an Emergency case and destination hospital to generate the referral packet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 5: RURAL HEALTH INFORMATION CHATBOT (UI-007)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-chatbot" style="display: none;">
+      <div class="glass-card chat-window" style="max-width: 860px; margin: 0 auto;">
+        <div class="card-header">
+          <h2>
+            <span>💬</span>
+            <span>UpcharAI Rural Health Information Assistant</span>
+          </h2>
+          <div style="font-size: 0.78rem; color: var(--text-dim);">
+            Deterministic Red-Flag Guardrail Active
+          </div>
+        </div>
+
+        <div style="padding: 10px 16px; background: rgba(15, 23, 42, 0.7); border-bottom: 1px solid var(--border-subtle); font-size: 0.78rem; color: var(--text-muted);">
+          ℹ️ <strong>Safety Notice:</strong> General health information only. Non-diagnostic. Red-flag symptoms trigger immediate fixed escalation text with no external AI call.
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">
+            नमस्ते! I am the UpcharAI health assistant. You can ask health education questions in <strong>English</strong> or <strong>हिन्दी</strong> (e.g. hydration during fever, ORS preparation, blood pressure lifestyle tips).
+          </div>
+        </div>
+
+        <div class="chat-input-bar">
+          <input type="text" id="chatInput" placeholder="Ask a health question (e.g. बुखार में क्या करें? / How to mix ORS?)..." maxlength="300" />
+          <button type="button" class="btn-primary" id="chatSendBtn" style="padding: 10px 20px;">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 6: OFFLINE SYNC OUTBOX (UI-006)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-outbox" style="display: none;">
+      <div class="glass-card">
+        <div class="outbox-status-card">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+              Transactional Outbox (Idempotent Sync)
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">
+              Every registration, assessment, escalation, and referral is saved locally first.
+            </p>
+          </div>
+          <div>
+            <button type="button" class="btn-primary" id="pushSyncBtn">
+              <span>🚀</span>
+              <span>Push Sync Now</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="queue-table-wrapper">
+          <table class="queue-table">
+            <thead>
+              <tr>
+                <th>Entity Type</th>
+                <th>Entity UUID</th>
+                <th>Sync State</th>
+                <th>Attempts</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="outboxTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         TAB 7: ORACLE VERIFICATION RUNNER (VM-01, VM-02, VM-03)
+         ====================================================================== -->
+    <div class="tab-content-panel" id="tab-oracle" style="display: none;">
+      <div class="glass-card">
+        <div class="oracle-runner-header">
+          <div>
+            <h2>
+              <span>🧪</span>
+              <span>Triage Rule Oracle Test Suite (12 Canonical Cases)</span>
+            </h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              Verifies 02-triage-rule-spec.md §7: pure deterministic NEWS2 calculation, red-flag triggers, and floor bounds.
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="text-align: right;">
+              <span id="oraclePassedCount" style="font-family: var(--font-mono); font-weight: 800; color: #34d399; font-size: 1.1rem;">
+                -- / --
+              </span>
+              <div id="oracleDuration" style="font-size: 0.72rem; color: var(--text-dim);">-- ms</div>
+            </div>
+            <button type="button" class="btn-primary" id="runOracleBtn">
+              <span>▶️</span> Run Oracle Tests
+            </button>
+          </div>
+        </div>
+
+        <div class="oracle-results-grid" id="oracleResultsContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Plausibility Confirmation Modal (REQ-002, VM-04) -->
+  <div class="modal-overlay" id="implausibleModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #f59e0b;">⚠️ Implausible Value Confirmation</h3>
+        <button type="button" class="modal-close-btn" id="cancelImplausibleBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px;">
+          One or more entered vital signs are outside standard physiological bounds. Per specification <strong>REQ-002</strong>, implausible values cannot be accepted silently and require explicit operator confirmation:
+        </p>
+        <div id="implausibleList"></div>
+        <p style="margin-top: 12px; font-size: 0.82rem; color: var(--text-dim);">
+          Confirming will record this measurement with <code>confirmed_implausible = true</code> in the permanent audit trail.
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="document.getElementById('implausibleModal').classList.remove('active')">
+          Cancel & Correct Value
+        </button>
+        <button type="button" class="btn-danger" id="confirmImplausibleBtn">
+          Confirm & Proceed Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Script Loader -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

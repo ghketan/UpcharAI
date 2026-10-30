@@ -1,0 +1,58 @@
+[
+  {
+    "id": "HOSP-001",
+    "name": "Community Health Centre (CHC) Rampur",
+    "area": "Rampur Block, Sector 4",
+    "level": "CHC",
+    "distance_km": 12,
+    "phone": "+91 1800-233-4011",
+    "emergency_open": true,
+    "icu_available": false,
+    "oxygen_ready": true,
+    "ambulance_contact": "+91 108",
+    "fictional": true,
+    "source": "Simulated Rural Health Network Directory"
+  },
+  {
+    "id": "HOSP-002",
+    "name": "Sub-District Hospital (SDH) Bilaspur",
+    "area": "Bilaspur Central",
+    "level": "SDH",
+    "distance_km": 28,
+    "phone": "+91 1800-233-4022",
+    "emergency_open": true,
+    "icu_available": true,
+    "oxygen_ready": true,
+    "ambulance_contact": "+91 108",
+    "fictional": true,
+    "source": "Simulated Rural Health Network Directory"
+  },
+  {
+    "id": "HOSP-003",
+    "name": "District Civil Hospital Sundarnagar",
+    "area": "District HQ, Sundarnagar",
+    "level": "District Hospital",
+    "distance_km": 45,
+    "phone": "+91 1800-233-4033",
+    "emergency_open": true,
+    "icu_available": true,
+    "oxygen_ready": true,
+    "ambulance_contact": "+91 108",
+    "fictional": true,
+    "source": "Simulated Rural Health Network Directory"
+  },
+  {
+    "id": "HOSP-004",
+    "name": "Maternal & Child Tertiary Referral Wing",
+    "area": "Sundarnagar Medical Complex",
+    "level": "Tertiary Care",
+    "distance_km": 48,
+    "phone": "+91 1800-233-4044",
+    "emergency_open": true,
+    "icu_available": true,
+    "oxygen_ready": true,
+    "ambulance_contact": "+91 102",
+    "fictional": true,
+    "source": "Simulated Rural Health Network Directory"
+  }
+]

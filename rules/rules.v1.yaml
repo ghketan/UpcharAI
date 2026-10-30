@@ -1,0 +1,229 @@
+# UpcharAI Canonical Rule Configuration
+# Revision: REV-001
+# Specification: 02-triage-rule-spec.md
+
+rule_set_version: "v1"
+
+clinical_review:
+  status: NONE            # NONE | REVIEWED
+  reviewer: null
+  date: null
+  qualification: null
+  note: "Not clinically reviewed. Configured for CT BuildFest 2.0 demonstrator only."
+
+age_floor: 16
+
+plausibility_bounds:
+  age:
+    min: 0
+    max: 120
+    unit: "years"
+  temp_c:
+    min: 30.0
+    max: 45.0
+    unit: "°C"
+  sbp:
+    min: 40
+    max: 300
+    unit: "mmHg"
+  dbp:
+    min: 20
+    max: 200
+    unit: "mmHg"
+  spo2:
+    min: 50
+    max: 100
+    unit: "%"
+  pulse:
+    min: 20
+    max: 250
+    unit: "bpm"
+  rr:
+    min: 4
+    max: 70
+    unit: "breaths/min"
+  duration_days:
+    min: 0
+    max: 365
+    unit: "days"
+
+news2:
+  spo2_scale1:
+    - max: 91
+      score: 3
+    - min: 92
+      max: 93
+      score: 2
+    - min: 94
+      max: 95
+      score: 1
+    - min: 96
+      score: 0
+  sbp:
+    - max: 90
+      score: 3
+    - min: 91
+      max: 100
+      score: 2
+    - min: 101
+      max: 110
+      score: 1
+    - min: 111
+      max: 219
+      score: 0
+    - min: 220
+      score: 3
+  pulse:
+    - max: 40
+      score: 3
+    - min: 41
+      max: 50
+      score: 1
+    - min: 51
+      max: 90
+      score: 0
+    - min: 91
+      max: 110
+      score: 1
+    - min: 111
+      max: 130
+      score: 2
+    - min: 131
+      score: 3
+  temp_c:
+    - max: 35.0
+      score: 3
+    - min: 35.1
+      max: 36.0
+      score: 1
+    - min: 36.1
+      max: 38.0
+      score: 0
+    - min: 38.1
+      max: 39.0
+      score: 1
+    - min: 39.1
+      score: 2
+  rr:
+    - max: 8
+      score: 3
+    - min: 9
+      max: 11
+      score: 1
+    - min: 12
+      max: 20
+      score: 0
+    - min: 21
+      max: 24
+      score: 2
+    - min: 25
+      score: 3
+  avpu:
+    A: 0
+    C: 3
+    V: 3
+    P: 3
+    U: 3
+  on_oxygen:
+    true: 2
+    false: 0
+
+rules:
+  # 3.1 Emergency Rules
+  - id: NW-E01
+    tier: EMERGENCY
+    trigger: "news2_total >= 7"
+    evidence: VERIFIED
+    message: "NEWS2 total score is 7 or higher (critical clinical risk)"
+  - id: RF-E01
+    tier: EMERGENCY
+    trigger: "spo2 <= 90 or sbp <= 90"
+    evidence: ASSUMED
+    message: "Critical oxygen saturation (<=90%) or critically low blood pressure (<=90 mmHg)"
+  - id: RF-E02
+    tier: EMERGENCY
+    trigger: "symptom: SEVERE_BREATHING_DIFFICULTY"
+    evidence: ASSUMED
+    message: "Severe breathing difficulty reported (respiratory failure risk)"
+  - id: RF-E03
+    tier: EMERGENCY
+    trigger: "avpu: P or U"
+    evidence: ASSUMED
+    message: "Depressed consciousness: responsive only to pain or unresponsive"
+  - id: RF-E04
+    tier: EMERGENCY
+    trigger: "symptom: SEVERE_BLEEDING"
+    evidence: ASSUMED
+    message: "Severe uncontrolled or arterial bleeding"
+  - id: RF-E05
+    tier: EMERGENCY
+    trigger: "symptom: SEIZURE_ONGOING"
+    evidence: ASSUMED
+    message: "Ongoing active seizure activity"
+  - id: RF-E06
+    tier: EMERGENCY
+    trigger: "symptom: STROKE_SIGNS"
+    evidence: ASSUMED
+    message: "Sudden stroke signs (facial droop, arm weakness, slurred speech)"
+  - id: RF-E07
+    tier: EMERGENCY
+    trigger: "symptom: SNAKEBITE_OR_POISONING"
+    evidence: ASSUMED
+    message: "Suspected venomous snakebite or acute toxic poisoning"
+  - id: RF-E08
+    tier: EMERGENCY
+    trigger: "pregnancy: heavy bleeding or convulsion"
+    evidence: ASSUMED
+    message: "Obstetric emergency: severe bleeding or convulsion in pregnancy"
+  - id: RF-E09
+    tier: EMERGENCY
+    trigger: "symptom: CHEST_PAIN and (spo2 score >= 2 or sbp score >= 2 or pulse score >= 2)"
+    evidence: ASSUMED
+    message: "Red-flag combination: chest pain accompanied by abnormal vital signs"
+
+  # 3.2 Urgent Rules
+  - id: NW-U01
+    tier: URGENT
+    trigger: "news2_total 5-6"
+    evidence: VERIFIED
+    message: "NEWS2 total score is 5–6 (moderate clinical risk)"
+  - id: NW-U02
+    tier: URGENT
+    trigger: "any single scored parameter == 3"
+    evidence: INFERRED
+    message: "Single parameter scored maximum severity (3)"
+  - id: RF-U01
+    tier: URGENT
+    trigger: "symptom: CHEST_PAIN (when RF-E09 did not fire)"
+    evidence: ASSUMED
+    message: "Chest pain reported (requires urgent clinician assessment and ECG)"
+  - id: RF-U02
+    tier: URGENT
+    trigger: "symptom: BREATHING_DIFFICULTY"
+    evidence: ASSUMED
+    message: "Moderate difficulty breathing reported"
+  - id: RF-U03
+    tier: URGENT
+    trigger: "symptom: VOMITING_DIARRHOEA_DEHYDRATION"
+    evidence: ASSUMED
+    message: "Persistent vomiting, diarrhea, or dehydration signs"
+  - id: RF-U04
+    tier: URGENT
+    trigger: "symptom: FEVER with duration > 3 days"
+    evidence: ASSUMED
+    message: "Fever persisting for more than 3 days"
+  - id: RF-U05
+    tier: URGENT
+    trigger: "high risk history or age >= 65 and (temp >= 38.1 or spo2 <= 95)"
+    evidence: ASSUMED
+    message: "High-risk history or elderly patient with fever or low-normal SpO2"
+  - id: FLOOR-01
+    tier: URGENT
+    trigger: "age < 16"
+    evidence: ASSUMED
+    message: "Outside this tool's adult scoring (age < 16). Needs a clinician's judgement."
+  - id: FLOOR-02
+    tier: URGENT
+    trigger: "pregnant == true"
+    evidence: ASSUMED
+    message: "Outside this tool's adult scoring (pregnancy). Needs a clinician's judgement."
