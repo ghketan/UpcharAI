@@ -201,21 +201,21 @@ export const TelemetrySyncView: React.FC = () => {
           </span>
         </div>
 
-        {/* Metric 3: Storage Cryptography */}
+        {/* Metric 3: Storage Engine */}
         <div className="p-5 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs font-mono text-[#747878] uppercase">
-            <span>Storage Cryptography</span>
+            <span>Storage Engine</span>
             <Lock className="w-4 h-4 text-[#2a6a48]" />
           </div>
           <div className="my-3">
             <span className="text-3xl sm:text-4xl font-bold font-mono text-[#1a1c1a]">
-              AES-256
+              SQLite
             </span>
-            <span className="text-xs font-mono text-[#2a6a48] ml-2 font-semibold">GCM</span>
+            <span className="text-xs font-mono text-[#2a6a48] ml-2 font-semibold">WAL Mode</span>
           </div>
           <span className="text-xs text-[#747878] font-mono flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#2a6a48]" />
-            <span>Local database encryption</span>
+            <span>OS disk encryption recommended</span>
           </span>
         </div>
 

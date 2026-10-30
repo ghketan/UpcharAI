@@ -48,6 +48,13 @@ def create_assessment(
         if req.id:
             existing = conn.execute("SELECT * FROM assessments WHERE id = ?", (req.id,)).fetchone()
             if existing:
+                if existing["patient_id"] != patient_id:
+                    raise APIException(
+                        status_code=409,
+                        code="patient_mismatch",
+                        message=f"Assessment ID {req.id} belongs to patient {existing['patient_id']}, not {patient_id}.",
+                    )
+
                 findings_rows = conn.execute(
                     "SELECT rule_id, tier, plain_message, observed_value FROM findings WHERE assessment_id = ?",
                     (existing["id"],),
@@ -59,6 +66,13 @@ def create_assessment(
                     AssessmentInputs(**inputs_data, confirm_implausible=True),
                     rule_cfg,
                 )
+
+                finalisation = conn.execute(
+                    "SELECT final_priority FROM finalisations WHERE assessment_id = ? ORDER BY at DESC LIMIT 1",
+                    (existing["id"],),
+                ).fetchone()
+                current_state = "FINALISED" if finalisation else "PRELIMINARY"
+
                 return AssessmentResponse(
                     assessment_id=existing["id"],
                     patient_id=existing["patient_id"],
@@ -68,7 +82,7 @@ def create_assessment(
                     missing=json.loads(existing["missing_json"]),
                     news2=news2_eval.news2.model_dump(),
                     findings=[AssessmentFindingResponse(**dict(f)) for f in findings_rows],
-                    state="PRELIMINARY",
+                    state=current_state,
                     rule_set_version=existing["rule_set_version"],
                     clinical_review_status=existing["clinical_review_status"],
                     suggested_action=existing["suggested_action"],
@@ -444,9 +458,9 @@ def preview_assessment(req: AssessmentPreviewRequest) -> AssessmentPreviewRespon
     from engine.plausibility import check_plausibility
     try:
         raw_violations = check_plausibility(engine_inputs, rule_cfg)
-        violations = [f"{v.parameter}: {v.message}" for v in raw_violations]
-    except Exception:
-        pass
+        violations = [str(v) for v in raw_violations]
+    except Exception as e:
+        violations = [str(e)]
 
     triage_res = evaluate_triage(engine_inputs, rule_cfg)
     return AssessmentPreviewResponse(

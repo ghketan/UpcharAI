@@ -830,7 +830,7 @@ export const OverviewView: React.FC = () => {
             </h2>
 
             <p className="max-w-xl text-sm sm:text-base text-[#444748] mb-8 leading-relaxed">
-              Replace diagnostic guesswork with verified, deterministic decision pathways. Zero connectivity required. Built strictly for the first mile of rural medicine.
+              Replace triage guesswork with verified, deterministic decision pathways. Zero connectivity required. Built strictly for the first mile of rural medicine.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mb-10">

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from fastapi import APIRouter
 
 from api.db import get_db, utc_now_iso
@@ -16,8 +16,16 @@ PRIORITY_RANKS = {
 
 
 @router.get("", response_model=QueueResponse)
-def get_queue() -> QueueResponse:
-    now_dt = datetime.now(timezone.utc)
+def get_queue(as_of: Optional[str] = None) -> QueueResponse:
+    if as_of:
+        try:
+            now_dt = datetime.fromisoformat(as_of)
+            if now_dt.tzinfo is None:
+                now_dt = now_dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            now_dt = datetime.now(timezone.utc)
+    else:
+        now_dt = datetime.now(timezone.utc)
     generated_at = now_dt.isoformat()
 
     items: List[QueueItemResponse] = []

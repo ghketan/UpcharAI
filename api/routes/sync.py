@@ -44,39 +44,43 @@ def push_sync_outbox() -> Dict[str, Any]:
     """
     Processes pending outbox items in order of creation.
     Sends items to sync target, handling idempotency and retries.
+    Avoids long-lived database locks by performing HTTP transmission outside DB transactions.
     """
     processed = 0
     errors = 0
 
     with get_db() as conn:
-        pending_items = conn.execute(
+        pending_rows = conn.execute(
             "SELECT * FROM sync_outbox WHERE state = 'PENDING' ORDER BY created_at ASC"
         ).fetchall()
+        pending_items = [dict(r) for r in pending_rows]
 
-        for item in pending_items:
-            item_id = item["id"]
-            entity = item["entity"]
-            entity_id = item["entity_id"]
-            payload = json.loads(item["payload_json"])
-            attempts = item["attempts"] + 1
+    for item in pending_items:
+        item_id = item["id"]
+        entity = item["entity"]
+        entity_id = item["entity_id"]
+        payload = json.loads(item["payload_json"])
+        attempts = item["attempts"] + 1
 
-            # If no target url or we are running in standalone demo mode without a 2nd instance,
-            # we simulate sending to a mock sync target successfully (DEC-007, 03 §6).
-            if not config.SYNC_TARGET_URL or config.SYNC_TARGET_URL == "mock":
+        # If no target url or we are running in standalone demo mode without a 2nd instance,
+        # we simulate sending to a mock sync target successfully (DEC-007, 03 §6).
+        if not config.SYNC_TARGET_URL or config.SYNC_TARGET_URL == "mock":
+            with get_db() as conn:
                 conn.execute(
                     "UPDATE sync_outbox SET state = 'SENT', attempts = ? WHERE id = ?",
                     (attempts, item_id),
                 )
-                processed += 1
-                continue
+            processed += 1
+            continue
 
-            try:
-                # Transmit to target
-                res = httpx.post(
-                    f"{config.SYNC_TARGET_URL}/api/sync/ingest",
-                    json={"entity": entity, "entity_id": entity_id, "payload": payload},
-                    timeout=3.0,
-                )
+        try:
+            # Transmit to target outside active DB write locks
+            res = httpx.post(
+                f"{config.SYNC_TARGET_URL}/api/sync/ingest",
+                json={"entity": entity, "entity_id": entity_id, "payload": payload},
+                timeout=3.0,
+            )
+            with get_db() as conn:
                 if res.status_code in (200, 201):
                     conn.execute(
                         "UPDATE sync_outbox SET state = 'SENT', attempts = ?, last_error = NULL WHERE id = ?",
@@ -97,13 +101,14 @@ def push_sync_outbox() -> Dict[str, Any]:
                         (new_state, attempts, res.text[:200], item_id),
                     )
                     errors += 1
-            except Exception as e:
+        except Exception as e:
+            with get_db() as conn:
                 new_state = "FAILED" if attempts >= 8 else "PENDING"
                 conn.execute(
                     "UPDATE sync_outbox SET state = ?, attempts = ?, last_error = ? WHERE id = ?",
                     (new_state, attempts, str(e)[:200], item_id),
                 )
-                errors += 1
+            errors += 1
 
     return {"processed": processed, "errors": errors}
 
@@ -213,6 +218,15 @@ def ingest_record(data: Dict[str, Any]) -> Dict[str, Any]:
             if existing:
                 return {"status": "duplicate", "entity": entity, "entity_id": entity_id}
 
+            parent = conn.execute("SELECT id FROM assessments WHERE id = ?", (payload.get("assessment_id"),)).fetchone()
+            if not parent:
+                raise APIException(
+                    status_code=409,
+                    code="parent_missing",
+                    message="Parent assessment not found at target instance.",
+                    retryable=True,
+                )
+
             conn.execute(
                 """
                 INSERT INTO escalations (id, assessment_id, to_priority, reason, role, at)
@@ -234,6 +248,15 @@ def ingest_record(data: Dict[str, Any]) -> Dict[str, Any]:
             if existing:
                 return {"status": "duplicate", "entity": entity, "entity_id": entity_id}
 
+            parent = conn.execute("SELECT id FROM assessments WHERE id = ?", (payload.get("assessment_id"),)).fetchone()
+            if not parent:
+                raise APIException(
+                    status_code=409,
+                    code="parent_missing",
+                    message="Parent assessment not found at target instance.",
+                    retryable=True,
+                )
+
             conn.execute(
                 """
                 INSERT INTO finalisations (id, assessment_id, final_priority, reason, role, at)
@@ -254,6 +277,15 @@ def ingest_record(data: Dict[str, Any]) -> Dict[str, Any]:
             existing = conn.execute("SELECT id FROM referrals WHERE id = ?", (entity_id,)).fetchone()
             if existing:
                 return {"status": "duplicate", "entity": entity, "entity_id": entity_id}
+
+            parent = conn.execute("SELECT id FROM assessments WHERE id = ?", (payload.get("assessment_id"),)).fetchone()
+            if not parent:
+                raise APIException(
+                    status_code=409,
+                    code="parent_missing",
+                    message="Parent assessment not found at target instance.",
+                    retryable=True,
+                )
 
             conn.execute(
                 """

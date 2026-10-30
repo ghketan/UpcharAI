@@ -87,11 +87,20 @@ export const TriageQueueView: React.FC = () => {
   // Submission & Confirmation State
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [implausibleWarning, setImplausibleWarning] = useState<string | null>(null);
+  const [createdPatientId, setCreatedPatientId] = useState<string | null>(null);
   const [ruleConfig, setRuleConfig] = useState<RuleConfig | null>(null);
   const [isListeningNotes, setIsListeningNotes] = useState<boolean>(false);
+  const recognitionRef = React.useRef<any>(null);
 
   useEffect(() => {
     api.getRuleConfig(role).then(setRuleConfig).catch(() => {});
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
+    };
   }, [role]);
 
   const toggleNotesDictation = () => {
@@ -101,11 +110,17 @@ export const TriageQueueView: React.FC = () => {
       return;
     }
     if (isListeningNotes) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
       setIsListeningNotes(false);
       return;
     }
     try {
       const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
       recognition.lang = 'en-IN';
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -216,20 +231,25 @@ export const TriageQueueView: React.FC = () => {
     setImplausibleWarning(null);
 
     try {
-      // 1. Create Patient
-      const patient = await api.createPatient(
-        {
-          display_code: displayCode.trim(),
-          age: parseInt(age, 10) || 0,
-          sex,
-          pregnant,
-        },
-        role
-      );
+      // 1. Create Patient only if not already created during initial unconfirmed attempt
+      let patientId = createdPatientId;
+      if (!patientId) {
+        const patient = await api.createPatient(
+          {
+            display_code: displayCode.trim(),
+            age: parseInt(age, 10) || 0,
+            sex,
+            pregnant,
+          },
+          role
+        );
+        patientId = patient.patient_id || patient.id;
+        setCreatedPatientId(patientId);
+      }
 
       // 2. Create Assessment
       const assessment = await api.createAssessment(
-        patient.patient_id || patient.id,
+        patientId,
         {
           symptom_codes: symptoms,
           history_codes: historyCodes,
@@ -249,9 +269,12 @@ export const TriageQueueView: React.FC = () => {
       );
 
       showToast(
-        `Patient ${patient.display_code} registered. Priority: ${assessment.priority}`,
+        `Patient ${displayCode.trim()} registered. Priority: ${assessment.priority}`,
         'success'
       );
+
+      // Reset createdPatientId after successful assessment registration
+      setCreatedPatientId(null);
 
       // Clear form and reset biometrics to healthy baseline defaults
       setDisplayCode('');
@@ -292,7 +315,7 @@ export const TriageQueueView: React.FC = () => {
       if (filterPriority === 'tier3' && item.effective_priority !== 'ROUTINE') return false;
       if (
         filterPriority === 'flagged' &&
-        !item.flags.some((f) => ['INCOMPLETE', 'NEEDS_REVIEW', 'SCORE_MAY_BE_UNDERSTATED'].includes(f))
+        !item.flags.some((f) => ['INCOMPLETE', 'NEEDS_REVIEW', 'SCORE_MAY_BE_UNDERSTATED', 'UNDERSTATED'].includes(f))
       ) {
         return false;
       }

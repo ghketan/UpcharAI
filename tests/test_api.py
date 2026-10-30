@@ -319,7 +319,7 @@ def test_demo_reset_and_repeatable_hash():
         assert reset_res.status_code == 200
         assert reset_res.json()["seeded_scenarios"] == 4
 
-        q_res = client.get("/api/queue")
+        q_res = client.get("/api/queue?as_of=2026-10-30T12:00:00Z")
         dumped = json.dumps(q_res.json()["items"], sort_keys=True)
         h = hashlib.sha256(dumped.encode("utf-8")).hexdigest()
         hashes.append(h)
@@ -338,6 +338,14 @@ def test_chatbot_guardrails_prefilter():
     en_data = en_res.json()
     assert en_data["escalated"] is True
     assert "EMERGENCY ALERT" in en_data["reply"]
+
+    # English red flag with apostrophe
+    en_res2 = client.post(
+        "/api/chat",
+        json={"message": "Doctor help me I can't breathe"},
+    )
+    assert en_res2.status_code == 200
+    assert en_res2.json()["escalated"] is True
 
     # Hindi red flag
     hi_res = client.post(

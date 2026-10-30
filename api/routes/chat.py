@@ -98,15 +98,26 @@ DOSE_REGEX = re.compile(r"\b\d+\s*(mg|mcg|g|ml|tablets?|capsules?|drops?|teaspoo
 
 
 def detect_red_flags(text: str) -> bool:
-    cleaned = re.sub(r"[^\w\s]", " ", text.lower())
-    # English check
+    raw_lower = text.lower()
+    cleaned = re.sub(r"[^\w\s]", " ", raw_lower)
+    cleaned_compact = re.sub(r"[^\w\s]", "", raw_lower)
+
+    # English check: test raw text, space-separated punctuation, and compact punctuation
     for phrase in ENGLISH_RED_FLAGS:
-        if phrase in cleaned:
+        p_lower = phrase.lower()
+        p_clean = re.sub(r"[^\w\s]", " ", p_lower)
+        p_compact = re.sub(r"[^\w\s]", "", p_lower)
+        if (p_lower in raw_lower) or (p_clean in cleaned) or (p_compact in cleaned_compact):
             return True
+
     # Hindi check
     for phrase in HINDI_RED_FLAGS:
-        if phrase in cleaned or phrase in text:
+        p_lower = phrase.lower()
+        p_clean = re.sub(r"[^\w\s]", " ", p_lower)
+        p_compact = re.sub(r"[^\w\s]", "", p_lower)
+        if (p_lower in raw_lower) or (p_clean in cleaned) or (p_compact in cleaned_compact):
             return True
+
     return False
 
 
@@ -115,6 +126,11 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     client_ip = request.client.host if request.client else "unknown"
     now_time = time.time()
     cutoff = now_time - 60.0
+
+    # Evict stale client IPs from memory to prevent memory leaks
+    stale_ips = [ip for ip, ts_list in _CHAT_REQUEST_HISTORY.items() if not ts_list or ts_list[-1] <= cutoff]
+    for ip in stale_ips:
+        _CHAT_REQUEST_HISTORY.pop(ip, None)
 
     history = [ts for ts in _CHAT_REQUEST_HISTORY[client_ip] if ts > cutoff]
     if len(history) >= _MAX_REQUESTS_PER_MINUTE:

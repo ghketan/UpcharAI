@@ -4,7 +4,7 @@ export type Priority = 'EMERGENCY' | 'URGENT' | 'ROUTINE';
 
 export type AssessmentState = 'PRELIMINARY' | 'FINALISED';
 
-export type ClinicalFlag = 'INCOMPLETE' | 'NEEDS_REVIEW' | 'SCORE_MAY_BE_UNDERSTATED' | string;
+export type ClinicalFlag = 'INCOMPLETE' | 'NEEDS_REVIEW' | 'SCORE_MAY_BE_UNDERSTATED' | 'UNDERSTATED' | string;
 
 export interface Patient {
   id: string;

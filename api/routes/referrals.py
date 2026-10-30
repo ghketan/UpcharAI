@@ -90,6 +90,7 @@ def create_referral(
 
         summary = {
             "referral_id": referral_id,
+            "assessment_id": req.assessment_id,
             "display_code": patient["display_code"],
             "age": patient["age"],
             "sex": patient["sex"],

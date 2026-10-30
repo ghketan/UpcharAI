@@ -247,7 +247,11 @@ export const AssessmentModal: React.FC = () => {
                   {/* Actions for this assessment */}
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => setShowEscalate(!showEscalate)}
+                      onClick={() => {
+                        const target = effectivePriority === 'ROUTINE' ? 'URGENT' : 'EMERGENCY';
+                        setEscalateTo(target);
+                        setShowEscalate(!showEscalate);
+                      }}
                       className="px-3.5 py-1.5 rounded-full bg-[#ffffff] hover:bg-[#f4f3f1] text-[#1a1c1a] font-mono text-xs border border-[#c4c7c7] transition-all cursor-pointer"
                     >
                       Escalate Priority ↑
@@ -397,7 +401,7 @@ export const AssessmentModal: React.FC = () => {
                       NEWS2 Risk Aggregate: {latestAssessment.news2?.total ?? (latestAssessment as any)?.news2_total ?? 0} points
                     </span>
                     <span className="font-mono text-xs text-[#747878]">
-                      {latestAssessment.news2?.params_scored ?? (latestAssessment as any)?.news2_params_scored ?? (latestAssessment.inputs ? 6 : 0)}/6 Parameters Scored
+                      {latestAssessment.news2?.params_scored ?? (latestAssessment as any)?.news2_params_scored ?? (latestAssessment.inputs ? 7 : 0)}/7 Parameters Scored
                     </span>
                   </div>
 

@@ -73,6 +73,8 @@ export const SahayakChatView: React.FC = () => {
     }).catch(() => {});
   }, [role]);
 
+  const recognitionRef = useRef<any>(null);
+
   const toggleSpeechRecognition = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -80,11 +82,17 @@ export const SahayakChatView: React.FC = () => {
       return;
     }
     if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
       setIsListening(false);
       return;
     }
     try {
       const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
       recognition.lang = language === 'hi' ? 'hi-IN' : language === 'pa' ? 'pa-IN' : 'en-IN';
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -127,6 +135,11 @@ export const SahayakChatView: React.FC = () => {
     return () => {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
       }
     };
   }, []);
