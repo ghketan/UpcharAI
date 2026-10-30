@@ -27,4 +27,3 @@ __all__ = [
     "evaluate_rules",
     "evaluate_triage",
 ]
-

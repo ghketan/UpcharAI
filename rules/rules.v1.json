@@ -1,0 +1,68 @@
+{
+  "rule_set_version": "v1",
+  "clinical_review": {
+    "status": "NONE",
+    "reviewer": null,
+    "date": null,
+    "note": "Not clinically reviewed. For hackathon demonstrator only."
+  },
+  "age_floor": 16,
+  "plausibility_bounds": {
+    "age": { "min": 0, "max": 120 },
+    "temp_c": { "min": 30.0, "max": 45.0, "unit": "°C" },
+    "sbp": { "min": 40, "max": 300, "unit": "mmHg" },
+    "dbp": { "min": 20, "max": 200, "unit": "mmHg" },
+    "spo2": { "min": 50, "max": 100, "unit": "%" },
+    "pulse": { "min": 20, "max": 250, "unit": "bpm" },
+    "rr": { "min": 4, "max": 70, "unit": "breaths/min" },
+    "duration_days": { "min": 0, "max": 365, "unit": "days" }
+  },
+  "news2_bands": {
+    "spo2": [
+      { "max": 91, "score": 3 },
+      { "min": 92, "max": 93, "score": 2 },
+      { "min": 94, "max": 95, "score": 1 },
+      { "min": 96, "score": 0 }
+    ],
+    "sbp": [
+      { "max": 90, "score": 3 },
+      { "min": 91, "max": 100, "score": 2 },
+      { "min": 101, "max": 110, "score": 1 },
+      { "min": 111, "max": 219, "score": 0 },
+      { "min": 220, "score": 3 }
+    ],
+    "pulse": [
+      { "max": 40, "score": 3 },
+      { "min": 41, "max": 50, "score": 1 },
+      { "min": 51, "max": 90, "score": 0 },
+      { "min": 91, "max": 110, "score": 1 },
+      { "min": 111, "max": 130, "score": 2 },
+      { "min": 131, "score": 3 }
+    ],
+    "temp_c": [
+      { "max": 35.0, "score": 3 },
+      { "min": 35.1, "max": 36.0, "score": 1 },
+      { "min": 36.1, "max": 38.0, "score": 0 },
+      { "min": 38.1, "max": 39.0, "score": 1 },
+      { "min": 39.1, "score": 2 }
+    ],
+    "rr": [
+      { "max": 8, "score": 3 },
+      { "min": 9, "max": 11, "score": 1 },
+      { "min": 12, "max": 20, "score": 0 },
+      { "min": 21, "max": 24, "score": 2 },
+      { "min": 25, "score": 3 }
+    ],
+    "avpu": {
+      "A": 0,
+      "C": 3,
+      "V": 3,
+      "P": 3,
+      "U": 3
+    },
+    "on_oxygen": {
+      "true": 2,
+      "false": 0
+    }
+  }
+}

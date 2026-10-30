@@ -1,4 +1,8 @@
-oracle_cases:
+# UpcharAI Canonical Oracle Test Cases
+# Specification: 02-triage-rule-spec.md §7
+# Revision: REV-001
+
+oracle_cases: &oracle_cases
   - id: 1
     description: "SpO2 86, pulse 120, SEVERE_BREATHING_DIFFICULTY"
     input:
@@ -16,6 +20,10 @@ oracle_cases:
       fired_rule_ids: ["RF-E01", "RF-E02", "NW-U01", "NW-U02"]
       priority: "EMERGENCY"
       flags: ["UNDERSTATED"]
+    expected_news2: 5
+    expected_priority: "EMERGENCY"
+    expected_rules: ["RF-E01", "RF-E02", "NW-U01", "NW-U02"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 2
     description: "CHEST_PAIN, SpO2 92, pulse 100 (age 50)"
@@ -24,7 +32,7 @@ oracle_cases:
       sex: "M"
       pregnant: false
       temp_c: 37.0
-      sbp: 120
+      sbp: 130
       dbp: 80
       spo2: 92
       pulse: 100
@@ -34,6 +42,10 @@ oracle_cases:
       fired_rule_ids: ["RF-E09"]
       priority: "EMERGENCY"
       flags: ["UNDERSTATED"]
+    expected_news2: 3
+    expected_priority: "EMERGENCY"
+    expected_rules: ["RF-E09"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 3
     description: "CHEST_PAIN, all vitals normal (age 50)"
@@ -52,12 +64,16 @@ oracle_cases:
       fired_rule_ids: ["RF-U01"]
       priority: "URGENT"
       flags: ["UNDERSTATED"]
+    expected_news2: 0
+    expected_priority: "URGENT"
+    expected_rules: ["RF-U01"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 4
     description: "FEVER 2 days, temp 38.2, age 30"
     input:
       age: 30
-      sex: "M"
+      sex: "F"
       pregnant: false
       temp_c: 38.2
       sbp: 120
@@ -71,12 +87,16 @@ oracle_cases:
       fired_rule_ids: []
       priority: "ROUTINE"
       flags: ["UNDERSTATED"]
+    expected_news2: 1
+    expected_priority: "ROUTINE"
+    expected_rules: []
+    expected_flags: ["UNDERSTATED"]
 
   - id: 5
     description: "Same as 4 but SpO2 not entered"
     input:
       age: 30
-      sex: "M"
+      sex: "F"
       pregnant: false
       temp_c: 38.2
       sbp: 120
@@ -91,6 +111,10 @@ oracle_cases:
       priority: "ROUTINE"
       flags: ["INCOMPLETE", "UNDERSTATED"]
       missing: ["spo2"]
+    expected_news2: 1
+    expected_priority: "ROUTINE"
+    expected_rules: []
+    expected_flags: ["INCOMPLETE", "UNDERSTATED"]
 
   - id: 6
     description: "Age 8, vitals normal"
@@ -109,11 +133,15 @@ oracle_cases:
       fired_rule_ids: ["FLOOR-01"]
       priority: "URGENT"
       flags: ["UNDERSTATED"]
+    expected_news2: 0
+    expected_priority: "URGENT"
+    expected_rules: ["FLOOR-01"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 7
     description: "SpO2 93, pulse 112, temp 39.2, SBP 105"
     input:
-      age: 40
+      age: 45
       sex: "M"
       pregnant: false
       temp_c: 39.2
@@ -127,11 +155,15 @@ oracle_cases:
       fired_rule_ids: ["NW-E01"]
       priority: "EMERGENCY"
       flags: ["UNDERSTATED"]
+    expected_news2: 7
+    expected_priority: "EMERGENCY"
+    expected_rules: ["NW-E01"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 8
     description: "SpO2 94, pulse 95, temp 38.5, SBP 108, rr 22"
     input:
-      age: 40
+      age: 55
       sex: "M"
       pregnant: false
       temp_c: 38.5
@@ -146,11 +178,15 @@ oracle_cases:
       fired_rule_ids: ["NW-U01"]
       priority: "URGENT"
       flags: ["UNDERSTATED"]
+    expected_news2: 6
+    expected_priority: "URGENT"
+    expected_rules: ["NW-U01"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 9
     description: "Pulse 135, all else normal"
     input:
-      age: 40
+      age: 35
       sex: "M"
       pregnant: false
       temp_c: 37.0
@@ -164,6 +200,10 @@ oracle_cases:
       fired_rule_ids: ["NW-U02"]
       priority: "URGENT"
       flags: ["UNDERSTATED"]
+    expected_news2: 3
+    expected_priority: "URGENT"
+    expected_rules: ["NW-U02"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 10
     description: "All vitals normal, free_text 'burning feet'"
@@ -183,6 +223,10 @@ oracle_cases:
       fired_rule_ids: []
       priority: "ROUTINE"
       flags: ["NEEDS_REVIEW", "UNDERSTATED"]
+    expected_news2: 0
+    expected_priority: "ROUTINE"
+    expected_rules: []
+    expected_flags: ["NEEDS_REVIEW", "UNDERSTATED"]
 
   - id: 11
     description: "Female, pregnant, vitals normal"
@@ -201,11 +245,15 @@ oracle_cases:
       fired_rule_ids: ["FLOOR-02"]
       priority: "URGENT"
       flags: ["UNDERSTATED"]
+    expected_news2: 0
+    expected_priority: "URGENT"
+    expected_rules: ["FLOOR-02"]
+    expected_flags: ["UNDERSTATED"]
 
   - id: 12
     description: "avpu = U, all else normal"
     input:
-      age: 40
+      age: 60
       sex: "M"
       pregnant: false
       temp_c: 37.0
@@ -220,4 +268,9 @@ oracle_cases:
       fired_rule_ids: ["RF-E03", "NW-U02"]
       priority: "EMERGENCY"
       flags: ["UNDERSTATED"]
+    expected_news2: 3
+    expected_priority: "EMERGENCY"
+    expected_rules: ["RF-E03", "NW-U02"]
+    expected_flags: ["UNDERSTATED"]
 
+cases: *oracle_cases
