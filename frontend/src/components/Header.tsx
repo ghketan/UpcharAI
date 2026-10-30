@@ -98,7 +98,7 @@ export const Header: React.FC = () => {
               <UserCheck className="w-3.5 h-3.5 text-[#444748] shrink-0" />
             )}
             <span className="font-mono text-xs font-bold tracking-tight whitespace-nowrap">
-              {role === 'DOCTOR' ? 'Dr. Mode (Finalise Enabled)' : 'Nurse Mode'}
+              {role === 'DOCTOR' ? 'Doctor Mode' : 'Nurse Mode'}
             </span>
           </button>
 
