@@ -178,7 +178,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onClose, asModa
                   auth
                 </span>
                 <span className="text-[#2b4c38] leading-tight">
-                  <strong className="text-[#123520]">Clinical Staff:</strong> Triage engine, patient intake, emergency hospital referrals, telemetry sync, and chatbot.
+                  <strong className="text-[#123520]">Clinical Staff:</strong> Triage engine, patient intake, emergency hospital referrals, and telemetry sync. (Chatbot excluded).
                 </span>
               </div>
               <div className="flex items-start gap-2">
@@ -308,7 +308,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onClose, asModa
                     </div>
                     <h3 className="font-bold text-sm text-[#123520]">Clinical Staff</h3>
                     <p className="text-[11px] text-[#446650] mt-1 leading-snug">
-                      Triage system, red-flag alerts, emergency referrals &amp; sync.
+                      Triage system, red-flag alerts, emergency referrals &amp; sync. (Chatbot excluded)
                     </p>
                   </div>
                   <div className="mt-3 pt-2 border-t border-[#e2efe6] flex flex-wrap gap-1">
@@ -318,8 +318,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onClose, asModa
                     <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#ebf7f0] text-[#1b6b44] border border-[#cde8d7] font-medium flex items-center gap-1">
                       <Hospital className="w-2.5 h-2.5" /> Referrals
                     </span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#ebf7f0] text-[#1b6b44] border border-[#cde8d7] font-medium flex items-center gap-1">
-                      <Bot className="w-2.5 h-2.5" /> Chat
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#f3eee3] text-[#747878] border border-[#e3e2e0] font-medium">
+                      No Chatbot
                     </span>
                   </div>
                 </div>

@@ -27,7 +27,8 @@ export const Header: React.FC = () => {
     logout,
   } = useApp();
 
-  const isPatientRole = currentUser?.role === 'user';
+  const isPatientRole = currentUser?.role === 'user' || (currentUser?.role as any) === 'client';
+  const isStaffRole = currentUser?.role === 'auth';
 
   const allNavItems: { key: TabKey; label: string }[] = [
     { key: 'overview', label: 'Platform' },
@@ -37,9 +38,18 @@ export const Header: React.FC = () => {
     { key: 'telemetry', label: 'Telemetry Sync' },
   ];
 
-  // When logged in as Patient ('user'), restrict tabs strictly to Sahayak Chatbot
+  // Strictly partitioned navigation:
+  // - Client / Patient gets ONLY Sahayak Chatbot
+  // - Doctor / Nurse Staff gets Clinical tools (Chatbot removed)
   const navItems = isPatientRole
     ? [{ key: 'sahayak' as TabKey, label: 'Sahayak Chatbot' }]
+    : isStaffRole
+    ? [
+        { key: 'overview' as TabKey, label: 'Platform' },
+        { key: 'triage' as TabKey, label: 'Triage Engine' },
+        { key: 'emergency' as TabKey, label: 'Emergency Referral' },
+        { key: 'telemetry' as TabKey, label: 'Telemetry Sync' },
+      ]
     : allNavItems;
 
   const activeIndex = navItems.findIndex((item) => item.key === activeTab);

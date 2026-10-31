@@ -22,7 +22,7 @@ def setup_test_db(tmp_path, monkeypatch):
 
 
 def test_login_auth_role_credentials():
-    """Auth role (Doctor / Staff) logs in and gets triage and referral access."""
+    """Auth role (Doctor / Staff) logs in and gets triage and referral access without chatbot."""
     res = client.post(
         "/api/auth/login",
         json={"username": "doctor", "password": "doctor123"},
@@ -33,7 +33,7 @@ def test_login_auth_role_credentials():
     assert data["role"] == "auth"
     assert "triage" in data["user"]["allowed_views"]
     assert "emergency" in data["user"]["allowed_views"]
-    assert "sahayak" in data["user"]["allowed_views"]
+    assert "sahayak" not in data["user"]["allowed_views"]
 
 
 def test_login_user_role_credentials():
@@ -205,6 +205,7 @@ def test_roles_endpoint_descriptions():
     assert "user" in roles
     assert roles["auth"]["can_access_triage"] is True
     assert roles["auth"]["can_access_referrals"] is True
+    assert roles["auth"]["can_access_chatbot"] is False
     assert roles["user"]["can_access_triage"] is False
     assert roles["user"]["can_access_chatbot"] is True
 
@@ -286,10 +287,11 @@ def test_role_enforcement_auth_role_has_full_clinical_access():
     h_res = client.get("/api/hospitals", headers=auth_headers)
     assert h_res.status_code == 200
 
-    # 5. Sahayak Chatbot -> 200 OK
+    # 5. Sahayak Chatbot -> 403 Forbidden (chatbot removed from 'auth' role)
     c_res = client.post(
         "/api/chat",
         headers=auth_headers,
         json={"message": "What is the recommended ORS mixing ratio?", "language": "en"},
     )
-    assert c_res.status_code == 200
+    assert c_res.status_code == 403
+    assert c_res.json()["code"] == "role_forbidden"

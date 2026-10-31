@@ -90,10 +90,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setActiveTab = (tab: TabKey) => {
     const isClient = currentUser?.role === 'user' || (currentUser?.role as any) === 'client';
+    const isStaff = currentUser?.role === 'auth';
+
     if (isClient && tab !== 'sahayak') {
       showToast("Access restricted: Client / Patient accounts are limited to the Sahayak Chatbot only. Triage & referrals require a Staff ('auth') login.", 'warning');
       return;
     }
+
+    if (isStaff && tab === 'sahayak') {
+      showToast("Access restricted: Sahayak Chatbot is designated for Client/Patient use only. Clinicians use the Triage & Referral workspace.", 'warning');
+      return;
+    }
+
     setActiveTabState(tab);
   };
 
@@ -108,6 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (res.user.username.toLowerCase().includes('doctor')) {
         setRoleState('DOCTOR');
       }
+      setActiveTabState((prev) => (prev === 'sahayak' ? 'overview' : prev));
       showToast(`Welcome ${res.user.full_name || res.user.username}! Clinical staff access active.`, 'success');
     }
     return res;
@@ -121,6 +130,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setActiveTabState('sahayak');
       showToast(`Account created for Client (${res.user.username}). Welcome to Sahayak!`, 'success');
     } else {
+      setActiveTabState((prev) => (prev === 'sahayak' ? 'overview' : prev));
       showToast(`Staff account created for ${res.user.full_name || res.user.username}. Clinical access active.`, 'success');
     }
     return res;

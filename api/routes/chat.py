@@ -4,9 +4,12 @@ import time
 from typing import Any, Dict, List
 from fastapi import APIRouter, Request
 
+from api.auth import get_user_from_token
 from api.config import LLM_API_KEY
+from api.db import get_db
 from api.errors import APIException
 from api.models import ChatRequest, ChatResponse
+from api.roles import extract_token_from_headers
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -123,6 +126,20 @@ def detect_red_flags(text: str) -> bool:
 
 @router.post("", response_model=ChatResponse)
 def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
+    # Role gate: Chatbot is exclusively for Client/Patient use; blocked for Clinicians/Staff ('auth')
+    auth_header = request.headers.get("Authorization") or request.headers.get("X-Auth-Token")
+    if auth_header:
+        token = extract_token_from_headers(auth_header)
+        if token:
+            with get_db() as conn:
+                user = get_user_from_token(conn, token)
+            if user and user.get("role") == "auth":
+                raise APIException(
+                    status_code=403,
+                    code="role_forbidden",
+                    message="Access restricted: Sahayak Chatbot is designated for Client/Patient use only. Clinicians use the Triage and Referral workspace.",
+                )
+
     client_ip = request.client.host if request.client else "unknown"
     now_time = time.time()
     cutoff = now_time - 60.0
@@ -253,4 +270,3 @@ def get_chat_protocols() -> List[Dict[str, Any]]:
             "text": "ਡੰਗ ਵਾਲੇ ਅੰਗ ਨੂੰ ਬਿਲਕੁਲ ਹਿੱਲਣ ਨਾ ਦਿਓ। ਕੋਈ ਕੱਟ ਨਾ ਲਗਾਓ। ਮਰੀਜ਼ ਨੂੰ ਸ਼ਾਂਤ ਰੱਖੋ ਅਤੇ ਤੁਰੰਤ ਐਂਟੀ ਸਨੇਕ ਵੈਨਮ ਵਾਲੇ ਹਸਪਤਾਲ ਪਹੁੰਚਾਓ।",
         },
     ]
-

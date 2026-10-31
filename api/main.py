@@ -56,6 +56,8 @@ app.include_router(demo.router)
 
 
 @app.get("/")
+@app.get("/health")
+@app.get("/api/health")
 def root():
     return {
         "service": "UpcharAI API",
