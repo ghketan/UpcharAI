@@ -10,8 +10,8 @@ import uuid
 ROLE_CONFIG: Dict[str, Dict[str, Any]] = {
     "auth": {
         "name": "Clinical & Triage Staff",
-        "description": "Full access to triage queue, vital assessments, emergency referrals, telemetry sync, and informational chatbot.",
-        "allowed_views": ["overview", "triage", "emergency", "sahayak", "telemetry"],
+        "description": "Access to triage queue, vital assessments, emergency referrals, and telemetry sync.",
+        "allowed_views": ["overview", "triage", "emergency", "telemetry"],
         "permissions": [
             "triage_queue:read",
             "patient:create",
@@ -22,11 +22,10 @@ ROLE_CONFIG: Dict[str, Dict[str, Any]] = {
             "referral:create",
             "referral:read",
             "sync:manage",
-            "chatbot:access",
         ],
         "can_access_triage": True,
         "can_access_referrals": True,
-        "can_access_chatbot": True,
+        "can_access_chatbot": False,
     },
     "user": {
         "name": "Citizen / Patient",
