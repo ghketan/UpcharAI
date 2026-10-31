@@ -278,35 +278,7 @@ export const SahayakChatView: React.FC = () => {
             >
               हिन्दी (Hindi)
             </button>
-            <button
-              onClick={() => setLanguage('pa')}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
-                language === 'pa' ? 'bg-[#000000] text-white' : 'text-[#444748] hover:text-[#1a1c1a]'
-              }`}
-            >
-              ਪੰਜਾਬੀ (Punjabi)
-            </button>
-          </div>
-
-          {/* Practitioner vs Patient Mode */}
-          <div className="flex items-center p-1 rounded-full bg-[#eae4d6] border border-[#e3e2e0] text-xs font-mono">
-            <button
-              onClick={() => setPractitionerMode(true)}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
-                practitionerMode ? 'bg-[#ffffff] text-[#1a1c1a] shadow-sm font-bold' : 'text-[#444748]'
-              }`}
-            >
-              CHO / ANM Officer
-            </button>
-            <button
-              onClick={() => setPractitionerMode(false)}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
-                !practitionerMode ? 'bg-[#ffffff] text-[#1a1c1a] shadow-sm font-bold' : 'text-[#444748]'
-              }`}
-            >
-              Patient Mode (सरल)
-            </button>
-          </div>
+          </div>       
         </div>
       </section>
 
@@ -505,35 +477,7 @@ export const SahayakChatView: React.FC = () => {
           {/* Prompt Suggestions & Message Input Form */}
           <div className="p-4 bg-[#f3eee3] border-t border-[#e3e2e0] flex flex-col gap-3">
             
-            {/* Quick Prompt Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() =>
-                  handleSendMessage('What are the critical danger signs in second trimester pregnancy?')
-                }
-                className="px-2.5 py-1 rounded-full bg-white text-[#444748] hover:text-[#1a1c1a] border border-[#e3e2e0] whitespace-nowrap cursor-pointer"
-              >
-                Pregnancy Danger Signs
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSendMessage('How to recognise hypovolemic shock in a field clinic?')}
-                className="px-2.5 py-1 rounded-full bg-white text-[#444748] hover:text-[#1a1c1a] border border-[#e3e2e0] whitespace-nowrap cursor-pointer"
-              >
-                Hypovolemic Shock
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleSendMessage('Patient has severe chest pain and breathlessness')
-                }
-                className="px-2.5 py-1 rounded-full bg-[#ffdad6] text-[#ba1a1a] border border-[#ba1a1a]/30 whitespace-nowrap cursor-pointer"
-              >
-                Test Red-Flag Filter
-              </button>
-            </div>
-
+          
             {/* Input & Send Form */}
             <form
               onSubmit={(e) => {
@@ -578,7 +522,7 @@ export const SahayakChatView: React.FC = () => {
             </form>
 
             <span className="text-[11px] text-[#747878] text-center font-mono">
-              General information, not medical advice. Max 10 messages/minute.
+              General information, not medical advice.
             </span>
           </div>
 
