@@ -18,6 +18,7 @@ import {
   FileQuestion,
   Mic,
   MicOff,
+  Key,
 } from 'lucide-react';
 
 interface VoiceProtocol {
@@ -66,6 +67,9 @@ export const SahayakChatView: React.FC = () => {
   const [practitionerMode, setPractitionerMode] = useState<boolean>(true);
   const [protocols, setProtocols] = useState<VoiceProtocol[]>(VOICE_PROTOCOLS);
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [geminiKey, setGeminiKey] = useState<string>(() => (typeof localStorage !== 'undefined' ? localStorage.getItem('upcharai_gemini_key') || '' : ''));
+  const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
+  const [tempKeyInput, setTempKeyInput] = useState<string>('');
 
   useEffect(() => {
     api.getChatProtocols(role).then((data) => {
@@ -205,7 +209,7 @@ export const SahayakChatView: React.FC = () => {
     setSending(true);
 
     try {
-      const response = await api.sendMessage(text.trim(), language, role);
+      const response = await api.sendMessage(text.trim(), language, role, geminiKey);
       const assistantMsg: ChatMessage = {
         id: Math.random().toString(36).substring(2, 9),
         sender: 'assistant',
@@ -213,6 +217,7 @@ export const SahayakChatView: React.FC = () => {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         escalated: response.escalated,
         language: response.language,
+        provider: response.provider,
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch (err: any) {
@@ -424,13 +429,32 @@ export const SahayakChatView: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={clearChat}
-              title="Reset conversation"
-              className="w-8 h-8 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setTempKeyInput(geminiKey);
+                  setShowKeyModal(true);
+                }}
+                className={`px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer border ${
+                  geminiKey
+                    ? 'bg-[#aceec4]/40 text-[#2f6e4c] border-[#2a6a48]/30 hover:bg-[#aceec4]/60'
+                    : 'bg-[#f3eee3] text-[#444748] border-[#e3e2e0] hover:border-black'
+                }`}
+                title="Connect or edit Google Gemini AI Key"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#2a6a48]" />
+                <span>{geminiKey ? 'Gemini 2.5 Active' : 'Connect Gemini AI'}</span>
+              </button>
+
+              <button
+                onClick={clearChat}
+                title="Reset conversation"
+                className="w-8 h-8 rounded-full bg-[#f3eee3] hover:bg-[#eae4d6] text-[#444748] flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Chat Messages Body */}
@@ -460,13 +484,21 @@ export const SahayakChatView: React.FC = () => {
 
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
 
-                    <span
-                      className={`text-[10px] font-mono self-end ${
-                        isUser ? 'text-[#a8abaa]' : 'text-[#747878]'
-                      }`}
-                    >
-                      {msg.timestamp}
-                    </span>
+                    <div className="flex items-center justify-between gap-2 mt-0.5">
+                      {msg.provider && !isUser ? (
+                        <span className="text-[10px] font-mono text-[#2a6a48] flex items-center gap-1">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          {msg.provider.includes('gemini') ? 'Gemini 2.5 Generative AI' : 'Offline Clinical Core'}
+                        </span>
+                      ) : <span />}
+                      <span
+                        className={`text-[10px] font-mono ${
+                          isUser ? 'text-[#a8abaa]' : 'text-[#747878]'
+                        }`}
+                      >
+                        {msg.timestamp}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -476,8 +508,26 @@ export const SahayakChatView: React.FC = () => {
 
           {/* Prompt Suggestions & Message Input Form */}
           <div className="p-4 bg-[#f3eee3] border-t border-[#e3e2e0] flex flex-col gap-3">
-            
-          
+            {/* Quick Suggested Queries */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+              {[
+                language === 'hi' ? 'घर पर ओआरएस (ORS) घोल कैसे बनाएं?' : 'How to prepare ORS at home?',
+                language === 'hi' ? 'हल्के बुखार में घरेलू देखभाल के नियम' : 'Fever home-care guidelines',
+                language === 'hi' ? 'डेंगू और मच्छर से बचाव के उपाय' : 'Dengue & vector prevention',
+                language === 'hi' ? 'पीने का पानी साफ करने के तरीके' : 'Safe drinking water purification',
+              ].map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleSendMessage(chip)}
+                  disabled={sending}
+                  className="px-2.5 py-1 rounded-full bg-white text-[#444748] border border-[#e3e2e0] hover:border-black hover:text-black whitespace-nowrap text-[11px] transition-colors cursor-pointer shadow-xs shrink-0"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
             {/* Input & Send Form */}
             <form
               onSubmit={(e) => {
@@ -529,6 +579,94 @@ export const SahayakChatView: React.FC = () => {
         </section>
 
       </div>
+      {/* Gemini API Key Configuration Modal */}
+      {showKeyModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-[#e3e2e0] shadow-2xl flex flex-col gap-4 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e3e2e0]">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#2a6a48]" />
+                <h3 className="font-bold text-base text-[#1a1c1a]">Google Gemini Generative AI Key</h3>
+              </div>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="text-gray-400 hover:text-black font-mono text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-[#444748] leading-relaxed">
+              Power the Sahayak Copilot with live Google Gemini 2.5 / 1.5 Flash generation. Get a free API key instantly at{' '}
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#2a6a48] underline font-medium hover:text-black"
+              >
+                Google AI Studio ↗
+              </a>.
+            </p>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-mono font-bold text-[#1a1c1a]">Gemini API Key</label>
+              <input
+                type="password"
+                placeholder="Paste Gemini API key here..."
+                value={tempKeyInput}
+                onChange={(e) => setTempKeyInput(e.target.value)}
+                className="px-3.5 py-2.5 rounded-xl border border-[#e3e2e0] font-mono text-xs focus:outline-none focus:ring-1 focus:ring-black w-full"
+              />
+              <span className="text-[11px] text-[#747878]">
+                Saved locally in your browser session. Never shared or stored on public servers.
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-[#e3e2e0]">
+              <button
+                type="button"
+                onClick={() => {
+                  setGeminiKey('');
+                  setTempKeyInput('');
+                  localStorage.removeItem('upcharai_gemini_key');
+                  showToast('API key removed. Running in offline clinical knowledge mode.', 'info');
+                  setShowKeyModal(false);
+                }}
+                className="text-xs text-[#ba1a1a] hover:underline cursor-pointer"
+              >
+                Clear Key
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowKeyModal(false)}
+                  className="px-3 py-1.5 rounded-full text-xs text-[#444748] border border-[#e3e2e0] hover:bg-gray-100 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const trimmed = tempKeyInput.trim();
+                    setGeminiKey(trimmed);
+                    if (trimmed) {
+                      localStorage.setItem('upcharai_gemini_key', trimmed);
+                      showToast('Gemini Generative AI Key connected!', 'success');
+                    } else {
+                      localStorage.removeItem('upcharai_gemini_key');
+                      showToast('Cleared. Operating in offline knowledge mode.', 'info');
+                    }
+                    setShowKeyModal(false);
+                  }}
+                  className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#000000] text-white hover:bg-zinc-800 cursor-pointer"
+                >
+                  Save Key
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -104,12 +104,14 @@ class SyncStatusResponse(BaseModel):
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=500)
     language: Optional[str] = "en"
+    api_key: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
     reply: str
     escalated: bool
     language: str
+    provider: Optional[str] = None
 
 
 class AssessmentPreviewRequest(BaseModel):
