@@ -171,14 +171,12 @@ export interface ChatMessage {
   timestamp: string;
   escalated?: boolean;
   language?: string;
-  provider?: string;
 }
 
 export interface ChatResponse {
   reply: string;
   escalated: boolean;
   language: string;
-  provider?: string;
 }
 
 export interface SyncOutboxItem {

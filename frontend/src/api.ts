@@ -238,16 +238,10 @@ export const api = {
   },
 
   // Chat
-  async sendMessage(message: string, language: string = 'en', role: DemoRole, apiKey?: string): Promise<ChatResponse> {
-    const key = apiKey || (typeof localStorage !== 'undefined' ? localStorage.getItem('upcharai_gemini_key') : null) || '';
-    const headers: Record<string, string> = {};
-    if (key) {
-      headers['X-Gemini-Key'] = key;
-    }
+  async sendMessage(message: string, language: string = 'en', role: DemoRole): Promise<ChatResponse> {
     return request<ChatResponse>('/api/chat', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ message, language, api_key: key || undefined }),
+      body: JSON.stringify({ message, language }),
     }, role);
   },
 

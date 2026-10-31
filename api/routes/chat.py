@@ -1,7 +1,7 @@
 from collections import defaultdict
 import re
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from fastapi import APIRouter, Request
 
 from api.auth import get_user_from_token
@@ -124,201 +124,6 @@ def detect_red_flags(text: str) -> bool:
     return False
 
 
-def generate_offline_health_guidance(message: str, lang: str) -> str:
-    msg_lower = message.lower()
-
-    # Hydration / Water / ORS / Diarrhea
-    if any(k in msg_lower for k in ["water", "drink", "pani", "paani", "ors", "diarrhea", "dast", "dehydration", "उल्टी", "दस्त"]):
-        if lang == "hi":
-            return (
-                "दैनिक पानी व ओआरएस (ORS) संबंधी सामान्य स्वास्थ्य मार्गदर्शन:\n\n"
-                "• स्वस्थ वयस्क को प्रतिदिन सामान्यतः 2.5 से 3 लीटर स्वच्छ, उबला या छना हुआ पानी पीना चाहिए।\n"
-                "• दस्त या उल्टी की स्थिति में शरीर में पानी की कमी (डिहाइड्रेशन) रोकने के लिए ओआरएस (ORS) का घोल दें।\n"
-                "• घर पर ओआरएस: 1 लीटर साफ पानी में 6 छोटी चम्मच चीनी और आधा चम्मच नमक घोलें।\n"
-                "• बच्चों में दस्त होने पर स्तनपान या सामान्य भोजन जारी रखें और जिंक की गोली के लिए आशा कार्यकर्ता से संपर्क करें।\n\n"
-                "सामान्य स्वास्थ्य सूचना (General Health Guidance): यह जानकारी केवल जन-जागरूकता के लिए है। किसी भी बीमारी के उपचार या दवा की खुराक के लिए स्थानीय प्राथमिक स्वास्थ्य केंद्र (PHC) या डॉक्टर से परामर्श लें।"
-            )
-        elif lang == "pa":
-            return (
-                "ਪਾਣੀ ਅਤੇ ਓਆਰਐਸ (ORS) ਬਾਰੇ ਆਮ ਸਿਹਤ ਸਲਾਹ:\n\n"
-                "• ਹਰ ਰੋਜ਼ 2.5 ਤੋਂ 3 ਲੀਟਰ ਸਾਫ਼ ਅਤੇ ਉਬਲਿਆ ਹੋਇਆ ਪਾਣੀ ਪੀਣਾ ਚਾਹੀਦਾ ਹੈ।\n"
-                "• ਦਸਤ ਜਾਂ ਡੀਹਾਈਡਰੇਸ਼ਨ ਦੀ ਸਥਿਤੀ ਵਿੱਚ ਓਆਰਐਸ (ORS) ਦਾ ਘੋਲ ਤੁਰੰਤ ਸ਼ੁਰੂ ਕਰੋ।\n"
-                "• ਛੋਟੇ ਬੱਚਿਆਂ ਵਿੱਚ ਦਸਤ ਵੇਲੇ ਦੁੱਧ ਪਿਲਾਉਣਾ ਜਾਰੀ ਰੱਖੋ।\n\n"
-                "ਆਮ ਸਿਹਤ ਸੂਚਨਾ (General Health Guidance): ਇਹ ਕੇਵਲ ਸਿੱਖਿਆ ਅਤੇ ਜਾਗਰੂਕਤਾ ਲਈ ਹੈ। ਕਿਸੇ ਦਵਾਈ ਜਾਂ ਜਾਂਚ ਲਈ ਸਿਹਤ ਕੇਂਦਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
-            )
-        else:
-            return (
-                "Daily Hydration & Fluid Guidance:\n\n"
-                "• A healthy adult typically requires 2.5 to 3 litres of clean, safe drinking water daily, adjusting upward during heavy heat or physical labour.\n"
-                "• In cases of loose stools or mild dehydration, use Oral Rehydration Salts (ORS) solution to restore essential electrolytes.\n"
-                "• Homemade ORS method: 6 level teaspoons of sugar and 1/2 level teaspoon of clean salt dissolved thoroughly in 1 litre of boiled and cooled water.\n"
-                "• Danger signs requiring immediate facility care: inability to drink, persistent vomiting, sunken eyes, or no urination for 6 hours.\n\n"
-                "General Health Education: This information is for community education only. It does not constitute a prescription or diagnosis. Always consult a qualified clinician or health worker for medical advice."
-            )
-
-    # Fever / Bukhar / Temperature
-    if any(k in msg_lower for k in ["fever", "bukhar", "temperature", "tapman", "thand"]):
-        if lang == "hi":
-            return (
-                "हल्के बुखार की घरेलू देखभाल व प्राथमिक मार्गदर्शन:\n\n"
-                "• मरीज को भरपूर आराम दें और ढीले, आरामदायक सूती कपड़े पहनाएं।\n"
-                "• माथे और हथेलियों पर सामान्य (ताजे) पानी की पट्टी रखें। कभी भी बर्फ या अत्यधिक ठंडे पानी का उपयोग न करें।\n"
-                "• शरीर में पानी की कमी न होने दें—उबला पानी, दाल का पानी, या ओआरएस देते रहें।\n"
-                "• यदि बुखार 3 दिन से अधिक रहे, तेज कंपकंपी हो, या गर्दन में अकड़न हो तो तुरंत नजदीकी स्वास्थ्य केंद्र (PHC) जाएं।\n\n"
-                "सामान्य स्वास्थ्य सूचना (General Health Guidance): मैं दवाओं की खुराक निर्धारित नहीं कर सकता। बुखार कम करने वाली दवाओं के लिए स्वास्थ्य कार्यकर्ता या डॉक्टर से परामर्श लें।"
-            )
-        elif lang == "pa":
-            return (
-                "ਬੁਖ਼ਾਰ ਦੌਰਾਨ ਮੁੱਢਲੀ ਦੇਖਭਾਲ:\n\n"
-                "• ਮਰੀਜ਼ ਨੂੰ ਹਲਕੇ ਕੱਪੜੇ ਪਾਓ ਅਤੇ ਤਾਜ਼ੇ ਪਾਣੀ ਦੀਆਂ ਪੱਟੀਆਂ ਮੱਥੇ 'ਤੇ ਰੱਖੋ।\n"
-                "• ਤਰਲ ਪਦਾਰਥ ਜਿਵੇਂ ਦਾਲ ਦਾ ਪਾਣੀ ਜਾਂ ਓਆਰਐਸ ਵੱਧ ਦਿਓ।\n"
-                "• ਬੁਖ਼ਾਰ ਲੰਮਾ ਸਮਾਂ ਰਹੇ ਤਾਂ ਤੁਰੰਤ ਡਾਕਟਰ ਨੂੰ ਦਿਖਾਓ।\n\n"
-                "ਆਮ ਸਿਹਤ ਸੂਚਨਾ (General Health Guidance): ਦਵਾਈਆਂ ਦੀ ਖ਼ੁਰਾਕ ਲਈ ਸਿਹਤ ਕਰਮਚਾਰੀ ਨਾਲ ਸਲਾਹ ਕਰੋ।"
-            )
-        else:
-            return (
-                "General Health Guidance for Fever Management:\n\n"
-                "• Ensure adequate rest in a well-ventilated room with lightweight cotton bedding.\n"
-                "• Apply normal room-temperature water compresses (sponging) to the forehead and arms to safely lower core temperature. Never use ice or very cold water.\n"
-                "• Maintain high fluid intake: boiled water, thin soups, or ORS to prevent dehydration.\n"
-                "• Alert red flags: fever lasting more than 3 days, stiff neck, new skin rash, confusion, or breathing distress require immediate doctor evaluation.\n\n"
-                "General Health Education: This system does not diagnose or prescribe drug dosages. Please consult your local Primary Health Centre (PHC) or clinician for medical assessment."
-            )
-
-    # Dengue / Malaria / Mosquito / Machhar
-    if any(k in msg_lower for k in ["dengue", "malaria", "mosquito", "machhar", "machar", "chikungunya"]):
-        if lang == "hi":
-            return (
-                "मच्छर जनित रोगों (डेंगू, मलेरिया) से बचाव के उपाय:\n\n"
-                "• घर और आस-पास पानी जमा न होने दें। कूलर, गमले और टायरों का पानी हर सप्ताह खाली करें और सुखाएं।\n"
-                "• सोते समय हमेशा कीटनाशक उपचारित मच्छरदानी का प्रयोग करें।\n"
-                "• पूरी आस्तीन के कपड़े पहनें ताकि मच्छर काटने से बचा जा सके।\n"
-                "• तेज बुखार, जोड़ों में तेज दर्द, या आंखों के पीछे दर्द होने पर तुरंत नजदीकी स्वास्थ्य केंद्र जाकर रक्त जांच कराएं।\n\n"
-                "सामान्य स्वास्थ्य सूचना (General Health Guidance): यह सामान्य स्वास्थ्य शिक्षा है। बुखार होने पर बिना डॉक्टर की सलाह के कोई दवा न लें।"
-            )
-        else:
-            return (
-                "Vector-Borne Disease Prevention (Dengue & Malaria):\n\n"
-                "• Eliminate stagnant water sources around homes, overhead tanks, air coolers, and discarded containers at least once a week.\n"
-                "• Sleep under insecticide-treated bed nets and install window mesh screens.\n"
-                "• Wear full-sleeved, light-coloured clothing during daytime and dusk when vectors are active.\n"
-                "• Seek urgent blood screening at your local health centre if high fever develops alongside retro-orbital eye pain or severe joint aches.\n\n"
-                "General Health Guidance: Educational awareness only. Please consult your local health worker or doctor for clinical advice."
-            )
-
-    # Maternal / Pregnancy / Garbhavastha
-    if any(k in msg_lower for k in ["pregnant", "pregnancy", "garbh", "maternal", "delivery", "prasav"]):
-        if lang == "hi":
-            return (
-                "गर्भावस्था में स्वास्थ्य व पोषण संबंधी मार्गदर्शन:\n\n"
-                "• संतुलित आहार लें: हरी पत्तेदार सब्जियां, दालें, दूध, फल और पर्याप्त पानी शामिल करें।\n"
-                "• स्वास्थ्य उपकेंद्र या आशा कार्यकर्ता से नियमित प्रसव-पूर्व जांच (ANC) कराएं।\n"
-                "• डॉक्टर या एएनएम (ANM) द्वारा दी गई आयरन और फोलिक एसिड की गोलियां नियमित रूप से लें।\n"
-                "• खतरे के लक्षण: अत्यधिक रक्तस्राव, तेज सिरदर्द, धुंधला दिखना, या पैरों में अचानक सूजन आने पर तुरंत अस्पताल जाएं।\n\n"
-                "सामान्य स्वास्थ्य सूचना (General Health Guidance): गर्भावस्था के दौरान किसी भी चिकित्सीय समस्या के लिए तुरंत डॉक्टर या एएनएम से संपर्क करें।"
-            )
-        else:
-            return (
-                "Antenatal & Maternal Health Guidance:\n\n"
-                "• Maintain nutrient-rich meals with dark green leafy vegetables, lentils, dairy, and whole grains to support maternal and fetal wellbeing.\n"
-                "• Attend all scheduled Antenatal Care (ANC) visits at your nearest Sub-Centre or PHC.\n"
-                "• Comply with iron-folic acid and calcium supplementation as prescribed by your auxiliary nurse midwife (ANM).\n"
-                "• Report any danger signs (vaginal bleeding, severe persistent headache, visual disturbance, or severe swelling) to a doctor immediately.\n\n"
-                "General Health Guidance: Educational advice only. A qualified medical officer must oversee all maternal clinical care."
-            )
-
-    # General Fallback
-    if lang == "hi":
-        return (
-            "नमस्ते। मैं सहायक हूँ — आपका स्वास्थ्य सूचना सहयोगी।\n\n"
-            "• स्वास्थ्य संबंधी सामान्य प्रश्नों, स्वच्छता, पोषण, ओआरएस घोल, या मौसमी बीमारियों से बचाव के बारे में पूछ सकते हैं।\n"
-            "• अपने लक्षणों को समझने या बुनियादी घरेलू प्राथमिक उपचार की जानकारी के लिए दिए गए ऑडियो प्रोटोकॉल भी सुन सकते हैं।\n\n"
-            "सामान्य स्वास्थ्य सूचना (General Health Guidance): मैं केवल सामान्य स्वास्थ्य शिक्षा प्रदान करता हूँ। मैं किसी बीमारी का निदान, उपचार या दवा की खुराक नहीं बता सकता। कृपया चिकित्सीय सलाह के लिए स्थानीय प्राथमिक स्वास्थ्य केंद्र (PHC) या डॉक्टर से संपर्क करें।"
-        )
-    elif lang == "pa":
-        return (
-            "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। ਮੈਂ ਸਹਾਇਕ ਹਾਂ — ਤੁਹਾਡਾ ਸਿਹਤ ਸੂਚਨਾ ਸਹਾਇਕ।\n\n"
-            "• ਤੁਸੀਂ ਆਮ ਸਿਹਤ, ਪੋਸ਼ਣ, ਪੀਣ ਵਾਲੇ ਪਾਣੀ ਦੀ ਸਫ਼ਾਈ, ਜਾਂ ਬੁਖ਼ਾਰ ਦੀ ਦੇਖਭਾਲ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈ ਸਕਦੇ ਹੋ।\n\n"
-            "ਆਮ ਸਿਹਤ ਸੂਚਨਾ (General Health Guidance): ਇਹ ਕੇਵਲ ਸਿੱਖਿਆ ਲਈ ਹੈ। ਦਵਾਈ ਜਾਂ ਇਲਾਜ ਲਈ ਆਪਣੇ ਨਜ਼ਦੀਕੀ ਸਿਹਤ ਕੇਂਦਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
-        )
-    else:
-        return (
-            "Greetings. I am Sahayak, your community health education assistant.\n\n"
-            "• You can ask me about safe drinking water, childhood nutrition, fever home-care principles, ORS rehydration, or disease prevention.\n"
-            "• For common emergency directives, you can also select the spoken voice protocols on the panel.\n\n"
-            "General Health Guidance: I provide general health education only. I cannot diagnose conditions, provide treatment plans, or recommend medication doses. Please consult your local health worker or doctor for clinical advice."
-        )
-
-
-def call_gemini_api(api_key: str, message: str, lang: str) -> Optional[str]:
-    import httpx
-
-    target_lang = "Hindi" if lang == "hi" else ("Punjabi" if lang == "pa" else "English")
-    system_instruction = (
-        "You are Sahayak, an explainable rural health education copilot created for community health workers and rural citizens in India. "
-        "Provide clear, practical, empathetic general health, hygiene, first-aid, or wellness guidance. "
-        "STRICT SAFETY DIRECTIVES: "
-        "1. Never diagnose illnesses or provide clinical verdicts. "
-        "2. Never prescribe medications or specify drug dosages (e.g., mg, ml, tablets). "
-        "3. Emphasize that community members should consult an ASHA, ANM, or Primary Health Centre doctor for personal medical care. "
-        f"Answer concisely in {target_lang} (under 160 words) with clear bullet points where helpful."
-    )
-
-    models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
-
-    for model in models:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-            payload = {
-                "systemInstruction": {
-                    "parts": [{"text": system_instruction}]
-                },
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": message}]
-                    }
-                ],
-                "generationConfig": {
-                    "temperature": 0.3,
-                    "maxOutputTokens": 450
-                }
-            }
-            res = httpx.post(url, json=payload, timeout=12.0)
-            if res.status_code == 200:
-                data = res.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    if parts and "text" in parts[0]:
-                        return parts[0]["text"].strip()
-
-            # Fallback format for older/alternative endpoint signatures
-            fallback_payload = {
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": f"Instruction: {system_instruction}\nUser question: {message}"}]
-                    }
-                ],
-                "generationConfig": {
-                    "temperature": 0.3,
-                    "maxOutputTokens": 450
-                }
-            }
-            res2 = httpx.post(url, json=fallback_payload, timeout=12.0)
-            if res2.status_code == 200:
-                data = res2.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    if parts and "text" in parts[0]:
-                        return parts[0]["text"].strip()
-        except Exception:
-            continue
-    return None
-
-
 @router.post("", response_model=ChatResponse)
 def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     # Role gate: Chatbot is exclusively for Client/Patient use; blocked for Clinicians/Staff ('auth')
@@ -357,8 +162,7 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     _CHAT_REQUEST_HISTORY[client_ip] = history
 
     is_hindi = req.language == "hi" or any("\u0900" <= ch <= "\u097f" for ch in req.message)
-    is_punjabi = req.language == "pa" or any("\u0a00" <= ch <= "\u0a7f" for ch in req.message)
-    lang = "pa" if is_punjabi else ("hi" if is_hindi else "en")
+    lang = "hi" if is_hindi else "en"
 
     # 1. Deterministic red flag pre-filter BEFORE any LLM call (REQ-022, DEC-009, 03 §8)
     if detect_red_flags(req.message):
@@ -367,50 +171,68 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
             reply=escalation_reply,
             escalated=True,
             language=lang,
-            provider="deterministic_emergency_filter",
         )
 
-    # 2. Extract API Key (from header, request body, or environment)
-    effective_api_key = (
-        req.api_key
-        or request.headers.get("x-gemini-key")
-        or request.headers.get("x-llm-key")
-        or LLM_API_KEY
-    )
+    # 2. If no API key is available or offline, return static safety information (RISK-007, 03 §8)
+    if not LLM_API_KEY:
+        safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+        return ChatResponse(
+            reply=safety_reply,
+            escalated=False,
+            language=lang,
+        )
 
-    # 3. If an API key is available, call the live Google Gemini API
-    if effective_api_key:
-        llm_reply = call_gemini_api(effective_api_key, req.message, lang)
-        if llm_reply:
-            # Output safety filter: if response contains specific dosage patterns, block it
-            if DOSE_REGEX.search(llm_reply):
-                llm_reply = (
+    # 3. Call LLM provider with isolated guardrails (SEC-003, 03 §8)
+    try:
+        import httpx
+
+        system_instruction = (
+            "You are UpcharAI Health Assistant, an informational bot for rural community members. "
+            "You provide general health and hygiene information only. "
+            "You MUST NEVER diagnose diseases, recommend prescriptions, or provide medication doses. "
+            "If the user asks for doses, tell them to ask a healthcare worker. "
+            f"Answer concisely in {'Hindi' if is_hindi else 'English'}."
+        )
+
+        response = httpx.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={LLM_API_KEY}",
+            json={
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": f"Instruction: {system_instruction}\nUser question: {req.message}"}],
+                    }
+                ],
+                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 200},
+            },
+            timeout=5.0,
+        )
+
+        if response.status_code == 200:
+            res_json = response.json()
+            candidates = res_json.get("candidates", [])
+            reply_text = candidates[0]["content"]["parts"][0]["text"] if candidates else ""
+
+            # 4. Output filter: if response contains dosage pattern, block it (03 §8)
+            if DOSE_REGEX.search(reply_text):
+                reply_text = (
                     "मैं दवाओं की खुराक की सलाह नहीं दे सकता। कृपया स्वास्थ्य कार्यकर्ता से परामर्श लें।"
                     if is_hindi
-                    else "I cannot advise on medicine dosages. Please consult a qualified health worker."
-                )
-
-            # Ensure general health educational disclaimer is present
-            if "general health" not in llm_reply.lower() and "स्वास्थ्य" not in llm_reply:
-                llm_reply += (
-                    "\n\n[General Health Education: This information is for general awareness. Consult your PHC doctor or ASHA for clinical diagnosis and care.]"
+                    else "I can't advise on medicines. Please ask a health worker."
                 )
 
             return ChatResponse(
-                reply=llm_reply,
+                reply=reply_text,
                 escalated=False,
                 language=lang,
-                provider="gemini_generative_api",
             )
-
-    # 4. Fallback / Offline Mode: Use intelligent vernacular clinical knowledge synthesizer
-    offline_reply = generate_offline_health_guidance(req.message, lang)
-    return ChatResponse(
-        reply=offline_reply,
-        escalated=False,
-        language=lang,
-        provider="offline_health_knowledge_engine",
-    )
+        else:
+            safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+            return ChatResponse(reply=safety_reply, escalated=False, language=lang)
+    except Exception:
+        # Fallback to static safety reply when network/LLM is unreachable
+        safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+        return ChatResponse(reply=safety_reply, escalated=False, language=lang)
 
 
 @router.get("/protocols")
