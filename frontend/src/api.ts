@@ -24,7 +24,7 @@ import {
   RoleInfo,
 } from './types';
 
-const API_BASE = ''; // Relies on Vite proxy to http://127.0.0.1:8000
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 const TOKEN_KEY = 'upcharai_auth_token';
 const USER_KEY = 'upcharai_auth_user';

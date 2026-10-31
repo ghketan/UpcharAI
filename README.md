@@ -3,6 +3,8 @@
 > **CT BuildFest 2.0 · Problem Code: CTBF-AI-02 · AI & Intelligent Systems**  
 > *An explainable, offline-first clinical decision-support prototype designed to help rural health workers prioritise patients, identify red-flag conditions, and coordinate emergency referrals.*
 
+[![Live Demo](https://img.shields.io/badge/Live%20Deployment-upchar--ai--beta.vercel.app-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://upchar-ai-beta.vercel.app/)
+
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![React 19](https://img.shields.io/badge/React-19.3-61DAFB.svg)](https://react.dev/)
@@ -12,10 +14,14 @@
 [![Tests](https://img.shields.io/badge/Pytest-47%20Passed-brightgreen.svg)](tests/)
 [![Architecture](https://img.shields.io/badge/Architecture-Local--First_Offline-orange.svg)](#offline-first-architecture--outbox-sync)
 
+> 🚀 **Live Web Application:** [https://upchar-ai-beta.vercel.app/](https://upchar-ai-beta.vercel.app/)  
+> Access the fully responsive live application directly in your browser without any local setup.
+
 ---
 
 ## Table of Contents
 
+- [Live Web Application](#live-web-application)
 - [The Problem](#the-problem)
 - [The UpcharAI Solution](#the-upcharai-solution)
 - [System Architecture](#system-architecture)
@@ -41,6 +47,23 @@
 - [REST API Reference](#rest-api-reference)
 - [Testing & Quality Assurance](#testing--quality-assurance)
 - [Safety Notice & Claim Boundaries](#safety-notice--claim-boundaries)
+
+---
+
+## Live Web Application
+
+The live production prototype is deployed and accessible globally at:
+
+🔗 **[https://upchar-ai-beta.vercel.app/](https://upchar-ai-beta.vercel.app/)**
+
+### Instant Demo Access
+No local installation is required. Test the different role permissions and clinical interfaces directly using the built-in credentials:
+
+| Role | Username | Password | Persona & Capabilities |
+|---|---|---|---|
+| **Clinician / Medical Officer** | `doctor` | `doctor123` | Dr. Ananya Sharma — Full queue triage, clinical overrides & finalisation |
+| **Triage Nurse / ASHA** | `staff` | `staff123` | Pooja Devi — Rapid intake, NEWS2 preview, upward escalation, emergency SOS |
+| **Citizen / Patient** | `user` | `user123` | Sita Devi — Sahayak Multilingual Health Education Chatbot |
 
 ---
 
@@ -328,6 +351,9 @@ UpcharAI/
 
 ## Quick Start Guide
 
+> [!TIP]
+> **Try without local installation:** You can access the live deployed application at **[https://upchar-ai-beta.vercel.app/](https://upchar-ai-beta.vercel.app/)**.
+
 ### Prerequisites
 - **Python:** Version 3.12 or newer
 - **Node.js:** Version 18 or newer (with `npm`)
@@ -338,7 +364,7 @@ UpcharAI/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-org/UpcharAI.git
+   git clone https://github.com/ghketan/UpcharAI.git
    cd UpcharAI
    ```
 
