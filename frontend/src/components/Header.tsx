@@ -116,7 +116,7 @@ export const Header: React.FC = () => {
             className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-[#000000] text-[#ffffff] font-mono text-xs font-medium tracking-wider shadow-md hover:bg-[#1c1b1b] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap shrink-0"
           >
             <Activity className="w-3.5 h-3.5 text-[#aff1c6] shrink-0" />
-            <span className="hidden sm:inline whitespace-nowrap">Launch Outpost CDSS</span>
+            <span className="hidden sm:inline whitespace-nowrap">Launch CDSS</span>
             <span className="sm:hidden whitespace-nowrap">CDSS</span>
             <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
           </button>

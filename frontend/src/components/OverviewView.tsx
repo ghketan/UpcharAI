@@ -74,7 +74,7 @@ export const OverviewView: React.FC = () => {
   return (
     <div className="flex flex-col w-full overflow-hidden">
       {/* Hero Section */}
-      <section className="relative w-full overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-gradient-to-b from-[#faf7ee] via-[#f3eee3] to-[#faf7ee]">
+      <section className="relative w-full overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24">
         {/* Ambient Glows */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[480px] bg-[#aff1c6]/30 rounded-full blur-[120px] pointer-events-none -z-10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] bg-[#aceec4]/40 rounded-full blur-[70px] pointer-events-none -z-10" />
@@ -115,7 +115,7 @@ export const OverviewView: React.FC = () => {
                 onClick={() => setActiveTab('triage')}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#000000] text-[#ffffff] font-mono text-xs uppercase tracking-wider shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
-                <span>Launch Outpost CDSS</span>
+                <span>Launch CDSS</span>
                 <ArrowUpRight className="w-4 h-4 text-[#aff1c6]" />
               </button>
               <button
@@ -129,14 +129,14 @@ export const OverviewView: React.FC = () => {
           </ScrollReveal>
 
           {/* Interactive Light Mode Bio-Synthetic Orb Animation */}
-          <ScrollReveal animation="zoom-in" delay={400} className="w-full max-w-[853px] mx-auto mt-2 relative z-0">
+          <ScrollReveal animation="zoom-in" delay={400} className="w-full max-w-[853px] mx-auto mt-2 relative z-10">
             <InteractiveOrb />
           </ScrollReveal>
         </div>
       </section>
 
       {/* Validation Metric Strip */}
-      <section className="w-full bg-[#f3eee3] py-12 border-y border-[#e3e2e0]">
+      <section className="w-full bg-[#f3eee3]/80 backdrop-blur-md py-12 border-y border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <ScrollReveal animation="fade-up" delay={0}>
@@ -175,7 +175,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Anti-Hallucination Architecture Section */}
-      <section className="w-full py-20 bg-[#faf7ee]">
+      <section className="w-full py-20">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
           <ScrollReveal animation="fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -317,7 +317,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* 5-Step Rural Outpost Pipeline Section */}
-      <section className="w-full py-20 bg-[#f3eee3] border-y border-[#e3e2e0]">
+      <section className="w-full py-20 bg-[#f3eee3]/80 backdrop-blur-md border-y border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10 text-center">
           <ScrollReveal animation="fade-up">
             <div className="max-w-2xl mx-auto">
@@ -396,7 +396,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Live Outpost Buffer Table Section */}
-      <section className="w-full py-20 bg-[#faf7ee]">
+      <section className="w-full py-20">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="zoom-in">
             <div className="p-6 sm:p-8 rounded-2xl bg-[#ffffff] border border-[#e3e2e0] shadow-sm">
@@ -827,7 +827,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Feature Cards Showcase (Point-of-Care Modules) */}
-      <section className="w-full py-20 bg-[#faf7ee]">
+      <section className="w-full py-20">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
           <ScrollReveal animation="fade-up">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -939,7 +939,7 @@ export const OverviewView: React.FC = () => {
       </section>
 
       {/* Call to Action (CTA) Section */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#faf7ee] via-[#f3eee3] to-[#faf7ee] border-t border-[#e3e2e0]">
+      <section className="w-full py-20 bg-[#f3eee3]/80 backdrop-blur-md border-t border-[#e3e2e0]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           <ScrollReveal animation="fade-up">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffffff] text-[#2a6a48] font-mono text-xs mb-4 border border-[#e3e2e0]">

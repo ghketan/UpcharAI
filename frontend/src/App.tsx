@@ -9,6 +9,7 @@ import { SahayakChatView } from './components/SahayakChatView';
 import { TelemetrySyncView } from './components/TelemetrySyncView';
 import { AssessmentModal } from './components/AssessmentModal';
 import { ScrollProgressBar } from './components/ScrollReveal';
+import { BackgroundAnimation } from './components/BackgroundAnimation';
 import { X, CheckCircle2, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 
 const ToastContainer: React.FC = () => {
@@ -73,10 +74,11 @@ const MainContent: React.FC = () => {
   const { activeTab } = useApp();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf7ee]">
+    <div className="min-h-screen flex flex-col relative text-[#1a1c1a]">
+      <BackgroundAnimation />
       <ScrollProgressBar />
       <Header />
-      <main className="flex-1 pt-[128px] lg:pt-20 flex flex-col">
+      <main className="flex-1 pt-[128px] lg:pt-20 flex flex-col relative z-10">
         {activeTab === 'overview' && <OverviewView />}
         {activeTab === 'triage' && <TriageQueueView />}
         {activeTab === 'emergency' && <EmergencyReferralView />}

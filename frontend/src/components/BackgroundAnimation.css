@@ -1,0 +1,96 @@
+/* Background stack for UpcharAI */
+.upchar-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #f6f5f1;
+}
+
+.upchar-bg .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.75;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.upchar-bg .b1 {
+  width: 55vmax;
+  height: 55vmax;
+  left: -12vmax;
+  top: -18vmax;
+  background: radial-gradient(circle, #bfe6cc 0%, rgba(191, 230, 204, 0) 68%);
+  animation: upchar-d1 26s ease-in-out infinite alternate;
+}
+
+.upchar-bg .b2 {
+  width: 48vmax;
+  height: 48vmax;
+  right: -14vmax;
+  top: 8vh;
+  background: radial-gradient(circle, #b9e3dc 0%, rgba(185, 227, 220, 0) 68%);
+  animation: upchar-d2 32s ease-in-out infinite alternate;
+}
+
+.upchar-bg .b3 {
+  width: 42vmax;
+  height: 42vmax;
+  left: 22vw;
+  bottom: -20vmax;
+  background: radial-gradient(circle, #d4ecc0 0%, rgba(212, 236, 192, 0) 68%);
+  animation: upchar-d3 29s ease-in-out infinite alternate;
+}
+
+@keyframes upchar-d1 {
+  to {
+    transform: translate(14vw, 10vh) scale(1.12);
+  }
+}
+
+@keyframes upchar-d2 {
+  to {
+    transform: translate(-12vw, 14vh) scale(0.92);
+  }
+}
+
+@keyframes upchar-d3 {
+  to {
+    transform: translate(10vw, -12vh) scale(1.15);
+  }
+}
+
+.upchar-bg .grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(47, 107, 79, 0.22) 1px, transparent 1.4px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 15%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 15%, transparent 75%);
+  animation: upchar-gridshift 40s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes upchar-gridshift {
+  to {
+    background-position: 28px 28px;
+  }
+}
+
+.upchar-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upchar-bg .blob,
+  .upchar-bg .grid {
+    animation: none;
+  }
+}
+

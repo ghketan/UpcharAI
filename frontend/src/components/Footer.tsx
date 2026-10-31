@@ -3,7 +3,7 @@ import { Shield, Database, Lock, HeartHandshake } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-[#f3eee3] border-t border-[#e3e2e0] mt-auto">
+    <footer className="w-full bg-[#f3eee3]/80 backdrop-blur-md border-t border-[#e3e2e0] mt-auto relative z-10">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
         
         {/* Core Regulatory & Clinical Disclaimers Banner */}
