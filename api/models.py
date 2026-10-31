@@ -154,9 +154,9 @@ class LoginRequest(BaseModel):
 
 
 class RegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    password: str = Field(..., min_length=6, max_length=200)
-    role: str = Field(default="user", pattern="^(auth|user|clinical|doctor|nurse|patient)$")
+    username: str = Field(..., min_length=1, max_length=100)
+    password: str = Field(..., min_length=1, max_length=200)
+    role: str = Field(default="user")
     full_name: Optional[str] = Field(default=None, max_length=100)
     email: Optional[str] = Field(default=None, max_length=120)
 

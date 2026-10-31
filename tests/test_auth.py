@@ -95,6 +95,65 @@ def test_register_and_login_new_user():
     assert me_res.json()["username"] == "new_patient"
 
 
+def test_register_with_client_role_alias():
+    """Verify that registering with role='client' succeeds and normalizes to 'user'."""
+    res = client.post(
+        "/api/auth/register",
+        json={
+            "username": "client_sarah",
+            "password": "sarahpassword",
+            "role": "client",
+            "full_name": "Sarah Client",
+        },
+    )
+    assert res.status_code == 201
+    reg_data = res.json()
+    assert reg_data["user"]["username"] == "client_sarah"
+    assert reg_data["user"]["role"] == "user"
+    assert reg_data["user"]["allowed_views"] == ["sahayak"]
+    token = reg_data["access_token"]
+
+    # Verify chatbot allowed
+    chat_res = client.post(
+        "/api/chat",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"message": "Can I drink coconut water?", "language": "en"},
+    )
+    assert chat_res.status_code == 200
+
+    # Verify triage forbidden
+    q_res = client.get(
+        "/api/queue",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert q_res.status_code == 403
+
+
+def test_register_with_auth_role():
+    """Verify that registering with role='auth' creates a clinician account with triage access."""
+    res = client.post(
+        "/api/auth/register",
+        json={
+            "username": "new_clinician",
+            "password": "clinicianpass123",
+            "role": "auth",
+            "full_name": "Dr. New Clinician",
+        },
+    )
+    assert res.status_code == 201
+    reg_data = res.json()
+    assert reg_data["user"]["username"] == "new_clinician"
+    assert reg_data["user"]["role"] == "auth"
+    token = reg_data["access_token"]
+
+    # Verify triage allowed
+    q_res = client.get(
+        "/api/queue",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert q_res.status_code == 200
+
+
 def test_register_duplicate_username_fails():
     res = client.post(
         "/api/auth/register",

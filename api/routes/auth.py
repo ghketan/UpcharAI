@@ -25,8 +25,16 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/login", response_model=LoginResponse)
 def login(req: LoginRequest) -> LoginResponse:
+    clean_username = req.username.strip()
+    if not clean_username or not req.password:
+        raise APIException(
+            status_code=400,
+            code="missing_credentials",
+            message="Please provide both username and password.",
+        )
+
     with get_db() as conn:
-        user = authenticate_user(conn, req.username, req.password)
+        user = authenticate_user(conn, clean_username, req.password)
         if not user:
             raise APIException(
                 status_code=401,
@@ -48,7 +56,19 @@ def login(req: LoginRequest) -> LoginResponse:
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=LoginResponse)
 def register(req: RegisterRequest) -> LoginResponse:
     clean_username = req.username.strip().lower()
-    clean_email = (req.email or f"{clean_username}@upchar.ai").strip().lower()
+    if not clean_username:
+        raise APIException(
+            status_code=422,
+            code="validation_error",
+            message="Username cannot be blank.",
+        )
+
+    if not req.password:
+        raise APIException(
+            status_code=422,
+            code="validation_error",
+            message="Password cannot be blank.",
+        )
 
     try:
         norm_role = normalize_role(req.role)
@@ -56,25 +76,47 @@ def register(req: RegisterRequest) -> LoginResponse:
         raise APIException(status_code=422, code="validation_error", message=str(e))
 
     with get_db() as conn:
-        # Check if username or email already exists
-        existing = conn.execute(
-            "SELECT id FROM users WHERE username = ? OR email = ?",
-            (clean_username, clean_email),
+        # Check if username already exists
+        existing_user = conn.execute(
+            "SELECT id FROM users WHERE username = ?",
+            (clean_username,),
         ).fetchone()
 
-        if existing:
+        if existing_user:
             raise APIException(
                 status_code=409,
                 code="user_conflict",
-                message=f"Username '{clean_username}' or email '{clean_email}' already exists.",
+                message=f"Username '{clean_username}' already exists. Please sign in or choose another username.",
             )
+
+        # Handle email validation & collision avoidance
+        user_provided_email = bool(req.email and req.email.strip())
+        if user_provided_email:
+            clean_email = req.email.strip().lower()
+            existing_email = conn.execute(
+                "SELECT id FROM users WHERE email = ?",
+                (clean_email,),
+            ).fetchone()
+            if existing_email:
+                raise APIException(
+                    status_code=409,
+                    code="email_conflict",
+                    message=f"Email '{clean_email}' is already registered. Please sign in or use another email.",
+                )
+        else:
+            clean_email = f"{clean_username}@upchar.ai"
+            if conn.execute("SELECT id FROM users WHERE email = ?", (clean_email,)).fetchone():
+                import uuid
+                clean_email = f"{clean_username}_{uuid.uuid4().hex[:4]}@upchar.ai"
+
+        display_name = (req.full_name or "").strip() or clean_username.title()
 
         user = create_user(
             conn=conn,
             username=clean_username,
             password=req.password,
             role=norm_role,
-            full_name=req.full_name or clean_username.title(),
+            full_name=display_name,
             email=clean_email,
         )
 

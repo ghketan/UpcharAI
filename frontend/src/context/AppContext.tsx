@@ -89,8 +89,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const setActiveTab = (tab: TabKey) => {
-    if (currentUser?.role === 'user' && tab !== 'sahayak') {
-      showToast("Access restricted: Patient accounts are limited to the Sahayak Chatbot only. Triage & referrals require a Staff ('auth') login.", 'warning');
+    const isClient = currentUser?.role === 'user' || (currentUser?.role as any) === 'client';
+    if (isClient && tab !== 'sahayak') {
+      showToast("Access restricted: Client / Patient accounts are limited to the Sahayak Chatbot only. Triage & referrals require a Staff ('auth') login.", 'warning');
       return;
     }
     setActiveTabState(tab);
@@ -99,9 +100,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const login = async (input: LoginInput): Promise<LoginResponse> => {
     const res = await api.login(input);
     setCurrentUser(res.user);
-    if (res.user.role === 'user') {
+    const isClient = res.user.role === 'user' || (res.user.role as any) === 'client';
+    if (isClient) {
       setActiveTabState('sahayak');
-      showToast(`Logged in as Patient (${res.user.username}). Workspace set to Sahayak Chatbot.`, 'info');
+      showToast(`Logged in as Client (${res.user.username}). Workspace set to Sahayak Chatbot.`, 'info');
     } else {
       if (res.user.username.toLowerCase().includes('doctor')) {
         setRoleState('DOCTOR');
@@ -114,9 +116,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const registerUser = async (input: RegisterInput): Promise<LoginResponse> => {
     const res = await api.register(input);
     setCurrentUser(res.user);
-    if (res.user.role === 'user') {
+    const isClient = res.user.role === 'user' || (res.user.role as any) === 'client';
+    if (isClient) {
       setActiveTabState('sahayak');
-      showToast(`Account created as Patient (${res.user.username}). Welcome to Sahayak!`, 'success');
+      showToast(`Account created for Client (${res.user.username}). Welcome to Sahayak!`, 'success');
     } else {
       showToast(`Staff account created for ${res.user.full_name || res.user.username}. Clinical access active.`, 'success');
     }

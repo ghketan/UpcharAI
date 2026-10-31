@@ -257,7 +257,7 @@ export interface VoiceProtocol {
 // Authentication & Access Control Types
 // -------------------------------------------------------------------------
 
-export type UserRole = 'auth' | 'user';
+export type UserRole = 'auth' | 'user' | 'client';
 
 export interface AuthUser {
   id: string;

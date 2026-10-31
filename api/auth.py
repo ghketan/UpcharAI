@@ -106,9 +106,9 @@ def normalize_role(role_raw: str) -> str:
     clean = (role_raw or "").strip().lower()
     if clean in ("auth", "clinical", "clinician", "doctor", "nurse", "staff", "admin"):
         return "auth"
-    if clean in ("user", "patient", "public", "citizen"):
+    if clean in ("user", "client", "clients", "patient", "public", "citizen"):
         return "user"
-    raise ValueError(f"Invalid role '{role_raw}'. Supported roles: 'auth' (staff/triage access) and 'user' (chatbot only).")
+    raise ValueError(f"Invalid role '{role_raw}'. Supported roles: 'auth' (staff/triage access) and 'client' / 'user' (chatbot only).")
 
 
 def build_user_response(user_row: sqlite3.Row) -> Dict[str, Any]:
