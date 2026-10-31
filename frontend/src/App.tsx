@@ -8,6 +8,7 @@ import { EmergencyReferralView } from './components/EmergencyReferralView';
 import { SahayakChatView } from './components/SahayakChatView';
 import { TelemetrySyncView } from './components/TelemetrySyncView';
 import { AssessmentModal } from './components/AssessmentModal';
+import { LoginPage } from './components/LoginPage';
 import { ScrollProgressBar } from './components/ScrollReveal';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import { X, CheckCircle2, AlertTriangle, AlertCircle, Info } from 'lucide-react';
@@ -71,7 +72,7 @@ const ToastContainer: React.FC = () => {
 };
 
 const MainContent: React.FC = () => {
-  const { activeTab } = useApp();
+  const { activeTab, showLoginModal, setShowLoginModal } = useApp();
 
   return (
     <div className="min-h-screen flex flex-col relative text-[#1a1c1a]">
@@ -87,6 +88,13 @@ const MainContent: React.FC = () => {
       </main>
       <Footer />
       <AssessmentModal />
+      {showLoginModal && (
+        <LoginPage
+          asModal
+          onClose={() => setShowLoginModal(false)}
+          onSuccess={() => setShowLoginModal(false)}
+        />
+      )}
       <ToastContainer />
     </div>
   );

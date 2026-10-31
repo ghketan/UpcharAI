@@ -1,18 +1,19 @@
 import json
 from typing import Any, Dict
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 import httpx
 
 import api.config as config
 from api.db import get_db, utc_now_iso
 from api.errors import APIException
 from api.models import SyncStatusResponse
+from api.roles import DemoRole, get_demo_role
 
 router = APIRouter(prefix="/api/sync", tags=["sync"])
 
 
 @router.get("/status", response_model=SyncStatusResponse)
-def get_sync_status() -> SyncStatusResponse:
+def get_sync_status(_role: DemoRole = Depends(get_demo_role)) -> SyncStatusResponse:
     with get_db() as conn:
         pending_count = conn.execute(
             "SELECT COUNT(*) AS c FROM sync_outbox WHERE state = 'PENDING'"
@@ -40,7 +41,7 @@ def get_sync_status() -> SyncStatusResponse:
 
 
 @router.post("/push")
-def push_sync_outbox() -> Dict[str, Any]:
+def push_sync_outbox(_role: DemoRole = Depends(get_demo_role)) -> Dict[str, Any]:
     """
     Processes pending outbox items in order of creation.
     Sends items to sync target, handling idempotency and retries.
@@ -307,7 +308,10 @@ def ingest_record(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @router.get("/outbox")
-def get_sync_outbox(limit: int = 50) -> Dict[str, Any]:
+def get_sync_outbox(
+    limit: int = 50,
+    _role: DemoRole = Depends(get_demo_role),
+) -> Dict[str, Any]:
     """
     Returns recent local outbox entries for telemetry inspection and store-and-forward tracking.
     """
@@ -328,7 +332,10 @@ def get_sync_outbox(limit: int = 50) -> Dict[str, Any]:
 
 
 @router.post("/outbox/{item_id}/retry")
-def retry_outbox_item(item_id: str) -> Dict[str, Any]:
+def retry_outbox_item(
+    item_id: str,
+    _role: DemoRole = Depends(get_demo_role),
+) -> Dict[str, Any]:
     """
     Resets an outbox entry to PENDING state and zeroes attempt counters to force immediate retry.
     """
@@ -345,7 +352,7 @@ def retry_outbox_item(item_id: str) -> Dict[str, Any]:
 
 
 @router.get("/target-hub")
-def get_target_hub_summary() -> Dict[str, Any]:
+def get_target_hub_summary(_role: DemoRole = Depends(get_demo_role)) -> Dict[str, Any]:
     """
     Aggregates synchronization records across remote outposts for central hospital hub monitoring.
     """

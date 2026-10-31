@@ -252,3 +252,52 @@ export interface VoiceProtocol {
   lang: string;
   text: string;
 }
+
+// -------------------------------------------------------------------------
+// Authentication & Access Control Types
+// -------------------------------------------------------------------------
+
+export type UserRole = 'auth' | 'user';
+
+export interface AuthUser {
+  id: string;
+  username: string;
+  email: string;
+  role: UserRole;
+  full_name: string;
+  allowed_views: string[];
+  permissions: string[];
+  created_at: string;
+}
+
+export interface LoginInput {
+  username: string;
+  password: string;
+}
+
+export interface RegisterInput {
+  username: string;
+  password: string;
+  role: UserRole;
+  full_name?: string;
+  email?: string;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  role: UserRole;
+  expires_at: string;
+  user: AuthUser;
+}
+
+export interface RoleInfo {
+  role: string;
+  name: string;
+  description: string;
+  allowed_views: string[];
+  permissions: string[];
+  can_access_triage: boolean;
+  can_access_referrals: boolean;
+  can_access_chatbot: boolean;
+}

@@ -1,10 +1,11 @@
 from datetime import datetime, timezone
 import json
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from api.db import get_db, utc_now_iso
 from api.models import QueueItemResponse, QueueResponse
+from api.roles import DemoRole, get_demo_role
 
 router = APIRouter(prefix="/api/queue", tags=["queue"])
 
@@ -16,7 +17,10 @@ PRIORITY_RANKS = {
 
 
 @router.get("", response_model=QueueResponse)
-def get_queue(as_of: Optional[str] = None) -> QueueResponse:
+def get_queue(
+    as_of: Optional[str] = None,
+    _role: DemoRole = Depends(get_demo_role),
+) -> QueueResponse:
     if as_of:
         try:
             now_dt = datetime.fromisoformat(as_of)

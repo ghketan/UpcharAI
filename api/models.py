@@ -144,3 +144,51 @@ class AssessmentPreviewResponse(BaseModel):
     plausibility_violations: List[str] = Field(default_factory=list)
 
 
+# -------------------------------------------------------------------------
+# Authentication & Role Models
+# -------------------------------------------------------------------------
+
+class LoginRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=100)
+    password: str = Field(..., min_length=1, max_length=200)
+
+
+class RegisterRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6, max_length=200)
+    role: str = Field(default="user", pattern="^(auth|user|clinical|doctor|nurse|patient)$")
+    full_name: Optional[str] = Field(default=None, max_length=100)
+    email: Optional[str] = Field(default=None, max_length=120)
+
+
+class UserResponse(BaseModel):
+    id: str
+    username: str
+    email: str
+    role: str
+    full_name: str
+    allowed_views: List[str]
+    permissions: List[str]
+    created_at: str
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    role: str
+    expires_at: str
+    user: UserResponse
+
+
+class RoleInfo(BaseModel):
+    role: str
+    name: str
+    description: str
+    allowed_views: List[str]
+    permissions: List[str]
+    can_access_triage: bool
+    can_access_referrals: bool
+    can_access_chatbot: bool
+
+
+

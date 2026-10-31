@@ -6,6 +6,7 @@ from api.db import init_db
 from api.errors import APIException, api_exception_handler
 from api.routes import (
     assessments,
+    auth,
     chat,
     demo,
     hospitals,
@@ -43,6 +44,7 @@ app.add_middleware(
 app.add_exception_handler(APIException, api_exception_handler)
 
 # Include routers
+app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(assessments.router)
 app.include_router(queue.router)

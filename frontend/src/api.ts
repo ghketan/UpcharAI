@@ -17,9 +17,48 @@ import {
   SyncOutboxItem,
   TargetHubSummary,
   VoiceProtocol,
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+  LoginResponse,
+  RoleInfo,
 } from './types';
 
 const API_BASE = ''; // Relies on Vite proxy to http://127.0.0.1:8000
+
+const TOKEN_KEY = 'upcharai_auth_token';
+const USER_KEY = 'upcharai_auth_user';
+
+export function getStoredToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function getStoredUser(): AuthUser | null {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredAuth(token: string, user: AuthUser) {
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  } catch {}
+}
+
+export function clearStoredAuth() {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  } catch {}
+}
 
 class ApiError extends Error {
   statusCode: number;
@@ -43,6 +82,11 @@ async function request<T>(
   const headers = new Headers(options.headers || {});
   headers.set('Content-Type', 'application/json');
   headers.set('X-Demo-Role', role);
+
+  const token = getStoredToken();
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
   const res = await fetch(`${API_BASE}${url}`, {
     ...options,
@@ -210,6 +254,41 @@ export const api = {
     return request('/api/demo/reset', {
       method: 'POST',
     }, role);
+  },
+
+  // Authentication & Access Control
+  async login(input: LoginInput): Promise<LoginResponse> {
+    const res = await request<LoginResponse>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    setStoredAuth(res.access_token, res.user);
+    return res;
+  },
+
+  async register(input: RegisterInput): Promise<LoginResponse> {
+    const res = await request<LoginResponse>('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    setStoredAuth(res.access_token, res.user);
+    return res;
+  },
+
+  async getMe(): Promise<AuthUser> {
+    return request<AuthUser>('/api/auth/me');
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await request('/api/auth/logout', { method: 'POST' });
+    } finally {
+      clearStoredAuth();
+    }
+  },
+
+  async getRoles(): Promise<RoleInfo[]> {
+    return request<RoleInfo[]>('/api/auth/roles');
   },
 };
 
