@@ -72,7 +72,20 @@ const ToastContainer: React.FC = () => {
 };
 
 const MainContent: React.FC = () => {
-  const { activeTab, showLoginModal, setShowLoginModal } = useApp();
+  const { activeTab, currentUser, showLoginModal, setShowLoginModal } = useApp();
+
+  // If user is not authenticated, display the Login Page first in the center of the viewport
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 lg:p-8 relative text-[#123520] selection:bg-[#aceec4] selection:text-[#123520]">
+        <BackgroundAnimation />
+        <div className="relative z-10 w-full flex items-center justify-center my-auto">
+          <LoginPage />
+        </div>
+        <ToastContainer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col relative text-[#1a1c1a]">
