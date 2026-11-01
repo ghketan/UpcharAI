@@ -108,16 +108,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const login = async (input: LoginInput): Promise<LoginResponse> => {
     const res = await api.login(input);
     setCurrentUser(res.user);
+    const isOffline = res.access_token.startsWith('offline_token_');
     const isClient = res.user.role === 'user' || (res.user.role as any) === 'client';
     if (isClient) {
       setActiveTabState('sahayak');
-      showToast(`Logged in as Client (${res.user.username}). Workspace set to Sahayak Chatbot.`, 'info');
+      showToast(
+        isOffline
+          ? `Logged in as Client (${res.user.username}) in Offline Node Mode.`
+          : `Logged in as Client (${res.user.username}). Workspace set to Sahayak Chatbot.`,
+        'info'
+      );
     } else {
       if (res.user.username.toLowerCase().includes('doctor')) {
         setRoleState('DOCTOR');
       }
       setActiveTabState((prev) => (prev === 'sahayak' ? 'overview' : prev));
-      showToast(`Welcome ${res.user.full_name || res.user.username}! Clinical staff access active.`, 'success');
+      showToast(
+        isOffline
+          ? `Welcome ${res.user.full_name || res.user.username}! (Local Offline Enclave Mode)`
+          : `Welcome ${res.user.full_name || res.user.username}! Clinical staff access active.`,
+        'success'
+      );
     }
     return res;
   };
@@ -125,13 +136,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const registerUser = async (input: RegisterInput): Promise<LoginResponse> => {
     const res = await api.register(input);
     setCurrentUser(res.user);
+    const isOffline = res.access_token.startsWith('offline_token_');
     const isClient = res.user.role === 'user' || (res.user.role as any) === 'client';
     if (isClient) {
       setActiveTabState('sahayak');
-      showToast(`Account created for Client (${res.user.username}). Welcome to Sahayak!`, 'success');
+      showToast(
+        isOffline
+          ? `Offline account created for Client (${res.user.username}). Welcome to Sahayak!`
+          : `Account created for Client (${res.user.username}). Welcome to Sahayak!`,
+        'success'
+      );
     } else {
       setActiveTabState((prev) => (prev === 'sahayak' ? 'overview' : prev));
-      showToast(`Staff account created for ${res.user.full_name || res.user.username}. Clinical access active.`, 'success');
+      showToast(
+        isOffline
+          ? `Staff account registered locally for ${res.user.full_name || res.user.username}. Clinical access active.`
+          : `Staff account created for ${res.user.full_name || res.user.username}. Clinical access active.`,
+        'success'
+      );
     }
     return res;
   };

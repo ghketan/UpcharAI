@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from api.db import init_db
 from api.errors import APIException, api_exception_handler
@@ -66,4 +69,41 @@ def root():
         "data_mode": "SYNTHETIC_DATA_ONLY",
         "role_notice": "Demo roles — not authentication.",
     }
+
+
+DIST_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if DIST_DIR.is_dir():
+    assets_dir = DIST_DIR / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/ui", include_in_schema=False)
+    @app.get("/ui/{rest_of_path:path}", include_in_schema=False)
+    def serve_ui(rest_of_path: str = ""):
+        index_file = DIST_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        return {"error": "Frontend build not found"}
+
+    @app.get("/favicon.svg", include_in_schema=False)
+    def favicon():
+        fav = DIST_DIR / "favicon.svg"
+        if fav.exists():
+            return FileResponse(fav)
+        return {"error": "Not found"}
+
+    @app.get("/manifest.json", include_in_schema=False)
+    def manifest():
+        man = DIST_DIR / "manifest.json"
+        if man.exists():
+            return FileResponse(man)
+        return {"error": "Not found"}
+
+    @app.get("/sw.js", include_in_schema=False)
+    def sw():
+        sw_file = DIST_DIR / "sw.js"
+        if sw_file.exists():
+            return FileResponse(sw_file)
+        return {"error": "Not found"}
+
 

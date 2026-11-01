@@ -106,8 +106,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onClose, asModa
       setRole('DOCTOR');
       showToast('Entered as Demo Clinician (Dr. Ananya Sharma)', 'success');
       if (onSuccess) onSuccess();
-    } catch {
-      window.location.reload();
+    } catch (err: any) {
+      setError(err?.message || 'Demo login failed. Please verify credentials.');
+      showToast(err?.message || 'Demo login failed', 'error');
     } finally {
       setLoading(false);
     }
@@ -566,7 +567,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onClose, asModa
               {error && (
                 <div className="p-3 rounded-xl bg-[#fee2e2] text-[#991b1b] border border-[#fecaca] text-xs font-mono flex items-start gap-2 shadow-xs">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#b91c1c]" />
-                  <span className="leading-relaxed">{error}</span>
+                  <div className="flex-1">
+                    <span className="leading-relaxed font-semibold block">{error}</span>
+                    <p className="mt-1 text-[11px] text-[#7f1d1d] font-sans">
+                      Tip: If backend server is starting, use the 1-click test accounts above (Clinician / Staff / Patient) or Instant Demo Access.
+                    </p>
+                  </div>
                 </div>
               )}
 
