@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 _CHAT_REQUEST_HISTORY: Dict[str, List[float]] = defaultdict(list)
 _MAX_REQUESTS_PER_MINUTE = 10
 
-# Deterministic red-flag word patterns in English and Hindi (03 §8)
+# Deterministic red-flag word patterns in English, Hindi, and Punjabi (03 §8)
 ENGLISH_RED_FLAGS: List[str] = [
     "chest pain",
     "cannot breathe",
@@ -72,6 +72,21 @@ HINDI_RED_FLAGS: List[str] = [
     "zehar",
 ]
 
+PUNJABI_RED_FLAGS: List[str] = [
+    "ਛਾਤੀ ਵਿੱਚ ਦਰਦ",
+    "ਸਾਹ ਲੈਣ ਵਿੱਚ ਤਕਲੀਫ਼",
+    "ਸਾਹ ਫੁੱਲ",
+    "ਬੇਹੋਸ਼",
+    "ਬੇਹੋਸ਼ੀ",
+    "ਖ਼ੂਨ",
+    "ਖੂਨ",
+    "ਦੌਰਾ",
+    "ਝਟਕੇ",
+    "ਲਕਵਾ",
+    "ਸੱਪ",
+    "ਜ਼ਹਿਰ",
+]
+
 EMERGENCY_TEXT_EN = (
     "EMERGENCY ALERT: Your message describes potential emergency symptoms. "
     "Please seek immediate in-person medical evaluation at the nearest emergency healthcare center "
@@ -82,6 +97,11 @@ EMERGENCY_TEXT_HI = (
     "आपातकालीन सूचना: आपके लक्षणों में गंभीर खतरे के संकेत हैं। "
     "कृपया तुरंत नजदीकी स्वास्थ्य केंद्र या आपातकालीन कक्ष में डॉक्टर से संपर्क करें "
     "या स्वास्थ्य कार्यकर्ता को सूचित करें। प्रतीक्षा न करें।"
+)
+
+EMERGENCY_TEXT_PA = (
+    "ਸੰਕਟਕਾਲੀਨ ਚੇਤਾਵਨੀ: ਤੁਹਾਡੇ ਲੱਛਣ ਗੰਭੀਰ ਖਤਰੇ ਦਾ ਸੰਕੇਤ ਹਨ। "
+    "ਕਿਰਪਾ ਕਰਕੇ ਤੁਰੰਤ ਨਜ਼ਦੀਕੀ ਸਿਹਤ ਕੇਂਦਰ ਵਿੱਚ ਡਾਕਟਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਸਿਹਤ ਕਰਮਚਾਰੀ ਨੂੰ ਸੂਚਿਤ ਕਰੋ। ਉਡੀਕ ਨਾ ਕਰੋ।"
 )
 
 STATIC_SAFETY_EN = (
@@ -96,8 +116,18 @@ STATIC_SAFETY_HI = (
     "कृपया चिकित्सकीय सलाह के लिए स्थानीय स्वास्थ्य कार्यकर्ता या डॉक्टर से संपर्क करें।"
 )
 
-# Regex to detect medical dosage patterns (e.g., 500mg, 10 ml, 2 tablets)
-DOSE_REGEX = re.compile(r"\b\d+\s*(mg|mcg|g|ml|tablets?|capsules?|drops?|teaspoons?|pills?)\b", re.IGNORECASE)
+STATIC_SAFETY_PA = (
+    "ਮੈਂ ਸਿਰਫ਼ ਆਮ ਸਿਹਤ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਪ੍ਰਦਾਨ ਕਰਦਾ ਹਾਂ। "
+    "ਮੈਂ ਕਿਸੇ ਬਿਮਾਰੀ ਦਾ ਨਿਦਾਨ, ਇਲਾਜ ਜਾਂ ਦਵਾਈ ਦੀ ਖੁਰਾਕ ਨਹੀਂ ਦੱਸ ਸਕਦਾ। "
+    "ਕਿਰਪਾ ਕਰਕੇ ਡਾਕਟਰੀ ਸਲਾਹ ਲਈ ਸਥਾਨਕ ਸਿਹਤ ਕਰਮਚਾਰੀ ਜਾਂ ਡਾਕਟਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
+)
+
+# Regex to detect medical dosage patterns (e.g., 500mg, 2 tablets, 10ml cough syrup) while avoiding dietary recipes
+DOSE_REGEX = re.compile(
+    r"\b\d+\s*(mg|mcg|tablets?|capsules?|pills?)\b|"
+    r"\b\d+(\.\d+)?\s*(ml|drops?|teaspoons?)\s+(?:of\s+)?(?:\w+\s+)?(?:syrup|medicine|paracetamol|ibuprofen|antibiotic|suspension|elixir|drug|dose|dosage)\b",
+    re.IGNORECASE,
+)
 
 
 def detect_red_flags(text: str) -> bool:
@@ -115,6 +145,14 @@ def detect_red_flags(text: str) -> bool:
 
     # Hindi check
     for phrase in HINDI_RED_FLAGS:
+        p_lower = phrase.lower()
+        p_clean = re.sub(r"[^\w\s]", " ", p_lower)
+        p_compact = re.sub(r"[^\w\s]", "", p_lower)
+        if (p_lower in raw_lower) or (p_clean in cleaned) or (p_compact in cleaned_compact):
+            return True
+
+    # Punjabi check
+    for phrase in PUNJABI_RED_FLAGS:
         p_lower = phrase.lower()
         p_clean = re.sub(r"[^\w\s]", " ", p_lower)
         p_compact = re.sub(r"[^\w\s]", "", p_lower)
@@ -161,12 +199,13 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     history.append(now_time)
     _CHAT_REQUEST_HISTORY[client_ip] = history
 
-    is_hindi = req.language == "hi" or any("\u0900" <= ch <= "\u097f" for ch in req.message)
-    lang = "hi" if is_hindi else "en"
+    is_punjabi = req.language == "pa" or any("\u0a00" <= ch <= "\u0a7f" for ch in req.message)
+    is_hindi = not is_punjabi and (req.language == "hi" or any("\u0900" <= ch <= "\u097f" for ch in req.message))
+    lang = "pa" if is_punjabi else ("hi" if is_hindi else "en")
 
     # 1. Deterministic red flag pre-filter BEFORE any LLM call (REQ-022, DEC-009, 03 §8)
     if detect_red_flags(req.message):
-        escalation_reply = EMERGENCY_TEXT_HI if is_hindi else EMERGENCY_TEXT_EN
+        escalation_reply = EMERGENCY_TEXT_PA if is_punjabi else (EMERGENCY_TEXT_HI if is_hindi else EMERGENCY_TEXT_EN)
         return ChatResponse(
             reply=escalation_reply,
             escalated=True,
@@ -175,7 +214,7 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
 
     # 2. If no API key is available or offline, return static safety information (RISK-007, 03 §8)
     if not LLM_API_KEY:
-        safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+        safety_reply = STATIC_SAFETY_PA if is_punjabi else (STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN)
         return ChatResponse(
             reply=safety_reply,
             escalated=False,
@@ -186,40 +225,92 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
     try:
         import httpx
 
+        target_language = "Punjabi" if is_punjabi else ("Hindi" if is_hindi else "English")
         system_instruction = (
             "You are UpcharAI Health Assistant, an informational bot for rural community members. "
             "You provide general health and hygiene information only. "
             "You MUST NEVER diagnose diseases, recommend prescriptions, or provide medication doses. "
             "If the user asks for doses, tell them to ask a healthcare worker. "
-            f"Answer concisely in {'Hindi' if is_hindi else 'English'}."
+            f"Answer concisely and supportively in {target_language}."
         )
 
-        response = httpx.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={LLM_API_KEY}",
-            json={
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": f"Instruction: {system_instruction}\nUser question: {req.message}"}],
-                    }
-                ],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 200},
-            },
-            timeout=5.0,
-        )
+        reply_text = ""
 
-        if response.status_code == 200:
-            res_json = response.json()
-            candidates = res_json.get("candidates", [])
-            reply_text = candidates[0]["content"]["parts"][0]["text"] if candidates else ""
+        # Call Groq API when API key is a Groq key (gsk_...)
+        if LLM_API_KEY.startswith("gsk_"):
+            groq_models = ["qwen/qwen3.8-27b", "openai/gpt-oss-120b", "openai/gpt-oss-20b"]
+            for model_name in groq_models:
+                try:
+                    response = httpx.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {LLM_API_KEY}",
+                            "Content-Type": "application/json",
+                        },
+                        json={
+                            "model": model_name,
+                            "messages": [
+                                {"role": "system", "content": system_instruction},
+                                {"role": "user", "content": req.message},
+                            ],
+                            "temperature": 0.2,
+                            "max_tokens": 300,
+                        },
+                        timeout=8.0,
+                    )
+                    if response.status_code == 200:
+                        res_json = response.json()
+                        choices = res_json.get("choices", [])
+                        if choices:
+                            reply_text = choices[0].get("message", {}).get("content", "").strip()
+                            if reply_text:
+                                break
+                except Exception:
+                    continue
+        else:
+            # Fallback for Google Gemini API key
+            response = httpx.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={LLM_API_KEY}",
+                json={
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [{"text": f"Instruction: {system_instruction}\nUser question: {req.message}"}],
+                        }
+                    ],
+                    "generationConfig": {"temperature": 0.2, "maxOutputTokens": 300},
+                },
+                timeout=8.0,
+            )
+            if response.status_code == 200:
+                res_json = response.json()
+                candidates = res_json.get("candidates", [])
+                reply_text = candidates[0]["content"]["parts"][0]["text"].strip() if candidates else ""
 
+        if reply_text:
             # 4. Output filter: if response contains dosage pattern, block it (03 §8)
             if DOSE_REGEX.search(reply_text):
                 reply_text = (
-                    "मैं दवाओं की खुराक की सलाह नहीं दे सकता। कृपया स्वास्थ्य कार्यकर्ता से परामर्श लें।"
-                    if is_hindi
-                    else "I can't advise on medicines. Please ask a health worker."
+                    "ਮੈਂ ਦਵਾਈਆਂ ਦੀ ਖੁਰਾਕ ਦੀ ਸਲਾਹ ਨਹੀਂ ਦੇ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਸਿਹਤ ਕਰਮਚਾਰੀ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
+                    if is_punjabi
+                    else (
+                        "मैं दवाओं की खुराक की सलाह नहीं दे सकता। कृपया स्वास्थ्य कार्यकर्ता से परामर्श लें।"
+                        if is_hindi
+                        else "I can't advise on medicines. Please ask a health worker."
+                    )
                 )
+
+            disclaimer = (
+                "\n\n(ਸੂਚਨਾ: ਇਹ ਆਮ ਸਿਹਤ ਜਾਣਕਾਰੀ ਹੈ, ਡਾਕਟਰੀ ਸਲਾਹ ਨਹੀਂ।)"
+                if is_punjabi
+                else (
+                    "\n\n(सूचना: यह सामान्य स्वास्थ्य शिक्षा जानकारी है, चिकित्सीय सलाह नहीं।)"
+                    if is_hindi
+                    else "\n\n(Notice: General health education only. Consult a healthcare worker for clinical advice.)"
+                )
+            )
+            if "general health" not in reply_text.lower() and "सामान्य स्वास्थ्य" not in reply_text and "ਆਮ ਸਿਹਤ" not in reply_text:
+                reply_text = reply_text + disclaimer
 
             return ChatResponse(
                 reply=reply_text,
@@ -227,11 +318,11 @@ def chat_endpoint(req: ChatRequest, request: Request) -> ChatResponse:
                 language=lang,
             )
         else:
-            safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+            safety_reply = STATIC_SAFETY_PA if is_punjabi else (STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN)
             return ChatResponse(reply=safety_reply, escalated=False, language=lang)
     except Exception:
         # Fallback to static safety reply when network/LLM is unreachable
-        safety_reply = STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN
+        safety_reply = STATIC_SAFETY_PA if is_punjabi else (STATIC_SAFETY_HI if is_hindi else STATIC_SAFETY_EN)
         return ChatResponse(reply=safety_reply, escalated=False, language=lang)
 
 

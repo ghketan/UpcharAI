@@ -216,11 +216,17 @@ export const SahayakChatView: React.FC = () => {
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch (err: any) {
-      if (err instanceof ApiError && err.statusCode === 429) {
-        showToast('Rate limit reached: Maximum 10 questions per minute', 'warning');
-      } else {
-        showToast(err.message || 'Chat service offline', 'error');
-      }
+      const errorText = err instanceof ApiError && err.statusCode === 429
+        ? 'Rate limit reached: Maximum 10 questions per minute allowed. Please wait a moment.'
+        : (err?.message || 'Chat service is temporarily offline. Please try again shortly.');
+      showToast(errorText, err instanceof ApiError && err.statusCode === 429 ? 'warning' : 'error');
+      const errorMsg: ChatMessage = {
+        id: Math.random().toString(36).substring(2, 9),
+        sender: 'assistant',
+        text: errorText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
     } finally {
       setSending(false);
     }
@@ -277,6 +283,14 @@ export const SahayakChatView: React.FC = () => {
               }`}
             >
               हिन्दी (Hindi)
+            </button>
+            <button
+              onClick={() => setLanguage('pa')}
+              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
+                language === 'pa' ? 'bg-[#000000] text-white' : 'text-[#444748] hover:text-[#1a1c1a]'
+              }`}
+            >
+              ਪੰਜਾਬੀ (Punjabi)
             </button>
           </div>       
         </div>
